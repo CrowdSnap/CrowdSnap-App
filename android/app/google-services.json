@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "971504465078",
+    "project_id": "crowd-snap",
+    "storage_bucket": "crowd-snap.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:971504465078:android:a66fb56cad4b9375c02217",
+        "android_client_info": {
+          "package_name": "com.example.crowd_snap"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBrA6xyQMdfI9XtW8w_a3M5XYik5RJ8n0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
