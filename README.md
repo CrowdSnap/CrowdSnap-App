@@ -20,3 +20,11 @@ A new Flutter project.
 
 
 3. Si usáis la extension de vscode de Language Support for Java by Red Hat deshabilitar la extension      
+
+
+4. Ejecutar en la terminal del proyecto el comando: 
+    ```
+    dart run build_runner watch
+    ```
+    Este comando lo usaremos para poder trabajar con el código autogenerado de riverpod con las anotaciones.
+    Una vez ejecutado el comando no se puede usar la terminal ni cerrarla. Se tendrá que abrir otra para poder usarla.
