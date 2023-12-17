@@ -8,14 +8,15 @@ import 'firebase_options.dart';
 void main() async {
   // Asegura que los servicios de Flutter estén inicializados antes de cualquier otra cosa
   WidgetsFlutterBinding.ensureInitialized();
-  // Inicializa Riverpod
-  const ProviderScope(
-    child: MyApp(),
-  );
   // Inicializa Firebase
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  // Ejecuta la aplicación inicializando Riverpod
+  runApp(
+      const ProviderScope(
+    child: MyApp(),
+  ));
 }
 
 class MyApp extends ConsumerWidget {
