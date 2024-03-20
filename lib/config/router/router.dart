@@ -9,7 +9,7 @@ GoRouter appRouter(AppRouterRef ref) {
   return GoRouter(routes: [
     GoRoute(
       path: '/',
-      builder: (context, state) => const HomeScreen(),
+      builder: (context, state) => const SignInScreen(),
     ),
   ]);
 }

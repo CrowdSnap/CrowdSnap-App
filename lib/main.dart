@@ -13,8 +13,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   // Ejecuta la aplicación inicializando Riverpod
-  runApp(
-      const ProviderScope(
+  runApp(const ProviderScope(
     child: MyApp(),
   ));
 }
