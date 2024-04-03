@@ -12,7 +12,20 @@
           "package_name": "com.example.crowd_snap"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "971504465078-gcb7aln7j6ugt7ktthb9mfu8vtmug9t9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.crowd_snap",
+            "certificate_hash": "4c0c4883a11c802215ef45d9f93475acb40d9a9d"
+          }
+        },
+        {
+          "client_id": "971504465078-mvgvk72th070ikpj28pem7k79hmkj7rm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBBrA6xyQMdfI9XtW8w_a3M5XYik5RJ8n0"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "971504465078-mvgvk72th070ikpj28pem7k79hmkj7rm.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "971504465078-4rbd942mhe3ds36sdm3q77oahdvk3p3r.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.crowdSnap"
+              }
+            }
+          ]
         }
       }
     }
