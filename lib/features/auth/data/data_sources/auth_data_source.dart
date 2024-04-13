@@ -1,6 +1,7 @@
 import 'package:crowd_snap/features/auth/data/models/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:logging/logging.dart';
 
 part 'auth_data_source.g.dart';
 
@@ -10,6 +11,8 @@ abstract class AuthDataSource {
   Future<void> signOut();
   bool isAuthenticated();
 }
+
+final _logger = Logger('AuthDataSource');
 
 @Riverpod(keepAlive: true)
 AuthDataSource authDataSource(AuthDataSourceRef ref) {
@@ -30,7 +33,7 @@ class AuthDataSourceImpl implements AuthDataSource {
     );
     final user = userCredential.user;
     if (user != null) {
-      print('User: ${user.email} Firebase User signed in');
+      _logger.info('User: ${user.email} Firebase User signed in');
       return UserModel(uid: user.uid, email: user.email!);
     } else {
       throw Exception('User not found');
@@ -45,7 +48,7 @@ class AuthDataSourceImpl implements AuthDataSource {
     );
     final user = userCredential.user;
     if (user != null) {
-      print('User: ${user.email} Firebase User created');
+      _logger.info('User: ${user.email} Firebase User created');
       return UserModel(uid: user.uid, email: user.email!);
     } else {
       throw Exception('User creation failed');

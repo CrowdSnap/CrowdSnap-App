@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:crowd_snap/app/router/app_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:logging/logging.dart';
 
 part 'auth_redirect_provider.g.dart';
 
@@ -8,6 +9,8 @@ part 'auth_redirect_provider.g.dart';
 Stream<User?> authStateChanges(AuthStateChangesRef ref) {
   return FirebaseAuth.instance.authStateChanges();
 }
+
+final _logger = Logger('AuthRedirect');
 
 @riverpod
 void authRedirect(AuthRedirectRef ref) {
@@ -18,17 +21,17 @@ void authRedirect(AuthRedirectRef ref) {
     data: (user) {
       if (user != null) {
         router.go('/');
-        print('Authenticated, redirecting to home');
+        _logger.info('Authenticated, redirecting to home');
       } else {
         router.go('/login');
-        print('Not authenticated, redirecting to login');
+        _logger.info('Not authenticated, redirecting to login');
       }
     },
     error: (error, stackTrace) {
-      print('Error occurred: $error');
+      _logger.severe('Error occurred: $error');
     },
     loading: () {
-      print('Loading authentication state...');
+      _logger.info('Loading authentication state...');
     },
   );
 }

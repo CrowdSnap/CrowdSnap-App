@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:crowd_snap/features/auth/presentation/notifier/auth_notifier.dart';
+import 'package:logging/logging.dart';
+
+final _logger = Logger('LoginView');
 
 class LoginView extends ConsumerWidget {
   const LoginView({super.key});
@@ -44,7 +47,7 @@ class LoginView extends ConsumerWidget {
               onPressed: () {
                 // Call signIn method
                 authNotifier.signIn(email, password);
-                print('Email: $email, Password: $password');
+                _logger.info('Email: $email, Password: $password');
               },
               child: const Text('Login'),
             ),
