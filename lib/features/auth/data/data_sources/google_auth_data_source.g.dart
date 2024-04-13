@@ -1,25 +1,26 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'auth_repository_impl.dart';
+part of 'google_auth_data_source.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$authRepositoryHash() => r'734e457e2a3fb7435d5cc068dcc71a9fecfe7b81';
+String _$googleAuthDataSourceHash() =>
+    r'340d7bcccfbc6c122bc9afcb912e07fd2fb3c826';
 
-/// See also [authRepository].
-@ProviderFor(authRepository)
-final authRepositoryProvider = Provider<AuthRepository>.internal(
-  authRepository,
-  name: r'authRepositoryProvider',
+/// See also [googleAuthDataSource].
+@ProviderFor(googleAuthDataSource)
+final googleAuthDataSourceProvider = Provider<GoogleAuthDataSource>.internal(
+  googleAuthDataSource,
+  name: r'googleAuthDataSourceProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$authRepositoryHash,
+      : _$googleAuthDataSourceHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef AuthRepositoryRef = ProviderRef<AuthRepository>;
+typedef GoogleAuthDataSourceRef = ProviderRef<GoogleAuthDataSource>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

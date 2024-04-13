@@ -1,3 +1,4 @@
+import 'package:crowd_snap/features/auth/domain/use_cases/google_sign_in_use_case.dart';
 import 'package:crowd_snap/features/auth/domain/use_cases/sign_in_use_case.dart';
 import 'package:crowd_snap/features/auth/domain/use_cases/sign_out_use_case.dart';
 import 'package:crowd_snap/features/auth/domain/use_cases/sign_up_use_case.dart';
@@ -31,6 +32,17 @@ class AuthNotifier extends _$AuthNotifier {
       print('Error: $e StackTrace: $stackTrace');
     }
   }
+
+  Future<void> signInWithGoogle() async {
+  state = const AsyncValue.loading();
+  try {
+    await ref.read(googleSignInUseCaseProvider).execute();
+    state = const AsyncValue.data(null);
+  } catch (e, stackTrace) {
+    state = AsyncValue.error(e, stackTrace);
+    print('Error: $e StackTrace: $stackTrace');
+  }
+}
 
   Future<void> signOut() async {
     state = const AsyncValue.loading();

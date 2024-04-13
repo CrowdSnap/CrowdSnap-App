@@ -1,3 +1,4 @@
+import 'package:crowd_snap/features/auth/presentation/widgets/google_sign_in_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -47,6 +48,10 @@ class RegisterView extends ConsumerWidget {
               },
               child: const Text('Register'),
             ),
+            GoogleSignInButton(onPressed: () {
+              // Call signInWithGoogle method
+              authNotifier.signInWithGoogle();
+            }),
             TextButton(
               onPressed: () {
                 context.go('/login');

@@ -35,6 +35,7 @@ dependencies:
     sdk: flutter
   flutter_riverpod: ^2.4.9
   go_router: ^13.2.4
+  google_sign_in: ^6.2.1
   riverpod_annotation: ^2.3.3
 
 dev_dependencies:
@@ -82,6 +83,6 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
-
   assets:
     - assets/images/
+    - assets/icons/
