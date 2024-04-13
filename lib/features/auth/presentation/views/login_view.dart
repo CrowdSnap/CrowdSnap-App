@@ -1,0 +1,62 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:crowd_snap/features/auth/presentation/notifier/auth_notifier.dart';
+
+
+class LoginView extends ConsumerWidget {
+  const LoginView({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authNotifier = ref.watch(authNotifierProvider.notifier);
+    String email = '';
+    String password = '';
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Login'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextField(
+              decoration: const InputDecoration(
+                labelText: 'Email',
+              ),
+              onChanged: (value) {
+                email = value;
+              },
+            ),
+            TextField(
+              decoration: const InputDecoration(
+                labelText: 'Password',
+              ),
+              obscureText: true,
+              onChanged: (value) {
+                password = value;
+              },
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                // Call signIn method
+                authNotifier.signIn(email, password);
+                print('Email: $email, Password: $password');
+              },
+              child: const Text('Login'),
+            ),
+            TextButton(
+              onPressed: () {
+                context.go('/register');
+              },
+              child: const Text('Register'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
