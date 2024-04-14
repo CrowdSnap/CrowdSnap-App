@@ -26,76 +26,72 @@ class LoginView extends ConsumerWidget {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Column(
-              children: [
-                const SizedBox(height: 36),
-                TextFormField(
-                  initialValue: formValues.email,
-                  decoration: const InputDecoration(
-                    labelText: email,
-                  ),
-                  onChanged: (value) => formState.updateEmail(value),
-                ),
-                const PasswordInput(showPasswordRequirements: false),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed:
-                      formValues.isPasswordValid && formValues.email.isNotEmpty
-                          ? () {
-                              authNotifier.signIn(
-                                  formValues.email, formValues.password);
-                            }
-                          : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: formValues.isPasswordValid &&
-                            formValues.email.isNotEmpty
-                        ? Theme.of(context).colorScheme.surface
-                        : Theme.of(context)
-                            .colorScheme
-                            .onSurface
-                            .withOpacity(0.12),
-                    foregroundColor: formValues.isPasswordValid &&
-                            formValues.email.isNotEmpty
-                        ? Theme.of(context).colorScheme.primary
-                        : Theme.of(context)
-                            .colorScheme
-                            .onSurface
-                            .withOpacity(0.38),
-                  ),
-                  child: const Text('Login'),
-                ),
-                const SizedBox(height: 16),
-                Row(
+            Expanded(
+              child: Center(
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('Has olvidado tu contraseña?'),
+                    TextFormField(
+                      initialValue: formValues.email,
+                      decoration: const InputDecoration(
+                        labelText: email,
+                      ),
+                      onChanged: (value) => formState.updateEmail(value),
+                    ),
+                    const PasswordInput(showPasswordRequirements: false),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed:
+                          formValues.isPasswordValid && formValues.email.isNotEmpty
+                              ? () {
+                                  authNotifier.signIn(
+                                      formValues.email, formValues.password);
+                                }
+                              : null,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: formValues.isPasswordValid &&
+                                formValues.email.isNotEmpty
+                            ? Theme.of(context).colorScheme.surface
+                            : Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withOpacity(0.12),
+                        foregroundColor: formValues.isPasswordValid &&
+                                formValues.email.isNotEmpty
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withOpacity(0.38),
+                      ),
+                      child: const Text('Login'),
+                    ),
+                    const SizedBox(height: 22),
+                    GoogleSignInButton(onPressed: () {
+                      // Call signInWithGoogle method
+                      authNotifier.signInWithGoogle();
+                    }),
+                    const SizedBox(height: 40),
+                    const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(child: Divider()),
+                        Text('   O   ', style: TextStyle(fontSize: 14)),
+                        Expanded(child: Divider()),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
                     TextButton(
                       onPressed: () {
                         context.go('/forgot-password');
                       },
-                      child: const Text('Recuperar'),
+                      child: const Text('¿Has olvidado tu contraseña?'),
                     ),
                   ],
                 ),
-                const SizedBox(height: 22),
-                const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(child: Divider()),
-                    Text('   O   ', style: TextStyle(fontSize: 14)),
-                    Expanded(child: Divider()),
-                  ],
-                ),
-                const SizedBox(height: 30),
-                GoogleSignInButton(onPressed: () {
-                  // Call signInWithGoogle method
-                  authNotifier.signInWithGoogle();
-                }),
-              ],
+              ),
             ),
-            
             Column(
               children: [
                 const Divider(),
@@ -107,7 +103,7 @@ class LoginView extends ConsumerWidget {
                       onPressed: () {
                         context.go('/register');
                       },
-                      child: const Text('Register'),
+                      child: const Text('Regístrate'),
                     ),
                   ],
                 ),
