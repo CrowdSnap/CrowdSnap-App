@@ -6,6 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:crowd_snap/features/auth/presentation/notifier/auth_notifier.dart';
+import 'package:logging/logging.dart';
+
+final _logger = Logger('LoginView');
 
 class RegisterView extends ConsumerWidget {
   const RegisterView({super.key});

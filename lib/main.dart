@@ -5,8 +5,11 @@ import 'package:crowd_snap/app/app.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:crowd_snap/app/router/provider/auth_redirect_provider.dart';
 import 'firebase_options.dart';
+import 'package:logging/logging.dart';
 
 void main() async {
+  final logger = Logger('main');
+
   // Inicializa Firebase antes de ejecutar la aplicación.
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -15,21 +18,19 @@ void main() async {
 
   runApp(
     // El widget ProviderScope permitirá que toda tu aplicación tenga acceso a los proveedores de Riverpod.
-    ProviderScope(
-      child: Consumer(
-        builder: (context, ref, child) {
-          ref.watch(authRedirectProvider);
-          return const MyApp();
-        }, 
-      )
-    ),
+    ProviderScope(child: Consumer(
+      builder: (context, ref, child) {
+        ref.watch(authRedirectProvider);
+        return const MyApp();
+      },
+    )),
   );
 
   FirebaseAuth.instance.authStateChanges().listen((User? user) {
     if (user == null) {
-      print('No user is signed in.');
+      logger.info('No user is signed in.');
     } else {
-      print('User is signed in. User details: $user');
+      logger.info('User is signed in. User details: $user');
     }
   });
 }

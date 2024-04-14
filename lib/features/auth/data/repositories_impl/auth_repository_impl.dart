@@ -5,6 +5,7 @@ import 'package:crowd_snap/features/auth/data/data_sources/google_auth_data_sour
 import 'package:crowd_snap/features/auth/domain/entities/user.dart';
 import 'package:crowd_snap/features/auth/domain/repositories/auth_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:logging/logging.dart';
 
 part 'auth_repository_impl.g.dart';
 
@@ -14,6 +15,8 @@ AuthRepository authRepository(AuthRepositoryRef ref) {
   final googleAuthDataSource = ref.watch(googleAuthDataSourceProvider);
   return AuthRepositoryImpl(authDataSource, googleAuthDataSource);
 }
+
+final _logger = Logger('AuthRepository');
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthDataSource _authDataSource;
@@ -25,21 +28,21 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<User> signInWithEmailAndPassword(String email, String password) async {
     final userModel = await _authDataSource.signInWithEmailAndPassword(email, password);
-    print('UserModel: $userModel Desde el repositorio');
+    _logger.info('UserModel: $userModel Desde el repositorio');
     return User(uid: userModel.uid, email: userModel.email);
   }
 
   @override
   Future<User> createUserWithEmailAndPassword(String email, String password) async {
     final userModel = await _authDataSource.createUserWithEmailAndPassword(email, password);
-    print('UserModel: $userModel Desde el repositorio');
+    _logger.info('UserModel: $userModel Desde el repositorio');
     return User(uid: userModel.uid, email: userModel.email);
   }
 
   @override
   Future<User> signInWithGoogle() async {
     final userModel = await _googleAuthDataSource.signInWithGoogle();
-    print('UserModel: $userModel Desde el repositorio');
+    _logger.info('UserModel: $userModel Desde el repositorio');
     return User(uid: userModel.uid, email: userModel.email);
   }
 
