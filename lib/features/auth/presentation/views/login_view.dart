@@ -2,9 +2,7 @@ import 'package:crowd_snap/features/auth/presentation/notifier/form_notifier.dar
 import 'package:crowd_snap/features/auth/presentation/widgets/google_sign_in_button.dart';
 import 'package:crowd_snap/features/auth/presentation/widgets/password_input.dart';
 import 'package:crowd_snap/global/constants.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:crowd_snap/features/auth/presentation/notifier/auth_notifier.dart';
@@ -28,46 +26,92 @@ class LoginView extends ConsumerWidget {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            TextFormField(
-              initialValue: formValues.email,
-              decoration: const InputDecoration(
-                labelText: email,
-              ),
-              onChanged: (value) => formState.updateEmail(value),
+            Column(
+              children: [
+                const SizedBox(height: 36),
+                TextFormField(
+                  initialValue: formValues.email,
+                  decoration: const InputDecoration(
+                    labelText: email,
+                  ),
+                  onChanged: (value) => formState.updateEmail(value),
+                ),
+                const PasswordInput(showPasswordRequirements: false),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed:
+                      formValues.isPasswordValid && formValues.email.isNotEmpty
+                          ? () {
+                              authNotifier.signIn(
+                                  formValues.email, formValues.password);
+                            }
+                          : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: formValues.isPasswordValid &&
+                            formValues.email.isNotEmpty
+                        ? Theme.of(context).colorScheme.surface
+                        : Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.12),
+                    foregroundColor: formValues.isPasswordValid &&
+                            formValues.email.isNotEmpty
+                        ? Theme.of(context).colorScheme.primary
+                        : Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.38),
+                  ),
+                  child: const Text('Login'),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text('Has olvidado tu contraseña?'),
+                    TextButton(
+                      onPressed: () {
+                        context.go('/forgot-password');
+                      },
+                      child: const Text('Recuperar'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 22),
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(child: Divider()),
+                    Text('   O   ', style: TextStyle(fontSize: 14)),
+                    Expanded(child: Divider()),
+                  ],
+                ),
+                const SizedBox(height: 30),
+                GoogleSignInButton(onPressed: () {
+                  // Call signInWithGoogle method
+                  authNotifier.signInWithGoogle();
+                }),
+              ],
             ),
-            const PasswordInput(showPasswordRequirements: false),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed:
-                  formValues.isPasswordValid && formValues.email.isNotEmpty
-                      ? () {
-                          authNotifier.signIn(
-                              formValues.email, formValues.password);
-                        }
-                      : null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: formValues.isPasswordValid &&
-                        formValues.email.isNotEmpty
-                    ? Theme.of(context).colorScheme.surface
-                    : Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
-                foregroundColor: formValues.isPasswordValid &&
-                        formValues.email.isNotEmpty
-                    ? Theme.of(context).colorScheme.primary
-                    : Theme.of(context).colorScheme.onSurface.withOpacity(0.38),
-              ),
-              child: const Text('Login'),
-            ),
-            GoogleSignInButton(onPressed: () {
-              // Call signInWithGoogle method
-              authNotifier.signInWithGoogle();
-            }),
-            TextButton(
-              onPressed: () {
-                context.go('/register');
-              },
-              child: const Text('Register'),
+            
+            Column(
+              children: [
+                const Divider(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text('No tienes cuenta?'),
+                    TextButton(
+                      onPressed: () {
+                        context.go('/register');
+                      },
+                      child: const Text('Register'),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ],
         ),
