@@ -10,6 +10,7 @@ abstract class AuthDataSource {
   Future<UserModel> createUserWithEmailAndPassword(String email, String password);
   Future<void> signOut();
   bool isAuthenticated();
+  Future<void> recoverPassword(String email);
 }
 
 final _logger = Logger('AuthDataSource');
@@ -64,5 +65,10 @@ class AuthDataSourceImpl implements AuthDataSource {
   bool isAuthenticated() {
     final currentUser = _firebaseAuth.currentUser;
     return currentUser != null;
+  }
+
+  @override
+  Future<void> recoverPassword(String email) async {
+    await _firebaseAuth.sendPasswordResetEmail(email: email);
   }
 }

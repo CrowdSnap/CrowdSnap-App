@@ -55,4 +55,9 @@ class AuthRepositoryImpl implements AuthRepository {
   bool isAuthenticated() {
     return _authDataSource.isAuthenticated();
   }
+
+  @override
+  Future<void> recoverPassword(String email) async {
+    await _authDataSource.recoverPassword(email);
+  }
 }
