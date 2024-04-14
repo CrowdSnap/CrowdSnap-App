@@ -1,5 +1,10 @@
+import 'package:crowd_snap/features/auth/presentation/notifier/form_notifier.dart';
 import 'package:crowd_snap/features/auth/presentation/widgets/google_sign_in_button.dart';
+import 'package:crowd_snap/features/auth/presentation/widgets/password_input.dart';
+import 'package:crowd_snap/global/constants.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:crowd_snap/features/auth/presentation/notifier/auth_notifier.dart';
@@ -10,8 +15,8 @@ class LoginView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authNotifier = ref.watch(authNotifierProvider.notifier);
-    String email = '';
-    String password = '';
+    final formState = ref.watch(formNotifierProvider.notifier);
+    final formValues = ref.watch(formNotifierProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -22,30 +27,33 @@ class LoginView extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextField(
+            TextFormField(
+              initialValue: formValues.email,
               decoration: const InputDecoration(
-                labelText: 'Email',
+                labelText: email,
               ),
-              onChanged: (value) {
-                email = value;
-              },
+              onChanged: (value) => formState.updateEmail(value),
             ),
-            TextField(
-              decoration: const InputDecoration(
-                labelText: 'Password',
-              ),
-              obscureText: true,
-              onChanged: (value) {
-                password = value;
-              },
-            ),
+            const PasswordInput(showPasswordRequirements: false),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () {
-                // Call signIn method
-                authNotifier.signIn(email, password);
-                print('Email: $email, Password: $password');
-              },
+              onPressed:
+                  formValues.isPasswordValid && formValues.email.isNotEmpty
+                      ? () {
+                          authNotifier.signIn(
+                              formValues.email, formValues.password);
+                        }
+                      : null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: formValues.isPasswordValid &&
+                        formValues.email.isNotEmpty
+                    ? Theme.of(context).colorScheme.surface
+                    : Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
+                foregroundColor: formValues.isPasswordValid &&
+                        formValues.email.isNotEmpty
+                    ? Theme.of(context).colorScheme.primary
+                    : Theme.of(context).colorScheme.onSurface.withOpacity(0.38),
+              ),
               child: const Text('Login'),
             ),
             GoogleSignInButton(onPressed: () {
