@@ -82,27 +82,4 @@ class FormNotifier extends _$FormNotifier {
         RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(password);
     state = state.copyWith(isPasswordValid: isValid);
   }
-
-  InputBorder getBorder(BuildContext context, {bool isError = false}) {
-  final theme = Theme.of(context);
-  final colorScheme = theme.colorScheme;
-
-  if (state.password.isEmpty) {
-    return theme.inputDecorationTheme.enabledBorder ?? 
-      UnderlineInputBorder(
-        borderSide: BorderSide(color: colorScheme.onSurface.withOpacity(0.38)),
-      );
-  } else if (isError || !state.isPasswordValid) {
-    return theme.inputDecorationTheme.errorBorder ?? 
-      UnderlineInputBorder(
-        borderSide: BorderSide(color: colorScheme.error),
-      );
-  } else {
-    return theme.inputDecorationTheme.focusedBorder ?? 
-      UnderlineInputBorder(
-        borderSide: BorderSide(color: colorScheme.primary),
-      );
-  }
-}
-
 }
