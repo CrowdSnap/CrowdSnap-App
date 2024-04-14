@@ -36,8 +36,9 @@ class TextPasswordRequirements extends ConsumerWidget {
         ),
         // Letra mayúscula y minúscula
         Text(
-          '${_checkOrX(formValues.password.contains(RegExp(r'[A-Z][a-z]')))}  Incluye una letra mayúscula y una minúscula',
-          style: formValues.password.contains(RegExp(r'[A-Z][a-z]'))
+          '${_checkOrX(formValues.password.contains(RegExp(r'[A-Z]')) && formValues.password.contains(RegExp(r'[a-z]')))}  Incluye una letra mayúscula y una minúscula',
+          style: formValues.password.contains(RegExp(r'[A-Z]')) &&
+                  formValues.password.contains(RegExp(r'[a-z]'))
               ? Theme.of(context)
                   .textTheme
                   .bodySmall!
