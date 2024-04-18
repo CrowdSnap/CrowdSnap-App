@@ -27,6 +27,9 @@ class NavBar extends ConsumerWidget {
         ),
       ],
       onTap: (index) {
+        if (navBarIndex == index) {
+          return;
+        }
         ref.read(navBarIndexNotifierProvider.notifier).updateIndex(index);
         context.push(
           index == 0
