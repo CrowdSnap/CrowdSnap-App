@@ -1,4 +1,5 @@
 import 'package:crowd_snap/features/auth/presentation/views/forgot_password_view.dart';
+import 'package:crowd_snap/global/navbar/providers/navbar_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:crowd_snap/features/auth/presentation/views/login_view.dart';
@@ -16,6 +17,9 @@ class AppRouter extends _$AppRouter {
   @override
   GoRouter build() {
     return GoRouter(
+      observers: [GoRouterObserver(
+        ref.read(navBarIndexNotifierProvider.notifier),
+      )],
       routes: [
         GoRoute(
           path: '/login',
@@ -53,5 +57,30 @@ class AppRouter extends _$AppRouter {
         ),
       ],
     );
+  }
+}
+
+class GoRouterObserver extends NavigatorObserver {
+  // ignore: prefer_typing_uninitialized_variables
+  final navBarIndexNotifier;
+
+  GoRouterObserver(this.navBarIndexNotifier);
+
+  @override
+  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    print('MyTest didPop: $route');
+    final currentRoute = route.settings.name;
+    switch (currentRoute) {
+      case '/':
+        break;
+      case '/settings':
+        navBarIndexNotifier.updateIndex(1);
+        break;
+      case '/profile':
+        navBarIndexNotifier.updateIndex(2);
+        break;
+      default:
+        break;
+    }
   }
 }
