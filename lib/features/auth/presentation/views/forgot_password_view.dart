@@ -5,8 +5,8 @@ import 'package:crowd_snap/global/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ForgotPassword extends ConsumerWidget {
-  const ForgotPassword({super.key});
+class ForgotPasswordView extends ConsumerWidget {
+  const ForgotPasswordView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -27,7 +27,7 @@ class AppRouter extends _$AppRouter {
         ),
         GoRoute(
           path: '/forgot-password',
-          builder: (context, state) => const ForgotPassword()
+          builder: (context, state) => const ForgotPasswordView()
         ),
         ShellRoute(
           builder: (context, state, child) {

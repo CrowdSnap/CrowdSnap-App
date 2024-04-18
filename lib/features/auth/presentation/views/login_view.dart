@@ -1,10 +1,10 @@
+import 'package:crowd_snap/app/router/app_router.dart';
 import 'package:crowd_snap/features/auth/presentation/notifier/form_notifier.dart';
 import 'package:crowd_snap/features/auth/presentation/widgets/google_sign_in_button.dart';
 import 'package:crowd_snap/features/auth/presentation/widgets/password_input.dart';
 import 'package:crowd_snap/global/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:crowd_snap/features/auth/presentation/notifier/auth_notifier.dart';
 import 'package:logging/logging.dart';
 
@@ -18,6 +18,7 @@ class LoginView extends ConsumerWidget {
     final authNotifier = ref.watch(authNotifierProvider.notifier);
     final formState = ref.watch(formNotifierProvider.notifier);
     final formValues = ref.watch(formNotifierProvider);
+    final router = ref.watch(appRouterProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -84,7 +85,7 @@ class LoginView extends ConsumerWidget {
                     const SizedBox(height: 20),
                     TextButton(
                       onPressed: () {
-                        context.go('/forgot-password');
+                        router.push('/forgot-password');
                       },
                       child: const Text('¿Has olvidado tu contraseña?'),
                     ),
@@ -101,7 +102,7 @@ class LoginView extends ConsumerWidget {
                     const Text('No tienes cuenta?'),
                     TextButton(
                       onPressed: () {
-                        context.go('/register');
+                        router.push('/register');
                       },
                       child: const Text('Regístrate'),
                     ),
