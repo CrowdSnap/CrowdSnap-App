@@ -7,4 +7,6 @@ abstract class AuthRepository {
   Future<User> signInWithGoogle();
   Future<void> signOut();
   bool isAuthenticated();
+  // Password Recovery
+  Future<void> recoverPassword(String email);
 }

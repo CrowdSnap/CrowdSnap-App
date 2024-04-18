@@ -1,3 +1,4 @@
+import 'package:crowd_snap/features/auth/presentation/views/forgot_password_view.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:crowd_snap/features/auth/presentation/views/login_view.dart';
@@ -14,39 +15,44 @@ part 'app_router.g.dart';
 class AppRouter extends _$AppRouter {
   @override
   GoRouter build() {
-  return GoRouter(
-    routes: [
-      GoRoute(
-        path: '/login',
-        builder: (context, state) => const LoginView(),
-      ),
-      GoRoute(
-        path: '/register',
-        builder: (context, state) => const RegisterView(),
-      ),
-      ShellRoute(
-        builder: (context, state, child) {
-          return Scaffold(
-            body: child,
-            bottomNavigationBar: const NavBar(),
-          );
-        },
-        routes: [
-          GoRoute(
-            path: '/',
-            builder: (context, state) => const HomeView(),
-          ),
-          GoRoute(
-            path: '/settings',
-            builder: (context, state) => const SettingsView(),
-          ),
-          GoRoute(
-            path: '/profile',
-            builder: (context, state) => const ProfileView(),
-          ),
-        ],
-      ),
-    ],
-  );
-}
+    return GoRouter(
+      routes: [
+        GoRoute(
+          path: '/login',
+          builder: (context, state) => const LoginView(),
+        ),
+        GoRoute(
+          path: '/register',
+          builder: (context, state) => const RegisterView(),
+        ),
+        GoRoute(
+          path: '/forgot-password',
+          builder: (context, state) => const ForgotPasswordView()
+        ),
+        ShellRoute(
+          builder: (context, state, child) {
+            return Scaffold(
+              body: child,
+              bottomNavigationBar: const NavBar(),
+            );
+          },
+          routes: [
+            GoRoute(
+              path: '/',
+              builder: (context, state) => const HomeView(),
+            ),
+            GoRoute(
+              path: '/settings',
+              builder: (context, state) => const SettingsView(),
+            ),
+            GoRoute(
+              path: '/profile',
+              builder: (context, state) => const ProfileView(),
+            ),
+          ],
+        ),
+      ],
+      
+    );
+  }
 }

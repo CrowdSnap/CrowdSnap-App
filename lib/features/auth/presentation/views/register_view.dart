@@ -55,7 +55,7 @@ class RegisterView extends ConsumerWidget {
                     ? Theme.of(context).colorScheme.primary
                     : Theme.of(context).colorScheme.onSurface.withOpacity(0.38),
               ),
-              child: const Text('Register'),
+              child: const Text('Registro'),
             ),
             GoogleSignInButton(onPressed: () {
               // Call signInWithGoogle method

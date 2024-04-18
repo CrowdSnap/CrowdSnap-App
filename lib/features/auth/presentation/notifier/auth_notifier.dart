@@ -1,4 +1,5 @@
 import 'package:crowd_snap/features/auth/domain/use_cases/google_sign_in_use_case.dart';
+import 'package:crowd_snap/features/auth/domain/use_cases/recover_password_use_case.dart';
 import 'package:crowd_snap/features/auth/domain/use_cases/sign_in_use_case.dart';
 import 'package:crowd_snap/features/auth/domain/use_cases/sign_out_use_case.dart';
 import 'package:crowd_snap/features/auth/domain/use_cases/sign_up_use_case.dart';
@@ -51,6 +52,16 @@ class AuthNotifier extends _$AuthNotifier {
     state = const AsyncValue.loading();
     try {
       await ref.read(signOutUseCaseProvider).execute();
+      state = const AsyncValue.data(null);
+    } catch (e, stackTrace) {
+      state = AsyncValue.error(e, stackTrace);
+    }
+  }
+
+  Future<void> recoverPassword(String email) async {
+    state = const AsyncValue.loading();
+    try {
+      await ref.read(recoverPasswordUseCaseProvider).execute(email);
       state = const AsyncValue.data(null);
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
