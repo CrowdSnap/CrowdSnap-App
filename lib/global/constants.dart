@@ -1,3 +1,5 @@
 // Formulario de registro
+const String name = 'Nombre';
+const String userName = 'Nombre de Usuario';
 const String email = 'Email';
-const String password = 'Password';
+const String password = 'Contraseña';

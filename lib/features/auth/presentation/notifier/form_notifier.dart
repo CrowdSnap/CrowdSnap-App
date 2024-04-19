@@ -4,7 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'form_notifier.g.dart';
 
 class FormState {
-  final String nombre;
+  final String name;
   final String email;
   final String password;
   final String userName;
@@ -12,7 +12,7 @@ class FormState {
   final bool isPasswordValid;
 
   FormState(
-      {this.nombre = '',
+      {this.name = '',
       this.email = '',
       this.password = '',
       this.userName = '',
@@ -20,7 +20,7 @@ class FormState {
       this.isPasswordValid = false});
 
   FormState copyWith({
-    String? nombre,
+    String? name,
     String? email,
     String? password,
     String? userName,
@@ -28,7 +28,7 @@ class FormState {
     bool? isPasswordValid,
   }) {
     return FormState(
-      nombre: nombre ?? this.nombre,
+      name: name ?? this.name,
       email: email ?? this.email,
       password: password ?? this.password,
       userName: userName ?? this.userName,
@@ -46,7 +46,7 @@ class FormNotifier extends _$FormNotifier {
   }
 
   void updateNombre(String nombre) {
-    state = state.copyWith(nombre: nombre);
+    state = state.copyWith(name: nombre);
   }
 
   void updateEmail(String email) {
