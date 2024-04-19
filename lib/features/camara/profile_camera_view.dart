@@ -37,7 +37,7 @@ class _ImagePickerState extends State<ImagePickerTest> {
               : Image.file(_image!),
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: getImage,
+          onPressed: () => getImage(),
           child: const Icon(Icons.add_a_photo),
         ));
   }

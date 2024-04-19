@@ -69,6 +69,9 @@ class LoginView extends ConsumerWidget {
               },
               child: const Text('Register'),
             ),
+            ElevatedButton(
+                onPressed: () => context.go('/camera-register'),
+                child: const Text('Camera'))
           ],
         ),
       ),
