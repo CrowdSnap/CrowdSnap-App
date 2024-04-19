@@ -1,19 +1,22 @@
 import 'package:crowd_snap/features/auth/data/repositories_impl/auth_repository_impl.dart';
-import 'package:crowd_snap/features/auth/domain/entities/user.dart';
+import 'package:crowd_snap/features/auth/data/repositories_impl/firestore_repository_impl.dart';
 import 'package:crowd_snap/features/auth/domain/repositories/auth_repository.dart';
+import 'package:crowd_snap/features/auth/domain/repositories/firestore_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:logging/logging.dart';
 
 part 'sign_up_use_case.g.dart';
 
 class SignUpUseCase {
-	final AuthRepository _authRepository;
+  final AuthRepository _authRepository;
+  final FirestoreRepository _firestoreRepository;
 
-	SignUpUseCase(this._authRepository);
+  SignUpUseCase(this._authRepository, this._firestoreRepository);
 
-	Future<User> execute(String email, String password) {
-		return _authRepository.createUserWithEmailAndPassword(email, password);
-	}
+  Future<void> execute(String username, String email, String password) async {
+    final userModel = await _authRepository.createUserWithEmailAndPassword(email, password, username);
+    await _firestoreRepository.saveUser(userModel);
+  }
 }
 
 final _logger = Logger('SignUpUseCase');
@@ -21,6 +24,7 @@ final _logger = Logger('SignUpUseCase');
 @riverpod
 SignUpUseCase signUpUseCase(SignUpUseCaseRef ref) {
   final authRepository = ref.watch(authRepositoryProvider);
+  final firestoreRepository = ref.watch(firestoreRepositoryProvider);
   _logger.info('SignUpUseCase');
-  return SignUpUseCase(authRepository);
+  return SignUpUseCase(authRepository, firestoreRepository);
 }

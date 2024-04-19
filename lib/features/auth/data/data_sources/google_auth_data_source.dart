@@ -36,7 +36,12 @@ class GoogleAuthDataSourceImpl implements GoogleAuthDataSource {
     final user = userCredential.user;
 
     if (user != null) {
-      return UserModel(uid: user.uid, email: user.email!);
+      return UserModel(
+        userId: user.uid,
+        username: user.displayName ?? '',
+        email: user.email ?? '',
+        joinedAt: DateTime.now(),
+      );
     } else {
       throw Exception('Google sign-in failed');
     }

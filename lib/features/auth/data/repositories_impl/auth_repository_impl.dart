@@ -2,7 +2,7 @@
 
 import 'package:crowd_snap/features/auth/data/data_sources/auth_data_source.dart';
 import 'package:crowd_snap/features/auth/data/data_sources/google_auth_data_source.dart';
-import 'package:crowd_snap/features/auth/domain/entities/user.dart';
+import 'package:crowd_snap/features/auth/data/models/user_model.dart';
 import 'package:crowd_snap/features/auth/domain/repositories/auth_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:logging/logging.dart';
@@ -26,24 +26,24 @@ class AuthRepositoryImpl implements AuthRepository {
   AuthRepositoryImpl(this._authDataSource, this._googleAuthDataSource);
 
   @override
-  Future<User> signInWithEmailAndPassword(String email, String password) async {
+  Future<UserModel> signInWithEmailAndPassword(String email, String password) async {
     final userModel = await _authDataSource.signInWithEmailAndPassword(email, password);
     _logger.info('UserModel: $userModel Desde el repositorio');
-    return User(uid: userModel.uid, email: userModel.email);
+    return UserModel(userId: userModel.userId, username: userModel.username, email: userModel.email, joinedAt: userModel.joinedAt);
   }
 
   @override
-  Future<User> createUserWithEmailAndPassword(String email, String password) async {
-    final userModel = await _authDataSource.createUserWithEmailAndPassword(email, password);
+  Future<UserModel> createUserWithEmailAndPassword(String email, String password,String username) async {
+    final userModel = await _authDataSource.createUserWithEmailAndPassword(email, password, username);
     _logger.info('UserModel: $userModel Desde el repositorio');
-    return User(uid: userModel.uid, email: userModel.email);
+    return UserModel(userId: userModel.userId, username: userModel.username, email: userModel.email, joinedAt: userModel.joinedAt);
   }
 
   @override
-  Future<User> signInWithGoogle() async {
+  Future<UserModel> signInWithGoogle() async {
     final userModel = await _googleAuthDataSource.signInWithGoogle();
     _logger.info('UserModel: $userModel Desde el repositorio');
-    return User(uid: userModel.uid, email: userModel.email);
+    return UserModel(userId: userModel.userId, username: userModel.username, email: userModel.email, joinedAt: userModel.joinedAt);
   }
 
   @override

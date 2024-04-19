@@ -1,25 +1,26 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'sign_in_use_case.dart';
+part of 'firestore_data_source.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$signInUseCaseHash() => r'34cef8469e862b5d1bb0c5d4a45b44b8f1cfcd66';
+String _$firestoreDataSourceHash() =>
+    r'08685133950515be27c6562ae1e615a6749f0a61';
 
-/// See also [signInUseCase].
-@ProviderFor(signInUseCase)
-final signInUseCaseProvider = AutoDisposeProvider<SignInUseCase>.internal(
-  signInUseCase,
-  name: r'signInUseCaseProvider',
+/// See also [firestoreDataSource].
+@ProviderFor(firestoreDataSource)
+final firestoreDataSourceProvider = Provider<FirestoreDataSource>.internal(
+  firestoreDataSource,
+  name: r'firestoreDataSourceProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$signInUseCaseHash,
+      : _$firestoreDataSourceHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef SignInUseCaseRef = AutoDisposeProviderRef<SignInUseCase>;
+typedef FirestoreDataSourceRef = ProviderRef<FirestoreDataSource>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

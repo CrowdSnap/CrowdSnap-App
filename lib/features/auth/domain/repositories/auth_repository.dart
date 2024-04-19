@@ -1,10 +1,10 @@
-import 'package:crowd_snap/features/auth/domain/entities/user.dart';
+import 'package:crowd_snap/features/auth/data/models/user_model.dart';
 
 abstract class AuthRepository {
-  Future<User> signInWithEmailAndPassword(String email, String password);
-  Future<User> createUserWithEmailAndPassword(String email, String password);
+  Future<UserModel> signInWithEmailAndPassword(String email, String password);
+  Future<UserModel> createUserWithEmailAndPassword(String email, String password, String username);
   // Google Sign In
-  Future<User> signInWithGoogle();
+  Future<UserModel> signInWithGoogle();
   Future<void> signOut();
   bool isAuthenticated();
   // Password Recovery

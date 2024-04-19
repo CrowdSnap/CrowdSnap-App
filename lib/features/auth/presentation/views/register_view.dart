@@ -6,9 +6,6 @@ import 'package:crowd_snap/global/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:crowd_snap/features/auth/presentation/notifier/auth_notifier.dart';
-import 'package:logging/logging.dart';
-
-final _logger = Logger('LoginView');
 
 class RegisterView extends ConsumerWidget {
   const RegisterView({super.key});
@@ -73,7 +70,7 @@ class RegisterView extends ConsumerWidget {
                                       formValues.email.isNotEmpty
                                   ? () {
                                       authNotifier.signUp(formValues.email,
-                                          formValues.password);
+                                          formValues.password, formValues.userName);
                                     }
                                   : null,
                               style: ElevatedButton.styleFrom(

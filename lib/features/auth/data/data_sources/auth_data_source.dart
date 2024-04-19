@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:crowd_snap/features/auth/data/data_sources/firestore_data_source.dart';
 import 'package:crowd_snap/features/auth/data/models/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -7,7 +9,8 @@ part 'auth_data_source.g.dart';
 
 abstract class AuthDataSource {
   Future<UserModel> signInWithEmailAndPassword(String email, String password);
-  Future<UserModel> createUserWithEmailAndPassword(String email, String password);
+  Future<UserModel> createUserWithEmailAndPassword(
+      String email, String password, String username);
   Future<void> signOut();
   bool isAuthenticated();
   Future<void> recoverPassword(String email);
@@ -18,16 +21,19 @@ final _logger = Logger('AuthDataSource');
 @Riverpod(keepAlive: true)
 AuthDataSource authDataSource(AuthDataSourceRef ref) {
   final firebaseAuth = FirebaseAuth.instance;
-  return AuthDataSourceImpl(firebaseAuth);
+  final firestoreDataSource = ref.watch(firestoreDataSourceProvider);
+  return AuthDataSourceImpl(firebaseAuth, firestoreDataSource);
 }
 
 class AuthDataSourceImpl implements AuthDataSource {
   final FirebaseAuth _firebaseAuth;
+  final FirestoreDataSource _firestoreDataSource;
 
-  AuthDataSourceImpl(this._firebaseAuth);
+  AuthDataSourceImpl(this._firebaseAuth, this._firestoreDataSource);
 
   @override
-  Future<UserModel> signInWithEmailAndPassword(String email, String password) async {
+  Future<UserModel> signInWithEmailAndPassword(
+      String email, String password) async {
     final userCredential = await _firebaseAuth.signInWithEmailAndPassword(
       email: email,
       password: password,
@@ -35,14 +41,16 @@ class AuthDataSourceImpl implements AuthDataSource {
     final user = userCredential.user;
     if (user != null) {
       _logger.info('User: ${user.email} Firebase User signed in');
-      return UserModel(uid: user.uid, email: user.email!);
+      final userModel = await _firestoreDataSource.getUser(user.uid);
+      return userModel;
     } else {
       throw Exception('User not found');
     }
   }
 
   @override
-  Future<UserModel> createUserWithEmailAndPassword(String email, String password) async {
+  Future<UserModel> createUserWithEmailAndPassword(
+      String email, String password, String username) async {
     final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
       email: email,
       password: password,
@@ -50,10 +58,23 @@ class AuthDataSourceImpl implements AuthDataSource {
     final user = userCredential.user;
     if (user != null) {
       _logger.info('User: ${user.email} Firebase User created');
-      return UserModel(uid: user.uid, email: user.email!);
+      final userModel = UserModel(
+        userId: user.uid,
+        username: username,
+        email: user.email!,
+        joinedAt: DateTime.now(),
+      );
+      await _saveUserToFirestore(userModel);
+      return userModel;
     } else {
       throw Exception('User creation failed');
     }
+  }
+
+  Future<void> _saveUserToFirestore(UserModel user) async {
+    final userDoc =
+        FirebaseFirestore.instance.collection('users').doc(user.userId);
+    await userDoc.set(user.toJson());
   }
 
   @override

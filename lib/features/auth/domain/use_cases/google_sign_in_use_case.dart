@@ -1,5 +1,5 @@
+import 'package:crowd_snap/features/auth/data/models/user_model.dart';
 import 'package:crowd_snap/features/auth/data/repositories_impl/auth_repository_impl.dart';
-import 'package:crowd_snap/features/auth/domain/entities/user.dart';
 import 'package:crowd_snap/features/auth/domain/repositories/auth_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:logging/logging.dart';
@@ -11,7 +11,7 @@ class GoogleSignInUseCase {
 
   GoogleSignInUseCase(this._authRepository);
 
-  Future<User> execute() {
+  Future<UserModel> execute() {
     return _authRepository.signInWithGoogle();
   }
 }
