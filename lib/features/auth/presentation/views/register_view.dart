@@ -20,6 +20,7 @@ class RegisterView extends ConsumerWidget {
     final formValues = ref.watch(formNotifierProvider);
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: const Text('Register'),
       ),
@@ -34,6 +35,7 @@ class RegisterView extends ConsumerWidget {
                 labelText: email,
               ),
               onChanged: (value) => formState.updateEmail(value),
+              keyboardType: TextInputType.emailAddress,
             ),
             const PasswordInput(),
             const SizedBox(height: 16),

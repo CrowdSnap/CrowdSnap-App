@@ -62,6 +62,7 @@ class PasswordInput extends ConsumerWidget {
             formState.updatePassword(value);
             formState.validatePasswordVisual();
           },
+          keyboardType: TextInputType.visiblePassword,
         ),
         const SizedBox(height: 16),
         Visibility(

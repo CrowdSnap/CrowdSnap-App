@@ -21,6 +21,7 @@ class LoginView extends ConsumerWidget {
     final router = ref.watch(appRouterProvider);
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: const Text('Login'),
       ),
@@ -43,13 +44,13 @@ class LoginView extends ConsumerWidget {
                     const PasswordInput(showPasswordRequirements: false),
                     const SizedBox(height: 16),
                     ElevatedButton(
-                      onPressed:
-                          formValues.isPasswordValid && formValues.email.isNotEmpty
-                              ? () {
-                                  authNotifier.signIn(
-                                      formValues.email, formValues.password);
-                                }
-                              : null,
+                      onPressed: formValues.isPasswordValid &&
+                              formValues.email.isNotEmpty
+                          ? () {
+                              authNotifier.signIn(
+                                  formValues.email, formValues.password);
+                            }
+                          : null,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: formValues.isPasswordValid &&
                                 formValues.email.isNotEmpty
