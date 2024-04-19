@@ -21,96 +21,98 @@ class LoginView extends ConsumerWidget {
     final router = ref.watch(appRouterProvider);
 
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: const Text('Login'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: SafeArea(
         child: Column(
           children: [
             Expanded(
               child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextFormField(
-                      initialValue: formValues.email,
-                      decoration: const InputDecoration(
-                        labelText: email,
+                child: SingleChildScrollView(
+                  physics: const ClampingScrollPhysics(),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 16),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            TextFormField(
+                              initialValue: formValues.email,
+                              decoration: const InputDecoration(
+                                labelText: email,
+                              ),
+                              onChanged: (value) =>
+                                  formState.updateEmail(value),
+                              keyboardType: TextInputType.emailAddress,
+                            ),
+                            const PasswordInput(
+                                showPasswordRequirements: false),
+                            const SizedBox(height: 30),
+                            ElevatedButton(
+                              onPressed: formValues.isPasswordValid &&
+                                      formValues.email.isNotEmpty
+                                  ? () {
+                                      authNotifier.signIn(formValues.email,
+                                          formValues.password);
+                                    }
+                                  : null,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: formValues.isPasswordValid &&
+                                        formValues.email.isNotEmpty
+                                    ? Theme.of(context).colorScheme.surface
+                                    : Theme.of(context)
+                                        .colorScheme
+                                        .onSurface
+                                        .withOpacity(0.12),
+                                foregroundColor: formValues.isPasswordValid &&
+                                        formValues.email.isNotEmpty
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Theme.of(context)
+                                        .colorScheme
+                                        .onSurface
+                                        .withOpacity(0.38),
+                              ),
+                              child: const Text('Login'),
+                            ),
+                            const SizedBox(height: 30),
+                            const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Expanded(child: Divider()),
+                                Text('   O   ',
+                                    style: TextStyle(fontSize: 14)),
+                                Expanded(child: Divider()),
+                              ],
+                            ),
+                            const SizedBox(height: 30),
+                            GoogleSignInButton(onPressed: () {
+                              // Call signInWithGoogle method
+                              authNotifier.signInWithGoogle();
+                            }),
+                          ],
+                        ),
                       ),
-                      onChanged: (value) => formState.updateEmail(value),
-                    ),
-                    const PasswordInput(showPasswordRequirements: false),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: formValues.isPasswordValid &&
-                              formValues.email.isNotEmpty
-                          ? () {
-                              authNotifier.signIn(
-                                  formValues.email, formValues.password);
-                            }
-                          : null,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: formValues.isPasswordValid &&
-                                formValues.email.isNotEmpty
-                            ? Theme.of(context).colorScheme.surface
-                            : Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withOpacity(0.12),
-                        foregroundColor: formValues.isPasswordValid &&
-                                formValues.email.isNotEmpty
-                            ? Theme.of(context).colorScheme.primary
-                            : Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withOpacity(0.38),
-                      ),
-                      child: const Text('Login'),
-                    ),
-                    const SizedBox(height: 22),
-                    GoogleSignInButton(onPressed: () {
-                      // Call signInWithGoogle method
-                      authNotifier.signInWithGoogle();
-                    }),
-                    const SizedBox(height: 40),
-                    const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Expanded(child: Divider()),
-                        Text('   O   ', style: TextStyle(fontSize: 14)),
-                        Expanded(child: Divider()),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    TextButton(
-                      onPressed: () {
-                        router.push('/forgot-password');
-                      },
-                      child: const Text('¿Has olvidado tu contraseña?'),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
-            Column(
+            const Divider(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Divider(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text('No tienes cuenta?'),
-                    TextButton(
-                      onPressed: () {
-                        router.push('/register');
-                      },
-                      child: const Text('Regístrate'),
-                    ),
-                  ],
-                ),
+                const Text('¿No tienes cuenta?'),
+                TextButton(
+                    onPressed: () {
+                      router.push('/register');
+                    },
+                    child: const Text('Regístrate'))
               ],
-            ),
+            )
           ],
         ),
       ),
