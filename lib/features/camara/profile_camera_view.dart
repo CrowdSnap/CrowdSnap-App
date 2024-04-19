@@ -13,8 +13,20 @@ class _ImagePickerState extends State<ImagePickerTest> {
   File? _image;
   final picker = ImagePicker();
 
-  Future getImage() async {
+  Future getCamera() async {
     final pickedFile = await picker.pickImage(source: ImageSource.camera);
+
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
+  Future getImage() async {
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     setState(() {
       if (pickedFile != null) {
