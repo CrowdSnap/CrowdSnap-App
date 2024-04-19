@@ -19,7 +19,6 @@ class ProfileView extends ConsumerWidget {
         if (didPop) {
           return;
         }
-        print('PopScope invoked');
         _goHome(context, ref);
       },
       child: Scaffold(

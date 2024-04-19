@@ -13,7 +13,7 @@ class SignUpUseCase {
 
   SignUpUseCase(this._authRepository, this._firestoreRepository);
 
-  Future<void> execute(String username, String email, String password) async {
+  Future<void> execute(String email, String password, String username) async {
     final userModel = await _authRepository.createUserWithEmailAndPassword(email, password, username);
     await _firestoreRepository.saveUser(userModel);
   }

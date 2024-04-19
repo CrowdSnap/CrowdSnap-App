@@ -17,11 +17,11 @@ class SignInUseCase {
   Future<UserModel> execute(String email, String password) async {
     try {
       // Iniciar sesión con email y contraseña
-      final user = await _authRepository.signInWithEmailAndPassword(email, password);
-      
+      final user =
+          await _authRepository.signInWithEmailAndPassword(email, password);
+
       // Recuperar datos adicionales del usuario desde Firestore
       final userModel = await _firestoreRepository.getUser(user.userId);
-      
       return userModel;
     } catch (e) {
       _logger.severe('Error al iniciar sesión: $e');

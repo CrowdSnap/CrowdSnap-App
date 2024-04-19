@@ -22,28 +22,43 @@ class AuthRepositoryImpl implements AuthRepository {
   final AuthDataSource _authDataSource;
   final GoogleAuthDataSource _googleAuthDataSource;
 
-
   AuthRepositoryImpl(this._authDataSource, this._googleAuthDataSource);
 
   @override
-  Future<UserModel> signInWithEmailAndPassword(String email, String password) async {
-    final userModel = await _authDataSource.signInWithEmailAndPassword(email, password);
+  Future<UserModel> signInWithEmailAndPassword(
+      String email, String password) async {
+    final userModel =
+        await _authDataSource.signInWithEmailAndPassword(email, password);
     _logger.info('UserModel: $userModel Desde el repositorio');
-    return UserModel(userId: userModel.userId, username: userModel.username, email: userModel.email, joinedAt: userModel.joinedAt);
+    return UserModel(
+        userId: userModel.userId,
+        username: userModel.username,
+        email: userModel.email,
+        joinedAt: userModel.joinedAt);
   }
 
   @override
-  Future<UserModel> createUserWithEmailAndPassword(String email, String password,String username) async {
-    final userModel = await _authDataSource.createUserWithEmailAndPassword(email, password, username);
+  Future<UserModel> createUserWithEmailAndPassword(
+      String email, String password, String username) async {
+    final userModel = await _authDataSource.createUserWithEmailAndPassword(
+        email, password, username);
     _logger.info('UserModel: $userModel Desde el repositorio');
-    return UserModel(userId: userModel.userId, username: userModel.username, email: userModel.email, joinedAt: userModel.joinedAt);
+    return UserModel(
+        userId: userModel.userId,
+        username: userModel.username,
+        email: userModel.email,
+        joinedAt: userModel.joinedAt);
   }
 
   @override
   Future<UserModel> signInWithGoogle() async {
     final userModel = await _googleAuthDataSource.signInWithGoogle();
     _logger.info('UserModel: $userModel Desde el repositorio');
-    return UserModel(userId: userModel.userId, username: userModel.username, email: userModel.email, joinedAt: userModel.joinedAt);
+    return UserModel(
+        userId: userModel.userId,
+        username: userModel.username,
+        email: userModel.email,
+        joinedAt: userModel.joinedAt);
   }
 
   @override

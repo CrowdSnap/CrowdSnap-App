@@ -51,7 +51,7 @@ class RegisterView extends ConsumerWidget {
                                 labelText: userName,
                               ),
                               onChanged: (value) =>
-                                  formState.updateNombre(value),
+                                  formState.updateUserName(value),
                               keyboardType: TextInputType.name,
                             ),
                             TextFormField(
