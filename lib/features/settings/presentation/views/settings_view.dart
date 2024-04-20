@@ -23,7 +23,6 @@ class SettingsView extends ConsumerWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          leading: IconButton(onPressed: () => _goHome(context, ref), icon: const Icon(Icons.arrow_back)),
           title: const Text('Settings')
         ),
         body: const Center(

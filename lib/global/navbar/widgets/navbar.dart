@@ -31,13 +31,17 @@ class NavBar extends ConsumerWidget {
           return;
         }
         ref.read(navBarIndexNotifierProvider.notifier).updateIndex(index);
-        context.push(
-          index == 0
-              ? '/'
-              : index == 1
-                  ? '/settings'
-                  : '/profile',
-        );
+        switch (index) {
+          case 0:
+            context.go('/');
+            break;
+          case 1:
+            context.push('/settings');
+            break;
+          case 2:
+            context.push('/profile');
+            break;
+        }
       },
     );
   }
