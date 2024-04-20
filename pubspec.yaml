@@ -30,8 +30,8 @@ environment:
 dependencies:
   cloud_firestore: ^4.17.0
   cupertino_icons: ^1.0.2
-  firebase_auth: ^4.19.1
-  firebase_core: ^2.24.2
+  firebase_auth: ^4.19.2
+  firebase_core: ^2.30.0
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.4.9
