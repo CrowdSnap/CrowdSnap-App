@@ -19,12 +19,10 @@ class ProfileView extends ConsumerWidget {
         if (didPop) {
           return;
         }
-        print('PopScope invoked');
         _goHome(context, ref);
       },
       child: Scaffold(
         appBar: AppBar(
-          leading: IconButton(onPressed: () => _goHome(context, ref), icon: const Icon(Icons.arrow_back)),
           title: const Text('Profile')
         ),
         body: const Center(
