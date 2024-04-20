@@ -70,7 +70,7 @@ class RegisterView extends ConsumerWidget {
                                       formValues.email.isNotEmpty
                                   ? () {
                                       authNotifier.signUp(formValues.email,
-                                          formValues.password, formValues.userName);
+                                          formValues.password, formValues.userName, formValues.name);
                                     }
                                   : null,
                               style: ElevatedButton.styleFrom(

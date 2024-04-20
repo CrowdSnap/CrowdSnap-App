@@ -33,19 +33,21 @@ class AuthRepositoryImpl implements AuthRepository {
     return UserModel(
         userId: userModel.userId,
         username: userModel.username,
+        name: userModel.name,
         email: userModel.email,
         joinedAt: userModel.joinedAt);
   }
 
   @override
   Future<UserModel> createUserWithEmailAndPassword(
-      String email, String password, String username) async {
+      String email, String password, String username, String name) async {
     final userModel = await _authDataSource.createUserWithEmailAndPassword(
-        email, password, username);
+        email, password, username, name);
     _logger.info('UserModel: $userModel Desde el repositorio');
     return UserModel(
         userId: userModel.userId,
         username: userModel.username,
+        name: userModel.name,
         email: userModel.email,
         joinedAt: userModel.joinedAt);
   }
@@ -57,6 +59,7 @@ class AuthRepositoryImpl implements AuthRepository {
     return UserModel(
         userId: userModel.userId,
         username: userModel.username,
+        name: userModel.name,
         email: userModel.email,
         joinedAt: userModel.joinedAt);
   }

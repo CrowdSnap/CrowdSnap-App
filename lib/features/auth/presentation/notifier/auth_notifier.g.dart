@@ -6,7 +6,7 @@ part of 'auth_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$authNotifierHash() => r'ec66ba84cb0e46cf2a5fc8f2c0c2973614ee558e';
+String _$authNotifierHash() => r'a0953edf7af85e6402a2d56853f57430c9db6c3d';
 
 /// See also [AuthNotifier].
 @ProviderFor(AuthNotifier)

@@ -39,6 +39,7 @@ class GoogleAuthDataSourceImpl implements GoogleAuthDataSource {
       return UserModel(
         userId: user.uid,
         username: user.displayName ?? '',
+        name: user.displayName ?? '',
         email: user.email ?? '',
         joinedAt: DateTime.now(),
       );

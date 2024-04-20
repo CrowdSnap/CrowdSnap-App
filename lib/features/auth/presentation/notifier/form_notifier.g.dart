@@ -6,7 +6,7 @@ part of 'form_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$formNotifierHash() => r'ee6ce82b6c5e374114c851d4e77c203dc1bd9da2';
+String _$formNotifierHash() => r'5c1112007112e3058f07e58a569a9575170033a9';
 
 /// See also [FormNotifier].
 @ProviderFor(FormNotifier)
