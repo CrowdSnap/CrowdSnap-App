@@ -8,32 +8,40 @@ class FormState {
   final String email;
   final String password;
   final String userName;
+  final int age;
   final bool showPassword;
   final bool isPasswordValid;
+  final bool isAgeValid;
 
   FormState(
       {this.name = '',
       this.email = '',
       this.password = '',
       this.userName = '',
+      this.age = 0,
       this.showPassword = false,
-      this.isPasswordValid = false});
+      this.isPasswordValid = false,
+      this.isAgeValid = false});
 
   FormState copyWith({
     String? name,
     String? email,
     String? password,
     String? userName,
+    int? age,
     bool? showPassword,
     bool? isPasswordValid,
+    bool? isAgeValid,
   }) {
     return FormState(
       name: name ?? this.name,
       email: email ?? this.email,
       password: password ?? this.password,
       userName: userName ?? this.userName,
+      age: age ?? this.age,
       showPassword: showPassword ?? this.showPassword,
       isPasswordValid: isPasswordValid ?? this.isPasswordValid,
+      isAgeValid: isAgeValid ?? this.isAgeValid,
     );
   }
 }
@@ -61,6 +69,10 @@ class FormNotifier extends _$FormNotifier {
     state = state.copyWith(userName: userName);
   }
 
+  void updateAge(int age) {
+    state = state.copyWith(age: age);
+  }
+
   void reset() {
     state = FormState();
   }
@@ -81,5 +93,9 @@ class FormNotifier extends _$FormNotifier {
         RegExp(r'[0-9]').hasMatch(password) &&
         RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(password);
     state = state.copyWith(isPasswordValid: isValid);
+  }
+
+  void validateAgeVisual() {
+    state = state.copyWith(isAgeValid: state.age >= 18);
   }
 }
