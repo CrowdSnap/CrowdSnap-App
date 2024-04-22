@@ -1,4 +1,5 @@
 import 'package:crowd_snap/features/auth/presentation/views/forgot_password_view.dart';
+import 'package:crowd_snap/features/imgs/presentation/views/avatar_upload_view.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:crowd_snap/features/auth/presentation/views/login_view.dart';
@@ -28,6 +29,10 @@ class AppRouter extends _$AppRouter {
         GoRoute(
           path: '/forgot-password',
           builder: (context, state) => const ForgotPasswordView()
+        ),
+        GoRoute(
+          path:'/avatar-upload',
+          builder: (context, state) => const AvatarUploadView()
         ),
         ShellRoute(
           builder: (context, state, child) {

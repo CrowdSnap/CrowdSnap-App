@@ -20,8 +20,17 @@ void authRedirect(AuthRedirectRef ref) {
   authState.when(
     data: (user) {
       if (user != null) {
-        router.go('/');
-        _logger.info('Authenticated, redirecting to home');
+        final metadata = user.metadata;
+        if (metadata.creationTime == metadata.lastSignInTime) {
+          // El usuario acaba de crear una cuenta nueva, redirigir a subir avatar
+          router.go('/avatar-upload');
+          _logger.info('New user, redirecting to avatar upload');
+          print('New user, redirecting to avatar upload');
+        } else {
+          // El usuario ha iniciado sesión con una cuenta existente, redirigir al home
+          router.go('/');
+          _logger.info('Existing user, redirecting to home');
+        }
       } else {
         router.go('/login');
         _logger.info('Not authenticated, redirecting to login');

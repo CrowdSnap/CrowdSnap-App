@@ -6,6 +6,7 @@ import 'package:crowd_snap/global/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:crowd_snap/features/auth/presentation/notifier/auth_notifier.dart';
+import 'package:go_router/go_router.dart';
 
 class LoginView extends ConsumerWidget {
   const LoginView({super.key});
@@ -98,6 +99,7 @@ class LoginView extends ConsumerWidget {
                 ),
               ),
             ),
+            ElevatedButton(onPressed: () => context.go('/avatar-upload'), child: const Text('Avatar Upload')),
             const Divider(),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,

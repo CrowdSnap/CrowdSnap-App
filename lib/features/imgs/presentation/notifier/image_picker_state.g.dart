@@ -1,25 +1,25 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'app_router.dart';
+part of 'image_picker_state.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$appRouterHash() => r'673020762d0539ee2d820e27973d77b988907ef3';
+String _$imageStateHash() => r'654cb6242098d74445a5f555a8f92a9ec0d8071d';
 
-/// See also [AppRouter].
-@ProviderFor(AppRouter)
-final appRouterProvider =
-    AutoDisposeNotifierProvider<AppRouter, GoRouter>.internal(
-  AppRouter.new,
-  name: r'appRouterProvider',
+/// See also [ImageState].
+@ProviderFor(ImageState)
+final imageStateProvider =
+    AutoDisposeNotifierProvider<ImageState, File?>.internal(
+  ImageState.new,
+  name: r'imageStateProvider',
   debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$appRouterHash,
+      const bool.fromEnvironment('dart.vm.product') ? null : _$imageStateHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$AppRouter = AutoDisposeNotifier<GoRouter>;
+typedef _$ImageState = AutoDisposeNotifier<File?>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
