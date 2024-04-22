@@ -11,6 +11,7 @@ class UserModel with _$UserModel {
     required String name,
     required String email,
     required DateTime joinedAt,
+    required int age,
   }) = _UserModel;
 
   factory UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);

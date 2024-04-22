@@ -25,6 +25,7 @@ mixin _$UserModel {
   String get name => throw _privateConstructorUsedError;
   String get email => throw _privateConstructorUsedError;
   DateTime get joinedAt => throw _privateConstructorUsedError;
+  int get age => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -42,7 +43,8 @@ abstract class $UserModelCopyWith<$Res> {
       String username,
       String name,
       String email,
-      DateTime joinedAt});
+      DateTime joinedAt,
+      int age});
 }
 
 /// @nodoc
@@ -63,6 +65,7 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
     Object? name = null,
     Object? email = null,
     Object? joinedAt = null,
+    Object? age = null,
   }) {
     return _then(_value.copyWith(
       userId: null == userId
@@ -85,6 +88,10 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
           ? _value.joinedAt
           : joinedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      age: null == age
+          ? _value.age
+          : age // ignore: cast_nullable_to_non_nullable
+              as int,
     ) as $Val);
   }
 }
@@ -102,7 +109,8 @@ abstract class _$$UserModelImplCopyWith<$Res>
       String username,
       String name,
       String email,
-      DateTime joinedAt});
+      DateTime joinedAt,
+      int age});
 }
 
 /// @nodoc
@@ -121,6 +129,7 @@ class __$$UserModelImplCopyWithImpl<$Res>
     Object? name = null,
     Object? email = null,
     Object? joinedAt = null,
+    Object? age = null,
   }) {
     return _then(_$UserModelImpl(
       userId: null == userId
@@ -143,6 +152,10 @@ class __$$UserModelImplCopyWithImpl<$Res>
           ? _value.joinedAt
           : joinedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      age: null == age
+          ? _value.age
+          : age // ignore: cast_nullable_to_non_nullable
+              as int,
     ));
   }
 }
@@ -155,7 +168,8 @@ class _$UserModelImpl implements _UserModel {
       required this.username,
       required this.name,
       required this.email,
-      required this.joinedAt});
+      required this.joinedAt,
+      required this.age});
 
   factory _$UserModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserModelImplFromJson(json);
@@ -170,10 +184,12 @@ class _$UserModelImpl implements _UserModel {
   final String email;
   @override
   final DateTime joinedAt;
+  @override
+  final int age;
 
   @override
   String toString() {
-    return 'UserModel(userId: $userId, username: $username, name: $name, email: $email, joinedAt: $joinedAt)';
+    return 'UserModel(userId: $userId, username: $username, name: $name, email: $email, joinedAt: $joinedAt, age: $age)';
   }
 
   @override
@@ -187,13 +203,14 @@ class _$UserModelImpl implements _UserModel {
             (identical(other.name, name) || other.name == name) &&
             (identical(other.email, email) || other.email == email) &&
             (identical(other.joinedAt, joinedAt) ||
-                other.joinedAt == joinedAt));
+                other.joinedAt == joinedAt) &&
+            (identical(other.age, age) || other.age == age));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode =>
-      Object.hash(runtimeType, userId, username, name, email, joinedAt);
+      Object.hash(runtimeType, userId, username, name, email, joinedAt, age);
 
   @JsonKey(ignore: true)
   @override
@@ -215,7 +232,8 @@ abstract class _UserModel implements UserModel {
       required final String username,
       required final String name,
       required final String email,
-      required final DateTime joinedAt}) = _$UserModelImpl;
+      required final DateTime joinedAt,
+      required final int age}) = _$UserModelImpl;
 
   factory _UserModel.fromJson(Map<String, dynamic> json) =
       _$UserModelImpl.fromJson;
@@ -230,6 +248,8 @@ abstract class _UserModel implements UserModel {
   String get email;
   @override
   DateTime get joinedAt;
+  @override
+  int get age;
   @override
   @JsonKey(ignore: true)
   _$$UserModelImplCopyWith<_$UserModelImpl> get copyWith =>

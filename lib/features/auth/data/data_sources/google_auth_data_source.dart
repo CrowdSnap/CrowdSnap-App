@@ -48,6 +48,7 @@ class GoogleAuthDataSourceImpl implements GoogleAuthDataSource {
           username: user.displayName ?? '',
           name: user.displayName ?? '',
           email: user.email ?? '',
+          age: 0,
           joinedAt: user.metadata.creationTime ?? DateTime.now(),
         );
 
