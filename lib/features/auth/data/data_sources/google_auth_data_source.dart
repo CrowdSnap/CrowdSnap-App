@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:crowd_snap/features/auth/data/data_sources/firestore_data_source.dart';
 import 'package:crowd_snap/features/auth/data/models/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -15,18 +14,14 @@ abstract class GoogleAuthDataSource {
 GoogleAuthDataSource googleAuthDataSource(GoogleAuthDataSourceRef ref) {
   final firebaseAuth = FirebaseAuth.instance;
   final googleSignIn = GoogleSignIn();
-  final firestoreDataSource = ref.watch(firestoreDataSourceProvider);
-  return GoogleAuthDataSourceImpl(
-      firebaseAuth, googleSignIn, firestoreDataSource);
+  return GoogleAuthDataSourceImpl(firebaseAuth, googleSignIn);
 }
 
 class GoogleAuthDataSourceImpl implements GoogleAuthDataSource {
   final FirebaseAuth _firebaseAuth;
   final GoogleSignIn _googleSignIn;
-  final FirestoreDataSource _firestoreDataSource;
 
-  GoogleAuthDataSourceImpl(
-      this._firebaseAuth, this._googleSignIn, this._firestoreDataSource);
+  GoogleAuthDataSourceImpl(this._firebaseAuth, this._googleSignIn);
 
   @override
   Future<UserModel> signInWithGoogle() async {
