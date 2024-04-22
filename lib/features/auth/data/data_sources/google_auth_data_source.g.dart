@@ -7,7 +7,7 @@ part of 'google_auth_data_source.dart';
 // **************************************************************************
 
 String _$googleAuthDataSourceHash() =>
-    r'340d7bcccfbc6c122bc9afcb912e07fd2fb3c826';
+    r'b9b085c4e49be75fe55d90997798a1e1c4fecda0';
 
 /// See also [googleAuthDataSource].
 @ProviderFor(googleAuthDataSource)
