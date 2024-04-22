@@ -42,16 +42,23 @@ class GoogleAuthDataSourceImpl implements GoogleAuthDataSource {
     final user = userCredential.user;
 
     if (user != null) {
-      final userModel = UserModel(
-        userId: user.uid,
-        username: user.displayName ?? '',
-        name: user.displayName ?? '',
-        email: user.email ?? '',
-        joinedAt: user.metadata.creationTime ?? DateTime.now(),
-      );
+      final existingUser = await _getUserFromFirestore(user.uid);
 
-      await _saveUserToFirestore(userModel);
-      return userModel;
+      if (existingUser != null) {
+        // User already exists, return the existing user
+        return existingUser;
+      } else {
+        final userModel = UserModel(
+          userId: user.uid,
+          username: user.displayName ?? '',
+          name: user.displayName ?? '',
+          email: user.email ?? '',
+          joinedAt: user.metadata.creationTime ?? DateTime.now(),
+        );
+
+        await _saveUserToFirestore(userModel);
+        return userModel;
+      }
     } else {
       throw Exception('Google sign-in failed');
     }
@@ -65,5 +72,16 @@ class GoogleAuthDataSourceImpl implements GoogleAuthDataSource {
     if (!userSnapshot.exists) {
       await userDoc.set(user.toJson());
     }
+  }
+
+  Future<UserModel?> _getUserFromFirestore(String userId) async {
+    final userDoc = FirebaseFirestore.instance.collection('users').doc(userId);
+    final userSnapshot = await userDoc.get();
+
+    if (userSnapshot.exists) {
+      return UserModel.fromJson(userSnapshot.data()!);
+    }
+
+    return null;
   }
 }
