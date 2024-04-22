@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:crowd_snap/features/auth/data/data_sources/firestore_data_source.dart';
 import 'package:crowd_snap/features/auth/data/models/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -13,14 +15,18 @@ abstract class GoogleAuthDataSource {
 GoogleAuthDataSource googleAuthDataSource(GoogleAuthDataSourceRef ref) {
   final firebaseAuth = FirebaseAuth.instance;
   final googleSignIn = GoogleSignIn();
-  return GoogleAuthDataSourceImpl(firebaseAuth, googleSignIn);
+  final firestoreDataSource = ref.watch(firestoreDataSourceProvider);
+  return GoogleAuthDataSourceImpl(
+      firebaseAuth, googleSignIn, firestoreDataSource);
 }
 
 class GoogleAuthDataSourceImpl implements GoogleAuthDataSource {
   final FirebaseAuth _firebaseAuth;
   final GoogleSignIn _googleSignIn;
+  final FirestoreDataSource _firestoreDataSource;
 
-  GoogleAuthDataSourceImpl(this._firebaseAuth, this._googleSignIn);
+  GoogleAuthDataSourceImpl(
+      this._firebaseAuth, this._googleSignIn, this._firestoreDataSource);
 
   @override
   Future<UserModel> signInWithGoogle() async {
@@ -36,16 +42,28 @@ class GoogleAuthDataSourceImpl implements GoogleAuthDataSource {
     final user = userCredential.user;
 
     if (user != null) {
-      return UserModel(
+      final userModel = UserModel(
         userId: user.uid,
         username: user.displayName ?? '',
         name: user.displayName ?? '',
         email: user.email ?? '',
-        joinedAt: DateTime.now(),
+        joinedAt: user.metadata.creationTime ?? DateTime.now(),
       );
+
+      await _saveUserToFirestore(userModel);
+      return userModel;
     } else {
       throw Exception('Google sign-in failed');
     }
   }
 
+  Future<void> _saveUserToFirestore(UserModel user) async {
+    final userDoc =
+        FirebaseFirestore.instance.collection('users').doc(user.userId);
+    final userSnapshot = await userDoc.get();
+
+    if (!userSnapshot.exists) {
+      await userDoc.set(user.toJson());
+    }
+  }
 }
