@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crowd_snap/features/auth/data/models/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -36,16 +37,46 @@ class GoogleAuthDataSourceImpl implements GoogleAuthDataSource {
     final user = userCredential.user;
 
     if (user != null) {
-      return UserModel(
-        userId: user.uid,
-        username: user.displayName ?? '',
-        name: user.displayName ?? '',
-        email: user.email ?? '',
-        joinedAt: DateTime.now(),
-      );
+      final existingUser = await _getUserFromFirestore(user.uid);
+
+      if (existingUser != null) {
+        // User already exists, return the existing user
+        return existingUser;
+      } else {
+        final userModel = UserModel(
+          userId: user.uid,
+          username: user.displayName ?? '',
+          name: user.displayName ?? '',
+          email: user.email ?? '',
+          joinedAt: user.metadata.creationTime ?? DateTime.now(),
+        );
+
+        await _saveUserToFirestore(userModel);
+        return userModel;
+      }
     } else {
       throw Exception('Google sign-in failed');
     }
   }
 
+  Future<void> _saveUserToFirestore(UserModel user) async {
+    final userDoc =
+        FirebaseFirestore.instance.collection('users').doc(user.userId);
+    final userSnapshot = await userDoc.get();
+
+    if (!userSnapshot.exists) {
+      await userDoc.set(user.toJson());
+    }
+  }
+
+  Future<UserModel?> _getUserFromFirestore(String userId) async {
+    final userDoc = FirebaseFirestore.instance.collection('users').doc(userId);
+    final userSnapshot = await userDoc.get();
+
+    if (userSnapshot.exists) {
+      return UserModel.fromJson(userSnapshot.data()!);
+    }
+
+    return null;
+  }
 }
