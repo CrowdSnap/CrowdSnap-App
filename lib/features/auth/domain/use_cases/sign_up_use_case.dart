@@ -17,8 +17,8 @@ class SignUpUseCase {
 
   Future<void> execute(String email, String password, String username, String name) async {
     final userModel = await _authRepository.createUserWithEmailAndPassword(email, password, username, name);
-    await _firestoreRepository.saveUser(userModel);
     await _storeUserUseCase.execute(userModel);
+    await _firestoreRepository.saveUser(userModel);
   }
 }
 

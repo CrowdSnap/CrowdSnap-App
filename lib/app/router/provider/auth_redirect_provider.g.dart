@@ -21,7 +21,7 @@ final authStateChangesProvider = AutoDisposeStreamProvider<User?>.internal(
 );
 
 typedef AuthStateChangesRef = AutoDisposeStreamProviderRef<User?>;
-String _$authRedirectHash() => r'622669352342ae0770f2671b9954919f153dfd43';
+String _$authRedirectHash() => r'f570c09c9fe6edb8b3bcee79f18a3c10f707b1f3';
 
 /// See also [authRedirect].
 @ProviderFor(authRedirect)
