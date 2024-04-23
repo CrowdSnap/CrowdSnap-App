@@ -1,10 +1,10 @@
 import 'dart:io';
+import 'package:crowd_snap/core/provider/page_auth_provider.dart';
 import 'package:crowd_snap/features/auth/data/repositories_impl/firestore_repository_impl.dart';
 import 'package:crowd_snap/features/imgs/domain/use_case/avatar_upload_use_case.dart';
 import 'package:crowd_snap/features/imgs/presentation/notifier/image_picker_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AvatarUploadView extends ConsumerWidget {
@@ -37,6 +37,8 @@ class AvatarUploadView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final imageState = ref.watch(imageStateProvider);
     final imagesValue = ref.watch(imageStateProvider.notifier);
+    final pageAuth = ref.watch(pageAuthProvider.notifier);
+
 
     return Scaffold(
       appBar: AppBar(
@@ -81,8 +83,8 @@ class AvatarUploadView extends ConsumerWidget {
                     children: [
                       ElevatedButton(
                         onPressed: () {
-                          context.go('/');
                           _saveImage(imageState, ref);
+                          pageAuth.setFalse();
                         },
                         child: const Text('Yes'),
                       ),

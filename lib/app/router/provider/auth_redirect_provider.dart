@@ -1,4 +1,4 @@
-import 'package:crowd_snap/features/auth/data/repositories_impl/firestore_repository_impl.dart';
+import 'package:crowd_snap/core/provider/page_auth_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:crowd_snap/app/router/app_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -14,26 +14,30 @@ Stream<User?> authStateChanges(AuthStateChangesRef ref) {
 final _logger = Logger('AuthRedirect');
 
 @riverpod
-Future<void> authRedirect(AuthRedirectRef ref) async {
+void authRedirect(AuthRedirectRef ref) {
   final authState = ref.watch(authStateChangesProvider);
   final router = ref.watch(appRouterProvider);
-  final firestoreRepository = ref.read(firestoreRepositoryProvider);
+  final pageAuth = ref.watch(pageAuthProvider);
 
-  authState.whenData((user) async {
-    if (user != null) {
-      final userModel = await firestoreRepository.getUser(user.uid);
-      if (userModel.firstTime) {
-        // El usuario acaba de crear una cuenta nueva, redirigir a subir avatar
-        router.go('/avatar-upload');
-        print('New user, redirecting to avatar upload');
+  authState.when(
+    data: (user) {
+      if (user != null) {
+        if (pageAuth) {
+          router.go('/avatar-upload');
+        } else{
+          router.go('/');
+        }
+        _logger.info('Authenticated, redirecting to home');
       } else {
-        // El usuario ha iniciado sesión con una cuenta existente, redirigir al home
-        router.go('/');
-        print('Existing user, redirecting to home');
+        router.go('/login');
+        _logger.info('Not authenticated, redirecting to login');
       }
-    } else {
-      router.go('/login');
-      print('Not authenticated, redirecting to login');
-    }
-  });
+    },
+    error: (error, stackTrace) {
+      _logger.severe('Error occurred: $error');
+    },
+    loading: () {
+      _logger.info('Loading authentication state...');
+    },
+  );
 }

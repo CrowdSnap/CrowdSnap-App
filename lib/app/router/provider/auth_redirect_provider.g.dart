@@ -21,11 +21,11 @@ final authStateChangesProvider = AutoDisposeStreamProvider<User?>.internal(
 );
 
 typedef AuthStateChangesRef = AutoDisposeStreamProviderRef<User?>;
-String _$authRedirectHash() => r'f570c09c9fe6edb8b3bcee79f18a3c10f707b1f3';
+String _$authRedirectHash() => r'a7f465b38de4bde7df240c35b3393bfc93a05c73';
 
 /// See also [authRedirect].
 @ProviderFor(authRedirect)
-final authRedirectProvider = AutoDisposeFutureProvider<void>.internal(
+final authRedirectProvider = AutoDisposeProvider<void>.internal(
   authRedirect,
   name: r'authRedirectProvider',
   debugGetCreateSourceHash:
@@ -34,6 +34,6 @@ final authRedirectProvider = AutoDisposeFutureProvider<void>.internal(
   allTransitiveDependencies: null,
 );
 
-typedef AuthRedirectRef = AutoDisposeFutureProviderRef<void>;
+typedef AuthRedirectRef = AutoDisposeProviderRef<void>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
