@@ -7,7 +7,7 @@ import 'package:crowd_snap/features/auth/presentation/views/register_view.dart';
 import 'package:crowd_snap/features/home/presentation/views/home_view.dart';
 import 'package:crowd_snap/features/profile/presentation/views/profile_view.dart';
 import 'package:crowd_snap/features/settings/presentation/views/settings_view.dart';
-import 'package:crowd_snap/global/navbar/widgets/navbar.dart';
+import 'package:crowd_snap/core/navbar/widgets/navbar.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app_router.g.dart';

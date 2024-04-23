@@ -7,7 +7,7 @@ part of 'avatar_upload_use_case.dart';
 // **************************************************************************
 
 String _$avatarUploadUseCaseHash() =>
-    r'44b21f9f1c74a10960d5279bc8e35be13074f1a9';
+    r'e4085e5983f36bd6a73de6940c7b920c859d0478';
 
 /// See also [avatarUploadUseCase].
 @ProviderFor(avatarUploadUseCase)

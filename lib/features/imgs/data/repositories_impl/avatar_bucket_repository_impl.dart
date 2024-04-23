@@ -24,6 +24,12 @@ class AvatarBucketRepositoryImpl implements AvatarBucketRepository {
   }
 
   @override
+  Future<File> getUserAvatar() {
+    return _avatarBucketDataSource.getImage();
+  }
+
+
+  @override
   Future<String> deleteUserAvatar(String imageUrl) {
     // TODO: implement deleteUserAvatar
     throw UnimplementedError();

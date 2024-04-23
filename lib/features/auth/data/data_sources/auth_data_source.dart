@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crowd_snap/features/auth/data/data_sources/firestore_data_source.dart';
-import 'package:crowd_snap/features/auth/data/models/user_model.dart';
+import 'package:crowd_snap/core/data/models/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:logging/logging.dart';
@@ -9,7 +9,8 @@ part 'auth_data_source.g.dart';
 
 abstract class AuthDataSource {
   Future<UserModel> signInWithEmailAndPassword(String email, String password);
-  Future<UserModel> createUserWithEmailAndPassword(String email, String password, String username, String name);
+  Future<UserModel> createUserWithEmailAndPassword(
+      String email, String password, String username, String name);
   Future<void> signOut();
   bool isAuthenticated();
   Future<void> recoverPassword(String email);
@@ -41,14 +42,22 @@ class AuthDataSourceImpl implements AuthDataSource {
     if (user != null) {
       _logger.info('User: ${user.email} Firebase User signed in');
       final userModel = await _firestoreDataSource.getUser(user.uid);
-      return userModel;
+      // Verificar el valor de firstTime y actualizarlo si es necesario
+      if (userModel.firstTime) {
+        final updatedUserModel = userModel.copyWith(firstTime: false);
+        await _firestoreDataSource.updateUser(updatedUserModel);
+        return updatedUserModel;
+      } else {
+        return userModel;
+      }
     } else {
       throw Exception('User not found');
     }
   }
 
   @override
-  Future<UserModel> createUserWithEmailAndPassword(String email, String password, String username, String name) async {
+  Future<UserModel> createUserWithEmailAndPassword(
+      String email, String password, String username, String name) async {
     final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
       email: email,
       password: password,
@@ -61,6 +70,7 @@ class AuthDataSourceImpl implements AuthDataSource {
         name: name,
         username: username,
         email: user.email!,
+        firstTime: true,
         joinedAt: DateTime.now(),
       );
       await _saveUserToFirestore(userModel);

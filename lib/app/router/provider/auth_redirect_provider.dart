@@ -1,3 +1,4 @@
+import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_use_case.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:crowd_snap/app/router/app_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -13,34 +14,27 @@ Stream<User?> authStateChanges(AuthStateChangesRef ref) {
 final _logger = Logger('AuthRedirect');
 
 @riverpod
-void authRedirect(AuthRedirectRef ref) {
+Future<void> authRedirect(AuthRedirectRef ref) async {
   final authState = ref.watch(authStateChangesProvider);
   final router = ref.watch(appRouterProvider);
+  final getUserUseCase = ref.watch(getUserUseCaseProvider);
 
-  authState.when(
-    data: (user) {
-      if (user != null) {
-        final metadata = user.metadata;
-        if (metadata.creationTime == metadata.lastSignInTime) {
-          // El usuario acaba de crear una cuenta nueva, redirigir a subir avatar
-          router.go('/avatar-upload');
-          _logger.info('New user, redirecting to avatar upload');
-          print('New user, redirecting to avatar upload');
-        } else {
-          // El usuario ha iniciado sesión con una cuenta existente, redirigir al home
-          router.go('/');
-          _logger.info('Existing user, redirecting to home');
-        }
+  await authState.whenData((user) async {
+    if (user != null) {
+      final userModel = await getUserUseCase.execute();
+      if (userModel.firstTime) {
+        // El usuario acaba de crear una cuenta nueva, redirigir a subir avatar
+        router.go('/avatar-upload');
+        _logger.info('New user, redirecting to avatar upload');
+        print('New user, redirecting to avatar upload');
       } else {
-        router.go('/login');
-        _logger.info('Not authenticated, redirecting to login');
+        // El usuario ha iniciado sesión con una cuenta existente, redirigir al home
+        router.go('/');
+        _logger.info('Existing user, redirecting to home');
       }
-    },
-    error: (error, stackTrace) {
-      _logger.severe('Error occurred: $error');
-    },
-    loading: () {
-      _logger.info('Loading authentication state...');
-    },
-  );
+        } else {
+      router.go('/login');
+      _logger.info('Not authenticated, redirecting to login');
+    }
+  });
 }
