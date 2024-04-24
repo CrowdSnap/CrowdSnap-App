@@ -53,7 +53,7 @@ class RegisterButtonFormSubmit extends ConsumerWidget {
                       if (signUpResult == SignUpResult.emailAlreadyInUse ||
                           signUpResult == SignUpResult.accountExistsWithGoogle)
                         TextButton(
-                          onPressed: () => router.push('/login'),
+                          onPressed: () => router.go('/login'),
                           child: const Text('Inicia sesión'),
                         ),
                     ],
