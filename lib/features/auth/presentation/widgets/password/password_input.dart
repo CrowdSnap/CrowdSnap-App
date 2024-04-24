@@ -1,12 +1,11 @@
 import 'package:crowd_snap/features/auth/presentation/notifier/form_notifier.dart'
     as form_notifier;
-import 'package:crowd_snap/features/auth/presentation/widgets/text_password_requirements.dart';
+import 'package:crowd_snap/features/auth/presentation/widgets/password/text_password_requirements.dart';
 import 'package:crowd_snap/core/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class PasswordInput extends ConsumerWidget {
-
   final bool showPasswordRequirements;
 
   const PasswordInput({
@@ -66,9 +65,8 @@ class PasswordInput extends ConsumerWidget {
         ),
         const SizedBox(height: 16),
         Visibility(
-          visible: showPasswordRequirements,
-          child: const TextPasswordRequirements()
-        ),
+            visible: showPasswordRequirements,
+            child: const TextPasswordRequirements()),
       ],
     );
   }
