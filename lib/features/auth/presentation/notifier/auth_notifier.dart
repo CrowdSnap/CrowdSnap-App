@@ -15,14 +15,16 @@ class AuthNotifier extends _$AuthNotifier {
   @override
   AsyncValue<void> build() => const AsyncValue.data(null);
 
-  Future<void> signIn(String email, String password) async {
+  Future<bool> signIn(String email, String password) async {
     state = const AsyncValue.loading();
     try {
       await ref.read(signInUseCaseProvider).execute(email, password);
       state = const AsyncValue.data(null);
+      return true;
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
       _logger.severe('Error: $e StackTrace: $stackTrace');
+      return false;
     }
   }
 

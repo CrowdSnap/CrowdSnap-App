@@ -55,10 +55,21 @@ class LoginView extends ConsumerWidget {
                             ElevatedButton(
                               onPressed: formValues.isPasswordValid &&
                                       formValues.email.isNotEmpty
-                                  ? () {
-                                      authNotifier.signIn(formValues.email,
-                                          formValues.password);
-                                      authState.profileComplete();
+                                  ? () async {
+                                      formState.startLoading();
+                                      final signInSuccess =
+                                          await authNotifier.signIn(
+                                              formValues.email,
+                                              formValues.password);
+                                      if (signInSuccess) {
+                                        authState.profileComplete();
+                                      } else {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(const SnackBar(
+                                                content: Text(
+                                                    'Error al iniciar sesión')));
+                                      }
+                                      formState.stopLoading();
                                     }
                                   : null,
                               style: ElevatedButton.styleFrom(
@@ -77,15 +88,16 @@ class LoginView extends ConsumerWidget {
                                         .onSurface
                                         .withOpacity(0.38),
                               ),
-                              child: const Text('Login'),
+                              child: formValues.isLoading
+                                  ? const CircularProgressIndicator()
+                                  : const Text('Login'),
                             ),
                             const SizedBox(height: 30),
                             const Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Expanded(child: Divider()),
-                                Text('   O   ',
-                                    style: TextStyle(fontSize: 14)),
+                                Text('   O   ', style: TextStyle(fontSize: 14)),
                                 Expanded(child: Divider()),
                               ],
                             ),
@@ -102,7 +114,9 @@ class LoginView extends ConsumerWidget {
                 ),
               ),
             ),
-            ElevatedButton(onPressed: () => context.go('/avatar-upload'), child: const Text('Avatar Upload')),
+            ElevatedButton(
+                onPressed: () => context.go('/avatar-upload'),
+                child: const Text('Avatar Upload')),
             const Divider(),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,

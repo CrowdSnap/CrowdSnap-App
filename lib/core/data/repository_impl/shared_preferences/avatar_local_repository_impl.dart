@@ -18,12 +18,7 @@ class AvatarLocalRepositoryImpl implements AvatarLocalRepository {
 
   @override
   Future<void> deleteAvatar() async {
-    print('Entering deleteAvatar in AvatarLocalRepositoryImpl');
-    if (_avatarLocalDataSource != null) {
-      await _avatarLocalDataSource.deleteAvatar();
-    } else {
-      print('_avatarLocalDataSource is null');
-    }
+    await _avatarLocalDataSource.deleteAvatar();
   }
 
   @override
