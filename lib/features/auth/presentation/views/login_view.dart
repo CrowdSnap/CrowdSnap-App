@@ -64,10 +64,17 @@ class LoginView extends ConsumerWidget {
                                       if (signInSuccess) {
                                         authState.profileComplete();
                                       } else {
+                                        // ignore: use_build_context_synchronously
                                         ScaffoldMessenger.of(context)
-                                            .showSnackBar(const SnackBar(
-                                                content: Text(
-                                                    'Error al iniciar sesión')));
+                                            .showSnackBar( SnackBar(
+                                                content: Row(
+                                                  children: [
+                                                    const Text(
+                                                      'Error al iniciar sesión'
+                                                    ),
+                                                    TextButton(onPressed: () => context.push('/register'), child: const Text('Regístrate'))
+                                                  ],
+                                                )));
                                       }
                                       formState.stopLoading();
                                     }
@@ -88,9 +95,23 @@ class LoginView extends ConsumerWidget {
                                         .onSurface
                                         .withOpacity(0.38),
                               ),
-                              child: formValues.isLoading
-                                  ? const CircularProgressIndicator()
-                                  : const Text('Login'),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  if (formValues.isLoading)
+                                    const Padding(
+                                      padding: EdgeInsets.only(right: 8.0),
+                                      child: SizedBox(
+                                        width: 12,
+                                        height: 12,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      ),
+                                    ),
+                                  const Text('Login'),
+                                ],
+                              ),
                             ),
                             const SizedBox(height: 30),
                             const Row(
