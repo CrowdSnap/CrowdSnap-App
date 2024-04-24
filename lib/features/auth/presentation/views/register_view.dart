@@ -1,5 +1,5 @@
 import 'package:crowd_snap/app/router/app_router.dart';
-import 'package:crowd_snap/core/provider/page_auth_provider.dart';
+import 'package:crowd_snap/app/router/redirect/auth_state_provider.dart';
 import 'package:crowd_snap/features/auth/presentation/notifier/form_notifier.dart';
 import 'package:crowd_snap/features/auth/presentation/widgets/google_sign_in_button.dart';
 import 'package:crowd_snap/features/auth/presentation/widgets/password_input.dart';
@@ -17,7 +17,7 @@ class RegisterView extends ConsumerWidget {
     final formState = ref.watch(formNotifierProvider.notifier);
     final formValues = ref.watch(formNotifierProvider);
     final router = ref.watch(appRouterProvider);
-    final pageAuth = ref.watch(pageAuthProvider.notifier);
+    final authState = ref.watch(authStateProvider.notifier);
 
 
     return Scaffold(
@@ -75,7 +75,7 @@ class RegisterView extends ConsumerWidget {
                                       authNotifier.signUp(formValues.email,
                                           formValues.password, formValues.userName, formValues.name);
                                       
-                                      pageAuth.setTrue();
+                                      authState.loggedIn();
                                     }
                                   : null,
                               style: ElevatedButton.styleFrom(

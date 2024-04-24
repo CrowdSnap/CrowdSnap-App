@@ -1,5 +1,5 @@
 import 'package:crowd_snap/app/router/app_router.dart';
-import 'package:crowd_snap/core/provider/page_auth_provider.dart';
+import 'package:crowd_snap/app/router/redirect/auth_state_provider.dart';
 import 'package:crowd_snap/features/auth/presentation/notifier/form_notifier.dart';
 import 'package:crowd_snap/features/auth/presentation/widgets/google_sign_in_button.dart';
 import 'package:crowd_snap/features/auth/presentation/widgets/password_input.dart';
@@ -18,7 +18,7 @@ class LoginView extends ConsumerWidget {
     final formState = ref.watch(formNotifierProvider.notifier);
     final formValues = ref.watch(formNotifierProvider);
     final router = ref.watch(appRouterProvider);
-    final pageAuth = ref.watch(pageAuthProvider.notifier);
+    final authState = ref.watch(authStateProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(
@@ -58,7 +58,7 @@ class LoginView extends ConsumerWidget {
                                   ? () {
                                       authNotifier.signIn(formValues.email,
                                           formValues.password);
-                                      pageAuth.setFalse();
+                                      authState.profileComplete();
                                     }
                                   : null,
                               style: ElevatedButton.styleFrom(
