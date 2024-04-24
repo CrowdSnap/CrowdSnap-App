@@ -52,12 +52,16 @@ class AgeInput extends ConsumerWidget {
           },
           keyboardType: TextInputType.number,
         ),
-        const SizedBox(height: 16),
         Visibility(
-          visible: !formValues.isAgeValid,
-          child: const Text(
-            '✗  Debes tener al menos 18 años para registrarte',
-            style: TextStyle(color: Colors.red, fontSize: 12),
+          visible: formValues.age > 0 && !formValues.isAgeValid,
+          child: const Column(
+            children: [
+              SizedBox(height: 12),
+              Text(
+                '✗  Debes tener al menos 18 años para registrarte',
+                style: TextStyle(color: Colors.red, fontSize: 12),
+              ),
+            ],
           ),
         ),
       ],
