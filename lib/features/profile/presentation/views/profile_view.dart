@@ -22,6 +22,7 @@ class ProfileView extends ConsumerWidget {
       profileNotifier.updateName(user.name);
       profileNotifier.updateEmail(user.email);
       profileNotifier.updateUserName(user.username);
+      profileNotifier.updateAge(user.age);
     });
   }
 
@@ -63,6 +64,7 @@ class ProfileView extends ConsumerWidget {
           Text('Name: ${profileNotifier.name}'),
           Text('Email: ${profileNotifier.email}'),
           Text('Username: ${profileNotifier.userName}'),
+          Text('Age: ${profileNotifier.age}'),
           ElevatedButton(
               onPressed: () {
                 _getUser(context, ref);
