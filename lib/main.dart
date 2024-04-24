@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:crowd_snap/app/app.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:crowd_snap/app/router/provider/auth_redirect_provider.dart';
+import 'package:crowd_snap/app/router/redirect/auth_redirect_provider.dart';
 import 'firebase_options.dart';
 import 'package:logging/logging.dart';
 
