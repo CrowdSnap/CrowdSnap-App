@@ -17,13 +17,18 @@ class AuthState extends _$AuthState {
     state = await AsyncValue.guard(() => _prefsService.getAuthStatus());
   }
 
-  Future<void> loggedOut() async {
-    await _prefsService.setAuthStatus(AuthStatus.unauthenticated);  
+  Future<void> avatarUpload() async {
+    await _prefsService.setAuthStatus(AuthStatus.avatarUpload);
     state = await AsyncValue.guard(() => _prefsService.getAuthStatus());
   }
 
-  Future<void> profileComplete() async {
-    await _prefsService.setAuthStatus(AuthStatus.profileComplete);
+  Future<void> loggedOut() async {
+    await _prefsService.setAuthStatus(AuthStatus.loggedOut);  
+    state = await AsyncValue.guard(() => _prefsService.getAuthStatus());
+  }
+
+  Future<void> googleSignUp() async {
+    await _prefsService.setAuthStatus(AuthStatus.googleSignUp);
     state = await AsyncValue.guard(() => _prefsService.getAuthStatus());
   }
 }

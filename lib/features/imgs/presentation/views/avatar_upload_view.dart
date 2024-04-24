@@ -84,7 +84,7 @@ class AvatarUploadView extends ConsumerWidget {
                       ElevatedButton(
                         onPressed: () {
                           _saveImage(imageState, ref);
-                          authState.profileComplete();
+                          authState.loggedIn();
                         },
                         child: const Text('Yes'),
                       ),

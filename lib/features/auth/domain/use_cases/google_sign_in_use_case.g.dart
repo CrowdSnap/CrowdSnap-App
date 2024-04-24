@@ -7,7 +7,7 @@ part of 'google_sign_in_use_case.dart';
 // **************************************************************************
 
 String _$googleSignInUseCaseHash() =>
-    r'ed721c66a4502f1dddd95816bac6a0a076178ea0';
+    r'940b630ba8996733c1bd251315394ca2c4a4699d';
 
 /// See also [googleSignInUseCase].
 @ProviderFor(googleSignInUseCase)

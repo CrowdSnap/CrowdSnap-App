@@ -6,7 +6,6 @@ import 'package:crowd_snap/features/auth/presentation/widgets/password_input.dar
 import 'package:crowd_snap/core/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:crowd_snap/features/auth/presentation/notifier/auth_notifier.dart';
 import 'package:go_router/go_router.dart';
 
 class LoginView extends ConsumerWidget {
@@ -14,7 +13,6 @@ class LoginView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authNotifier = ref.watch(authNotifierProvider.notifier);
     final formState = ref.watch(formNotifierProvider.notifier);
     final formValues = ref.watch(formNotifierProvider);
     final router = ref.watch(appRouterProvider);
@@ -62,10 +60,7 @@ class LoginView extends ConsumerWidget {
                               ],
                             ),
                             const SizedBox(height: 30),
-                            GoogleSignInButton(onPressed: () {
-                              // Call signInWithGoogle method
-                              authNotifier.signInWithGoogle();
-                            }),
+                            const GoogleSignInButton(),
                           ],
                         ),
                       ),
@@ -75,7 +70,7 @@ class LoginView extends ConsumerWidget {
               ),
             ),
             ElevatedButton(
-                onPressed: () => context.go('/avatar-upload'),
+                onPressed: () => context.push('/avatar-upload'),
                 child: const Text('Avatar Upload')),
             const Divider(),
             Row(

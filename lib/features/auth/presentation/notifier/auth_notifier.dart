@@ -16,6 +16,7 @@ enum SignUpResult {
   emailAlreadyInUse,
   accountExistsWithGoogle,
   error,
+  googleSignUp
 }
 
 @riverpod
@@ -23,16 +24,16 @@ class AuthNotifier extends _$AuthNotifier {
   @override
   AsyncValue<void> build() => const AsyncValue.data(null);
 
-  Future<bool> signIn(String email, String password) async {
+  Future<SignUpResult> signIn(String email, String password) async {
     state = const AsyncValue.loading();
     try {
       await ref.read(signInUseCaseProvider).execute(email, password);
       state = const AsyncValue.data(null);
-      return true;
+      return SignUpResult.emailAlreadyInUse;
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
       print('Error: $e StackTrace: $stackTrace');
-      return false;
+      return SignUpResult.error;
     }
   }
 
@@ -64,15 +65,14 @@ class AuthNotifier extends _$AuthNotifier {
     }
   }
 
-  Future<void> signInWithGoogle() async {
+  Future<SignUpResult> signInWithGoogle() async {
     state = const AsyncValue.loading();
-    try {
-      await ref.read(googleSignInUseCaseProvider).execute();
+    final registered = await ref.read(googleSignInUseCaseProvider).execute();
+    if (!registered) {
       state = const AsyncValue.data(null);
-    } catch (e, stackTrace) {
-      state = AsyncValue.error(e, stackTrace);
-      _logger.severe('Error: $e StackTrace: $stackTrace');
+      return SignUpResult.googleSignUp;
     }
+    return SignUpResult.success;
   }
 
   Future<void> signOut() async {

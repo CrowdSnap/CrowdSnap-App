@@ -1,3 +1,4 @@
+import 'package:crowd_snap/core/data/models/google_user_model.dart';
 import 'package:crowd_snap/features/auth/data/data_sources/auth_data_source.dart';
 import 'package:crowd_snap/features/auth/data/data_sources/google_auth_data_source.dart';
 import 'package:crowd_snap/core/data/models/user_model.dart';
@@ -55,17 +56,8 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<UserModel> signInWithGoogle() async {
-    final userModel = await _googleAuthDataSource.signInWithGoogle();
-    _logger.info('UserModel: $userModel Desde el repositorio');
-    return UserModel(
-        userId: userModel.userId,
-        username: userModel.username,
-        name: userModel.name,
-        email: userModel.email,
-        joinedAt: userModel.joinedAt,
-        firstTime: userModel.firstTime
-        );
+  Future<GoogleUserModel> signInWithGoogle() async {
+    return await _googleAuthDataSource.signInWithGoogle();
   }
 
   @override

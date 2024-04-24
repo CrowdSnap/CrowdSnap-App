@@ -16,7 +16,8 @@ class StoreAuth {
 }
 
 enum AuthStatus {
-  unauthenticated,
+  avatarUpload,
+  googleSignUp,
   loggedIn,
-  profileComplete
+  loggedOut,
 }

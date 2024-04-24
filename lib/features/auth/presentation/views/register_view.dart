@@ -6,14 +6,12 @@ import 'package:crowd_snap/core/constants.dart';
 import 'package:crowd_snap/features/auth/presentation/widgets/register_button_form_submit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:crowd_snap/features/auth/presentation/notifier/auth_notifier.dart';
 
 class RegisterView extends ConsumerWidget {
   const RegisterView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authNotifier = ref.watch(authNotifierProvider.notifier);
     final formState = ref.watch(formNotifierProvider.notifier);
     final formValues = ref.watch(formNotifierProvider);
     final router = ref.watch(appRouterProvider);
@@ -77,10 +75,7 @@ class RegisterView extends ConsumerWidget {
                               ],
                             ),
                             const SizedBox(height: 30),
-                            GoogleSignInButton(onPressed: () {
-                              // Call signInWithGoogle method
-                              authNotifier.signInWithGoogle();
-                            }),
+                            const GoogleSignInButton(),
                           ],
                         ),
                       ),
