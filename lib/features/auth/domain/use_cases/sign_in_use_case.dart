@@ -3,8 +3,7 @@ import 'package:crowd_snap/features/auth/data/repositories_impl/auth_repository_
 import 'package:crowd_snap/features/auth/data/repositories_impl/firestore_repository_impl.dart';
 import 'package:crowd_snap/features/auth/domain/repositories/auth_repository.dart';
 import 'package:crowd_snap/features/auth/domain/repositories/firestore_repository.dart';
-import 'package:crowd_snap/features/imgs/data/repositories_impl/avatar_bucket_repository_impl.dart';
-import 'package:crowd_snap/features/imgs/domain/repository/avatar_bucket_repository.dart';
+import 'package:crowd_snap/features/imgs/domain/use_case/avatar_get_use_case.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:logging/logging.dart';
 
@@ -14,9 +13,9 @@ class SignInUseCase {
   final AuthRepository _authRepository;
   final FirestoreRepository _firestoreRepository;
   final StoreUserUseCase _storeUserUseCase;
-  final AvatarBucketRepository _avatarBucketRepository;
+  final AvatarGetUseCase _avatarGetUseCase;
 
-  SignInUseCase(this._authRepository, this._firestoreRepository, this._storeUserUseCase, this._avatarBucketRepository);
+  SignInUseCase(this._authRepository, this._firestoreRepository, this._storeUserUseCase, this._avatarGetUseCase);
 
   Future<void> execute(String email, String password) async {
     try {
@@ -24,7 +23,7 @@ class SignInUseCase {
           await _authRepository.signInWithEmailAndPassword(email, password);
       final userModel = await _firestoreRepository.getUser(user.userId);
       await _storeUserUseCase.execute(userModel);
-      await _avatarBucketRepository.getUserAvatar();
+      await _avatarGetUseCase.execute();
     } catch (e) {
       _logger.severe('Error al iniciar sesión: $e');
       throw Exception('Error al iniciar sesión');
@@ -39,7 +38,7 @@ SignInUseCase signInUseCase(SignInUseCaseRef ref) {
   final authRepository = ref.watch(authRepositoryProvider);
   final firestoreRepository = ref.watch(firestoreRepositoryProvider);
   final storeUserUseCase = ref.watch(storeUserUseCaseProvider);
-  final avatarBucketRepository = ref.watch(avatarBucketRepositoryProvider);
+  final avatarGetUseCase = ref.watch(avatarGetUseCaseProvider);
   _logger.info('SignInUseCase');
-  return SignInUseCase(authRepository, firestoreRepository, storeUserUseCase, avatarBucketRepository);
+  return SignInUseCase(authRepository, firestoreRepository, storeUserUseCase, avatarGetUseCase);
 }

@@ -52,8 +52,8 @@ class AvatarLocalDataSourceImpl implements AvatarLocalDataSource {
         throw Exception('Avatar file not found');
       } catch (e) {
         // Avatar file not found, handle the exception if needed
-        print('Avatar file not found');
-        throw Exception('Avatar file not found');
+        print('Exception: $e');
+        throw Exception(e.toString());
       }
     } else {
       // Avatar file not found, handle the exception if needed

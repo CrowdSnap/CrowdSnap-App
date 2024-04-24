@@ -18,7 +18,11 @@ class AvatarGetUseCase {
     try {
       return await _localRepository.getAvatar();
     } catch (e) {
-      return await _bucketRepository.getUserAvatar();
+      print('Error getting avatar from local storage: $e');
+      // If the avatar is not found in local storage, try to get it from the bucket and save it locally
+      final avatar = await _bucketRepository.getUserAvatar();
+      await _localRepository.saveAvatar(avatar);
+      return avatar;
     }
   }
 }
