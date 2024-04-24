@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crowd_snap/features/auth/data/data_sources/firestore_data_source.dart';
-import 'package:crowd_snap/features/auth/data/models/user_model.dart';
+import 'package:crowd_snap/core/data/models/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:logging/logging.dart';
@@ -41,7 +41,14 @@ class AuthDataSourceImpl implements AuthDataSource {
     if (user != null) {
       _logger.info('User: ${user.email} Firebase User signed in');
       final userModel = await _firestoreDataSource.getUser(user.uid);
-      return userModel;
+      // Verificar el valor de firstTime y actualizarlo si es necesario
+      if (userModel.firstTime) {
+        final updatedUserModel = userModel.copyWith(firstTime: false);
+        await _firestoreDataSource.updateUser(updatedUserModel);
+        return updatedUserModel;
+      } else {
+        return userModel;
+      }
     } else {
       throw Exception('User not found');
     }
@@ -62,6 +69,7 @@ class AuthDataSourceImpl implements AuthDataSource {
         username: username,
         email: user.email!,
         age: age,
+        firstTime: true,
         joinedAt: DateTime.now(),
       );
       await _saveUserToFirestore(userModel);

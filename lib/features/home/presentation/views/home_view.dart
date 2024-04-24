@@ -1,3 +1,4 @@
+import 'package:crowd_snap/app/router/redirect/auth_state_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:crowd_snap/app/theme/notifier/theme_notifier.dart';
@@ -11,6 +12,8 @@ class HomeView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isDarkMode = ref.watch(darkModeProvider);
     final authNotifier = ref.read(authNotifierProvider.notifier);
+    final authState = ref.watch(authStateProvider.notifier);
+
 
     return Scaffold(
       appBar: AppBar(
@@ -33,6 +36,7 @@ class HomeView extends ConsumerWidget {
             ElevatedButton(
           onPressed: () {
             authNotifier.signOut();
+            authState.loggedOut();
           },
           child: const Text('Logout'),
         ),

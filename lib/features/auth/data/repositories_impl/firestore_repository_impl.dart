@@ -1,5 +1,5 @@
 import 'package:crowd_snap/features/auth/data/data_sources/firestore_data_source.dart';
-import 'package:crowd_snap/features/auth/data/models/user_model.dart';
+import 'package:crowd_snap/core/data/models/user_model.dart';
 import 'package:crowd_snap/features/auth/domain/repositories/firestore_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:logging/logging.dart';
@@ -39,6 +39,29 @@ class FirestoreRepositoryImpl implements FirestoreRepository {
     } catch (e) {
       _logger.severe('Error getting user from Firestore: $e');
       throw Exception('Failed to get user from Firestore');
+    }
+  }
+
+  @override
+  Future<void> updateUser(UserModel user) async {
+    try {
+      await _firestoreDataSource.updateUser(user);
+      _logger.info('User updated in Firestore: ${user.email}');
+    } catch (e) {
+      _logger.severe('Error updating user in Firestore: $e');
+      throw Exception('Failed to update user in Firestore');
+    }
+  }
+
+  @override
+  Future<void> updateUserAvatar(String avatarUrl) async {
+    try {
+      print('Avatar URL: $avatarUrl');
+      await _firestoreDataSource.updateUserAvatar(avatarUrl);
+      _logger.info('User avatar updated in Firestore');
+    } catch (e) {
+      _logger.severe('Error updating user avatar in Firestore: $e');
+      throw Exception('Failed to update user avatar in Firestore');
     }
   }
 }

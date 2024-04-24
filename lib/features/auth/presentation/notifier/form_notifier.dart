@@ -12,6 +12,7 @@ class FormState {
   final bool showPassword;
   final bool isPasswordValid;
   final bool isAgeValid;
+  final bool isLoading;
 
   FormState(
       {this.name = '',
@@ -21,7 +22,8 @@ class FormState {
       this.age = 0,
       this.showPassword = false,
       this.isPasswordValid = false,
-      this.isAgeValid = false});
+      this.isAgeValid = false,
+      this.isLoading = false});
 
   FormState copyWith({
     String? name,
@@ -32,6 +34,7 @@ class FormState {
     bool? showPassword,
     bool? isPasswordValid,
     bool? isAgeValid,
+    bool? isLoading,
   }) {
     return FormState(
       name: name ?? this.name,
@@ -42,6 +45,7 @@ class FormState {
       showPassword: showPassword ?? this.showPassword,
       isPasswordValid: isPasswordValid ?? this.isPasswordValid,
       isAgeValid: isAgeValid ?? this.isAgeValid,
+      isLoading: isLoading ?? this.isLoading,
     );
   }
 }
@@ -79,6 +83,14 @@ class FormNotifier extends _$FormNotifier {
 
   void togglePasswordVisibility() {
     state = state.copyWith(showPassword: !state.showPassword);
+  }
+
+  void startLoading() {
+    state = state.copyWith(isLoading: true);
+  }
+
+  void stopLoading() {
+    state = state.copyWith(isLoading: false);
   }
 
   IconData getPasswordIcon() {
