@@ -1,7 +1,7 @@
 import 'package:crowd_snap/app/router/app_router.dart';
 import 'package:crowd_snap/features/auth/presentation/notifier/auth_notifier.dart';
 import 'package:crowd_snap/features/auth/presentation/notifier/form_notifier.dart';
-import 'package:crowd_snap/global/constants.dart';
+import 'package:crowd_snap/core/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

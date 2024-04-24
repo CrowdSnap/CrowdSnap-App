@@ -1,4 +1,4 @@
-import 'package:crowd_snap/features/auth/data/models/user_model.dart';
+import 'package:crowd_snap/core/data/models/user_model.dart';
 
 abstract class AuthRepository {
   Future<UserModel> signInWithEmailAndPassword(String email, String password);

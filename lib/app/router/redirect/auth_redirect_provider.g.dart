@@ -6,22 +6,7 @@ part of 'auth_redirect_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$authStateChangesHash() => r'06c05eec5a6c9127c308a9d2edb0019c311705c4';
-
-/// See also [authStateChanges].
-@ProviderFor(authStateChanges)
-final authStateChangesProvider = AutoDisposeStreamProvider<User?>.internal(
-  authStateChanges,
-  name: r'authStateChangesProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$authStateChangesHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-typedef AuthStateChangesRef = AutoDisposeStreamProviderRef<User?>;
-String _$authRedirectHash() => r'4bc8fe5dfeb3ccd1610318c01e00f5aa17e35325';
+String _$authRedirectHash() => r'91b9e7b3b598a9c432d135a2972a310288f427c3';
 
 /// See also [authRedirect].
 @ProviderFor(authRedirect)

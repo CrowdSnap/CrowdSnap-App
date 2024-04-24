@@ -1,4 +1,7 @@
-import 'package:crowd_snap/global/navbar/providers/navbar_provider.dart';
+import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_use_case.dart';
+import 'package:crowd_snap/core/navbar/providers/navbar_provider.dart';
+import 'package:crowd_snap/features/imgs/domain/use_case/avatar_get_use_case.dart';
+import 'package:crowd_snap/features/profile/presentation/notifier/profile_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -11,8 +14,29 @@ class ProfileView extends ConsumerWidget {
     ref.read(navBarIndexNotifierProvider.notifier).updateIndex(0);
   }
 
+  void _getUser(BuildContext context, WidgetRef ref) {
+    final getUserUseCase = ref.read(getUserUseCaseProvider);
+    final profileNotifier = ref.read(profileNotifierProvider.notifier);
+    getUserUseCase.execute().then((user) {
+      profileNotifier.updateUserId(user.userId);
+      profileNotifier.updateName(user.name);
+      profileNotifier.updateEmail(user.email);
+      profileNotifier.updateUserName(user.username);
+    });
+  }
+
+  void _getAvatarUser(BuildContext context, WidgetRef ref) {
+    final getAvatarUseCase = ref.read(avatarGetUseCaseProvider);
+    final profileNotifier = ref.read(profileNotifierProvider.notifier);
+    getAvatarUseCase.execute().then((avatar) {
+      profileNotifier.updateImage(avatar);
+    });
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final profileNotifier = ref.watch(profileNotifierProvider);
+
     return PopScope(
       canPop: false,
       onPopInvoked: (didPop) async {
@@ -22,12 +46,30 @@ class ProfileView extends ConsumerWidget {
         _goHome(context, ref);
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Profile')
-        ),
-        body: const Center(
-          child: Text('Profile View'),
-        ),
+        appBar: AppBar(title: const Text('Profile')),
+        body: Center(
+            child:
+                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          CircleAvatar(
+            radius: 50,
+            backgroundImage: profileNotifier.image != null
+                ? FileImage(profileNotifier.image!)
+                : null,
+            child: profileNotifier.image == null
+                ? const Icon(Icons.person, size: 50)
+                : null,
+          ),
+          Text('Profile ${profileNotifier.userId}'),
+          Text('Name: ${profileNotifier.name}'),
+          Text('Email: ${profileNotifier.email}'),
+          Text('Username: ${profileNotifier.userName}'),
+          ElevatedButton(
+              onPressed: () {
+                _getUser(context, ref);
+                _getAvatarUser(context, ref);
+              },
+              child: const Text('Get User'))
+        ])),
       ),
     );
   }

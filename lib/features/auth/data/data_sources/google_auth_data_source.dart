@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:crowd_snap/features/auth/data/models/user_model.dart';
+import 'package:crowd_snap/core/data/models/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -41,13 +41,16 @@ class GoogleAuthDataSourceImpl implements GoogleAuthDataSource {
 
       if (existingUser != null) {
         // User already exists, return the existing user
-        return existingUser;
+        final updatedUserModel = existingUser.copyWith(firstTime: false);
+        await _saveUserToFirestore(updatedUserModel);
+        return updatedUserModel;
       } else {
         final userModel = UserModel(
           userId: user.uid,
           username: user.displayName ?? '',
           name: user.displayName ?? '',
           email: user.email ?? '',
+          firstTime: true,
           joinedAt: user.metadata.creationTime ?? DateTime.now(),
         );
 
