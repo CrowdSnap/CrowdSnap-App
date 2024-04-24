@@ -40,7 +40,7 @@ class AgeInput extends ConsumerWidget {
       children: [
         TextFormField(
           decoration: InputDecoration(
-            labelText: 'Age',
+            labelText: 'Edad',
             enabledBorder: _getBorder(context, formValues),
             focusedBorder: _getBorder(context, formValues),
             errorBorder: _getBorder(context, formValues, isError: true),
