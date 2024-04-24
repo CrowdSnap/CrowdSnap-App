@@ -1,9 +1,9 @@
 import 'package:crowd_snap/app/router/app_router.dart';
-import 'package:crowd_snap/app/router/redirect/auth_state_provider.dart';
 import 'package:crowd_snap/features/auth/presentation/notifier/form_notifier.dart';
 import 'package:crowd_snap/features/auth/presentation/widgets/google_sign_in_button.dart';
 import 'package:crowd_snap/features/auth/presentation/widgets/password_input.dart';
 import 'package:crowd_snap/core/constants.dart';
+import 'package:crowd_snap/features/auth/presentation/widgets/register_button_form_submit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:crowd_snap/features/auth/presentation/notifier/auth_notifier.dart';
@@ -17,8 +17,6 @@ class RegisterView extends ConsumerWidget {
     final formState = ref.watch(formNotifierProvider.notifier);
     final formValues = ref.watch(formNotifierProvider);
     final router = ref.watch(appRouterProvider);
-    final authState = ref.watch(authStateProvider.notifier);
-
 
     return Scaffold(
       appBar: AppBar(
@@ -68,41 +66,13 @@ class RegisterView extends ConsumerWidget {
                             ),
                             const PasswordInput(),
                             const SizedBox(height: 30),
-                            ElevatedButton(
-                              onPressed: formValues.isPasswordValid &&
-                                      formValues.email.isNotEmpty
-                                  ? () {
-                                      authNotifier.signUp(formValues.email,
-                                          formValues.password, formValues.userName, formValues.name);
-                                      
-                                      authState.loggedIn();
-                                    }
-                                  : null,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: formValues.isPasswordValid &&
-                                        formValues.email.isNotEmpty
-                                    ? Theme.of(context).colorScheme.surface
-                                    : Theme.of(context)
-                                        .colorScheme
-                                        .onSurface
-                                        .withOpacity(0.12),
-                                foregroundColor: formValues.isPasswordValid &&
-                                        formValues.email.isNotEmpty
-                                    ? Theme.of(context).colorScheme.primary
-                                    : Theme.of(context)
-                                        .colorScheme
-                                        .onSurface
-                                        .withOpacity(0.38),
-                              ),
-                              child: const Text('Registro'),
-                            ),
+                            const RegisterButtonFormSubmit(),
                             const SizedBox(height: 30),
                             const Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Expanded(child: Divider()),
-                                Text('   O   ',
-                                    style: TextStyle(fontSize: 14)),
+                                Text('   O   ', style: TextStyle(fontSize: 14)),
                                 Expanded(child: Divider()),
                               ],
                             ),
