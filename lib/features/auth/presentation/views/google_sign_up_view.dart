@@ -1,54 +1,77 @@
-import 'dart:io';
-import 'package:crowd_snap/app/router/redirect/auth_state_provider.dart';
-import 'package:crowd_snap/core/data/repository_impl/shared_preferences/google_user_repository_impl.dart';
-import 'package:crowd_snap/features/auth/data/repositories_impl/firestore_repository_impl.dart';
-import 'package:crowd_snap/features/imgs/domain/use_case/avatar_upload_use_case.dart';
-import 'package:crowd_snap/features/imgs/presentation/notifier/image_picker_state.dart';
+import 'package:crowd_snap/features/auth/presentation/notifier/google_sign_up_notifier.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:go_router/go_router.dart';
 
-class GoogleSignUpView extends ConsumerWidget {
+class GoogleSignUpView extends ConsumerStatefulWidget {
   const GoogleSignUpView({super.key});
 
-  Future<void> _getCamera(WidgetRef ref) async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.camera);
-    if (pickedFile != null) {
-      ref.read(imageStateProvider.notifier).setImage(File(pickedFile.path));
-    }
-  }
+  @override
+  _GoogleSignUpScreenState createState() => _GoogleSignUpScreenState();
+}
 
-  Future<void> _getGallery(WidgetRef ref) async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      ref.read(imageStateProvider.notifier).setImage(File(pickedFile.path));
-    }
-  }
+class _GoogleSignUpScreenState extends ConsumerState<GoogleSignUpView> {
+  late Future<void> _initializeUserFuture = Future.value();
 
-  Future<void> _saveImage(File? imageState, WidgetRef ref) async {
-    final avatarUpload = ref.watch(avatarUploadUseCaseProvider);
-    final firestoreRepository = ref.watch(firestoreRepositoryProvider);
-    final image = await avatarUpload.execute(imageState!);
-    firestoreRepository.updateUserAvatar(image);
+  @override
+  void initState() {
+    super.initState();
+    _initializeUserFuture =
+        ref.read(googleSignUpNotifierProvider.notifier).initialize();
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final imageState = ref.watch(imageStateProvider);
-    final imagesValue = ref.watch(imageStateProvider.notifier);
-    final authState = ref.watch(authStateProvider.notifier);
-    final googleUser = ref.watch(googleUserRepositoryProvider);
+  Widget build(BuildContext context) {
+    final formState = ref.watch(googleSignUpNotifierProvider);
 
     return Scaffold(
-      body: Center(
-        child: ElevatedButton(onPressed: () async {
-          final googleUserModel = await googleUser.getGoogleUser();
-          print(googleUserModel.toString());
-        }, child: Text('Get GoogleUser')),
-      ),
-    );
+        appBar: AppBar(
+          title: const Text('Google Sign Up'),
+        ),
+        body: FutureBuilder(
+          future: _initializeUserFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            final formState = ref.watch(googleSignUpNotifierProvider);
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Form(
+                child: Column(
+                  children: [
+                    TextFormField(
+                      initialValue: formState.name,
+                      decoration: const InputDecoration(labelText: 'Name'),
+                      onChanged: (value) => ref
+                          .read(googleSignUpNotifierProvider.notifier)
+                          .updateNombre(value),
+                      keyboardType: TextInputType.name,
+                    ),
+                    TextFormField(
+                      initialValue: formState.userName,
+                      decoration: const InputDecoration(labelText: 'Username'),
+                      onChanged: (value) => ref
+                          .read(googleSignUpNotifierProvider.notifier)
+                          .updateUserName(value),
+                      keyboardType: TextInputType.name,
+                    ),
+                    TextFormField(
+                      initialValue: formState.age.toString(),
+                      decoration: const InputDecoration(labelText: 'Age'),
+                      onChanged: (value) => ref
+                          .read(googleSignUpNotifierProvider.notifier)
+                          .updateAge(int.parse(value)),
+                      keyboardType: TextInputType.number,
+                    ),
+                    ElevatedButton(
+                        onPressed: () => context.go('/'),
+                        child: const Text('Go to Home')),
+                  ],
+                ),
+              ),
+            );
+          },
+        ));
   }
 }
