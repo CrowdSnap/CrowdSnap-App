@@ -5,4 +5,5 @@ abstract class FirestoreRepository {
   Future<UserModel> getUser(String userId);
   Future<void> updateUser(UserModel user);
   Future<void> updateUserAvatar(String avatarUrl);
+  Future<void> deleteUser(String userId);
 }

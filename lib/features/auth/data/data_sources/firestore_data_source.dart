@@ -11,6 +11,7 @@ abstract class FirestoreDataSource {
   Future<UserModel> getUser(String userId);
   Future<void> updateUser(UserModel user);
   Future<void> updateUserAvatar(String avatarUrl);
+  Future<void> deleteUser(String userId);
 }
 
 final _logger = Logger('FirestoreDataSource');
@@ -82,6 +83,18 @@ class FirestoreDataSourceImpl implements FirestoreDataSource {
     } catch (e) {
       _logger.severe('Error updating user avatar in Firestore: $e');
       throw Exception('Failed to update user avatar in Firestore');
+    }
+  }
+
+  @override
+  Future<void> deleteUser(String userId) async {
+    try {
+      final userDoc = _firestore.collection('users').doc(userId);
+      await userDoc.delete();
+      _logger.info('User deleted from Firestore: $userId');
+    } catch (e) {
+      _logger.severe('Error deleting user from Firestore: $e');
+      throw Exception('Failed to delete user from Firestore');
     }
   }
 }
