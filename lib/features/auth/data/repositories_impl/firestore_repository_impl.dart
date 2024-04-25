@@ -64,4 +64,15 @@ class FirestoreRepositoryImpl implements FirestoreRepository {
       throw Exception('Failed to update user avatar in Firestore');
     }
   }
+
+  @override
+  Future<void> deleteUser(String userId) async {
+    try {
+      await _firestoreDataSource.deleteUser(userId);
+      _logger.info('User deleted from Firestore: $userId');
+    } catch (e) {
+      _logger.severe('Error deleting user from Firestore: $e');
+      throw Exception('Failed to delete user from Firestore');
+    }
+  }
 }
