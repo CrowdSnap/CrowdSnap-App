@@ -16,7 +16,8 @@ class GoogleSignUpState {
   final int age;
   final String userName;
   final bool isLoading;
-  final String image;
+  final String googleImage;
+  final String userImage;
 
   GoogleSignUpState(
       {this.name = '',
@@ -24,7 +25,8 @@ class GoogleSignUpState {
       this.age = 0,
       this.userName = '',
       this.isLoading = false,
-      this.image = ''});
+      this.googleImage = '',
+      this.userImage = '',});
 
   GoogleSignUpState copyWith({
     String? name,
@@ -32,7 +34,8 @@ class GoogleSignUpState {
     int? age,
     String? userName,
     bool? isLoading,
-    String? image,
+    String? googleImage,
+    String? userImage,
   }) {
     return GoogleSignUpState(
       name: name ?? this.name,
@@ -40,7 +43,8 @@ class GoogleSignUpState {
       age: age ?? this.age,
       userName: userName ?? this.userName,
       isLoading: isLoading ?? this.isLoading,
-      image: image ?? this.image,
+      googleImage: googleImage ?? this.googleImage,
+      userImage: userImage ?? this.userImage,
     );
   }
 }
@@ -59,7 +63,7 @@ class GoogleSignUpNotifier extends _$GoogleSignUpNotifier {
       name: googleUser.name ?? '',
       email: googleUser.email ?? '',
       userName: googleUser.email?.split('@').first ?? '',
-      image: googleUser.avatarUrl ?? '',
+      googleImage: googleUser.avatarUrl ?? '',
     );
   } catch (e) {
     print('Error initializing Google User: $e');
@@ -83,8 +87,12 @@ class GoogleSignUpNotifier extends _$GoogleSignUpNotifier {
     state = state.copyWith(userName: userName);
   }
 
-  void updateImage(String image) {
-    state = state.copyWith(image: image);
+  void updateGoogleImage(String googleImage) {
+    state = state.copyWith(googleImage: googleImage);
+  }
+
+  void updateUserImage(String userImage) {
+    state = state.copyWith(userImage: userImage);
   }
 
   void updateIsLoading(bool isLoading) {
