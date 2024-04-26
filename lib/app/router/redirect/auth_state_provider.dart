@@ -9,7 +9,18 @@ final _prefsService = StoreAuth();
 class AuthState extends _$AuthState {
   @override
   Future<AuthStatus> build() async {
-    return await _prefsService.getAuthStatus();
+    final status = await _prefsService.getAuthStatus();
+    
+    final isFirstLaunch = await _prefsService.isFirstLaunch();
+    
+    if (isFirstLaunch) {
+      // Si es la primera vez, establecer el estado inicial como loggedOut
+      await _prefsService.setAuthStatus(AuthStatus.loggedOut);
+      return AuthStatus.loggedOut;
+    } else {
+      // En el resto de los casos, seguir el AuthStatus que marque la aplicación
+      return status;
+    }
   }
 
   Future<void> loggedIn() async {

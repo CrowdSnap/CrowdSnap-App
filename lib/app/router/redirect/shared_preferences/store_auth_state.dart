@@ -13,6 +13,15 @@ class StoreAuth {
     final statusIndex = prefs.getInt(_authStatusKey) ?? 0;
     return AuthStatus.values[statusIndex];
   }
+
+  Future<bool> isFirstLaunch() async {
+    final prefs = await SharedPreferences.getInstance();
+    final isFirstLaunch = prefs.getBool('is_first_launch') ?? true;
+    if (isFirstLaunch) {
+      await prefs.setBool('is_first_launch', false);
+    }
+    return isFirstLaunch;
+  }
 }
 
 enum AuthStatus {
