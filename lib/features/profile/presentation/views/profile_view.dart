@@ -1,7 +1,8 @@
 import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_use_case.dart';
 import 'package:crowd_snap/core/navbar/providers/navbar_provider.dart';
-import 'package:crowd_snap/features/auth/data/data_sources/firestore_data_source.dart';
 import 'package:crowd_snap/features/auth/data/repositories_impl/firestore_repository_impl.dart';
+import 'package:crowd_snap/features/auth/domain/use_cases/sign_out_use_case.dart';
+import 'package:crowd_snap/features/imgs/data/repositories_impl/avatar_bucket_repository_impl.dart';
 import 'package:crowd_snap/features/imgs/domain/use_case/avatar_get_use_case.dart';
 import 'package:crowd_snap/features/profile/presentation/notifier/profile_notifier.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -39,11 +40,14 @@ class ProfileView extends ConsumerWidget {
 
   void _deleteUser(BuildContext context, WidgetRef ref) async {
     final userId = ref.read(profileNotifierProvider).userId;
+    final userModel = await ref.read(getUserUseCaseProvider).execute();
+    print('Deleting user: $userModel');
     try {
       await ref.read(firestoreRepositoryProvider).deleteUser(userId);
       await FirebaseAuth.instance.currentUser?.delete();
+      await ref.read(avatarBucketRepositoryProvider).deleteUserAvatar(userModel.avatarUrl!);
       if (context.mounted) {
-        context.go('/login');
+        ref.read(signOutUseCaseProvider).execute();
       }
     } catch (e) {
       if (context.mounted) {

@@ -24,7 +24,7 @@ class FormState {
       this.showPassword = false,
       this.isPasswordValid = false,
       this.isLoading = false,
-      this.isLoadingGoogle = false
+      this.isLoadingGoogle = false,
       this.isAgeValid = false,
       });
 

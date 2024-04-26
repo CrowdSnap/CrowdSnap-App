@@ -26,29 +26,31 @@ class GoogleSignUpUseCase {
   Future<void> execute(
       String name, String userName, int age, String userImage) async {
     try {
-      print('UserImage: $userImage');
       final googleUser = await _googleUserRepository.getGoogleUser();
+      final String userAvatar;
+      if (userImage.isEmpty) {
+        print('Downloading google avatar ${googleUser.avatarUrl}');
+        final avatar = googleUser.avatarUrl;
+        final dio = Dio();
+        final directory = await getApplicationDocumentsDirectory();
+        final avatarFile = File('${directory.path}/$avatar');
+        await dio.download(avatar!, avatarFile.path);
+        userAvatar = await _avatarUploadUseCase.execute(avatarFile, userName: userName);
+      } else {
+        userAvatar = await _avatarUploadUseCase.execute(File(userImage), userName: userName);
+      }
+      print('UserImage: $userAvatar');
       UserModel user = UserModel(
         userId: googleUser.userId,
         username: userName,
         name: name,
         email: googleUser.email!,
+        age: age,
         joinedAt: DateTime.now(),
         firstTime: true,
-        avatarUrl: userImage.isNotEmpty ? userImage : googleUser.avatarUrl,
+        avatarUrl: userAvatar,
       );
       print('User Avatar: ${user.avatarUrl}');
-      if (userImage.isEmpty) {
-        print('Downloading google avatar ${user.avatarUrl}');
-        final avatar = user.avatarUrl;
-        final dio = Dio();
-        final directory = await getApplicationDocumentsDirectory();
-        final avatarFile = File('${directory.path}/$avatar');
-        await dio.download(avatar!, avatarFile.path);
-        await _avatarUploadUseCase.execute(avatarFile, userName: userName);
-      } else {
-        await _avatarUploadUseCase.execute(File(userImage), userName: userName);
-      }
       print('Uploaded user selected avatar ${user.avatarUrl}');
       await _storeUserUseCase.execute(user);
       await _firestoreRepository.saveUser(user);

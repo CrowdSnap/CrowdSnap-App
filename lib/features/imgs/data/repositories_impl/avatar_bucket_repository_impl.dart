@@ -31,13 +31,11 @@ class AvatarBucketRepositoryImpl implements AvatarBucketRepository {
 
   @override
   Future<String> deleteUserAvatar(String imageUrl) {
-    // TODO: implement deleteUserAvatar
-    throw UnimplementedError();
+    return _avatarBucketDataSource.deleteImage(imageUrl);
   }
 
   @override
   Future<String> updateUserAvatar(File image, String imageUrl) {
-    // TODO: implement updateUserAvatar
-    throw UnimplementedError();
+    return _avatarBucketDataSource.updateImage(image, imageUrl);
   }
 }
