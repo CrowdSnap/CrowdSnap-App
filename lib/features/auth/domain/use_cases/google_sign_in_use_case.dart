@@ -19,15 +19,25 @@ class GoogleSignInUseCase {
   final AvatarGetUseCase _avatarGetUseCase;
   final GoogleUserRepository _googleUserRepository;
 
-  GoogleSignInUseCase(this._authRepository, this._firestoreRepository, this._storeUserUseCase, this._avatarGetUseCase, this._googleUserRepository);
+  GoogleSignInUseCase(
+      this._authRepository,
+      this._firestoreRepository,
+      this._storeUserUseCase,
+      this._avatarGetUseCase,
+      this._googleUserRepository);
 
   Future<bool> execute() async {
     final googleUserModel = await _authRepository.signInWithGoogle();
 
     try {
-      final UserModel userModel = await _firestoreRepository.getUser(googleUserModel.userId);
+      final UserModel userModel =
+          await _firestoreRepository.getUser(googleUserModel.userId);
       await _storeUserUseCase.execute(userModel);
-      await _avatarGetUseCase.execute();
+      try {
+        await _avatarGetUseCase.execute(userModel.avatarUrl!);
+      } on Exception catch (e) {
+        print('Avatar extraido de Firestore: $e');
+      }
       return true;
     } catch (e) {
       print('Usuario no existe en firestore: $e');
@@ -35,7 +45,7 @@ class GoogleSignInUseCase {
       print('GoogleUser guardado en SharedPreferences: $googleUserModel');
       return false;
     }
-  } 
+  }
 }
 
 final _logger = Logger('GoogleSignInUseCase');
@@ -48,5 +58,6 @@ GoogleSignInUseCase googleSignInUseCase(GoogleSignInUseCaseRef ref) {
   final avatarGetUseCase = ref.watch(avatarGetUseCaseProvider);
   final googleUserRepository = ref.watch(googleUserRepositoryProvider);
   _logger.info('GoogleSignInUseCase');
-  return GoogleSignInUseCase(authRepository, firestoreRepository, storeUserUseCase, avatarGetUseCase, googleUserRepository);
+  return GoogleSignInUseCase(authRepository, firestoreRepository,
+      storeUserUseCase, avatarGetUseCase, googleUserRepository);
 }

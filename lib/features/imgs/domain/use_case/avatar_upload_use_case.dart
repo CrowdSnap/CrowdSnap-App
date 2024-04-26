@@ -13,9 +13,9 @@ class AvatarUploadUseCase {
 
   AvatarUploadUseCase(this._bucketRepository, this._localRepository);
 
-  Future<String> execute(File image) async {
-    await _localRepository.saveAvatar(image);
-    return await _bucketRepository.uploadUserAvatar(image);
+  Future<String> execute(File image, {String? userName}) async {
+    await _localRepository.saveAvatar(image, userName: userName);
+    return await _bucketRepository.uploadUserAvatar(image, userName: userName);
   }
 }
 

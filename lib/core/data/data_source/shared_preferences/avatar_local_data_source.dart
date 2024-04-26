@@ -6,7 +6,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'avatar_local_data_source.g.dart';
 
 abstract class AvatarLocalDataSource {
-  Future<void> saveAvatar(File avatar);
+  Future<void> saveAvatar(File avatar, {String? userName});
   Future<File> getAvatar();
   Future<void> deleteAvatar();
 }
@@ -22,9 +22,11 @@ class AvatarLocalDataSourceImpl implements AvatarLocalDataSource {
   AvatarLocalDataSourceImpl(this._getUserUseCase);
 
   @override
-  Future<void> saveAvatar(File avatar) async {
-    final user = await _getUserUseCase.execute();
-    final userName = user.username;
+  Future<void> saveAvatar(File avatar, {String? userName}) async {
+    if (userName == null) {
+      final user = await _getUserUseCase.execute();
+      userName = user.username;
+    }
     final imageName = 'avatar-$userName.jpeg';
     final directory = await getApplicationDocumentsDirectory();
     await avatar.copy('${directory.path}/$imageName');
@@ -60,7 +62,6 @@ class AvatarLocalDataSourceImpl implements AvatarLocalDataSource {
       print('Avatar file not found');
       throw Exception('Avatar file not found');
     }
-
   }
 
   @override

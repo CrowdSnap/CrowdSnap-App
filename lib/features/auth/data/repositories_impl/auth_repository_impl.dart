@@ -29,14 +29,7 @@ class AuthRepositoryImpl implements AuthRepository {
     final userModel =
         await _authDataSource.signInWithEmailAndPassword(email, password);
     _logger.info('UserModel: $userModel Desde el repositorio');
-    return UserModel(
-        userId: userModel.userId,
-        username: userModel.username,
-        name: userModel.name,
-        email: userModel.email,
-        joinedAt: userModel.joinedAt,
-        firstTime: userModel.firstTime
-        );
+    return userModel;
   }
 
   @override
@@ -45,14 +38,7 @@ class AuthRepositoryImpl implements AuthRepository {
     final userModel = await _authDataSource.createUserWithEmailAndPassword(
         email, password, username, name);
     _logger.info('UserModel: $userModel Desde el repositorio');
-    return UserModel(
-        userId: userModel.userId,
-        username: userModel.username,
-        name: userModel.name,
-        email: userModel.email,
-        joinedAt: userModel.joinedAt,
-        firstTime: userModel.firstTime
-        );
+    return userModel;
   }
 
   @override

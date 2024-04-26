@@ -8,8 +8,8 @@ import 'package:path_provider/path_provider.dart';
 part 'avatar_bucket_data_source.g.dart';
 
 abstract class AvatarBucketDataSource {
-  Future<String> uploadImage(File image);
-  Future<File> getImage();
+  Future<String> uploadImage(File image, {String? userName});
+  Future<File> getImage(String userName);
   Future<String> deleteImage(String imageUrl);
   Future<String> updateImage(File image, String imageUrl);
 }
@@ -28,9 +28,7 @@ class AvatarBucketDataSourceImpl implements AvatarBucketDataSource {
   AvatarBucketDataSourceImpl(this._firebaseStorage, this._getUserUseCase);
 
   @override
-  Future<File> getImage() async {
-    final user = await _getUserUseCase.execute();
-    final imageName = user.avatarUrl;
+  Future<File> getImage(String avatarUrl) async {
     // Create a Dio instance
     final dio = Dio();
 
@@ -38,18 +36,19 @@ class AvatarBucketDataSourceImpl implements AvatarBucketDataSource {
     final directory = await getApplicationDocumentsDirectory();
 
     // Create a new file in the app's directory
-    final localFile = File('${directory.path}/$imageName');
+    final localFile = File('${directory.path}/$avatarUrl');
 
     // Download the image file from the URL
-    await dio.download(imageName!, localFile.path);
-
+    await dio.download(avatarUrl, localFile.path);
     return localFile;
   }
 
   @override
-  Future<String> uploadImage(File image) async {
-    final user = await _getUserUseCase.execute();
-    final userName = user.username;
+  Future<String> uploadImage(File image, {String? userName}) async {
+    if (userName == null) {
+      final user = await _getUserUseCase.execute();
+      userName = user.username;
+    }
     final imageName = '$userName-${DateTime.now()}.jpeg';
     final ref = _firebaseStorage.ref().child('images/$imageName');
     final uploadTask = ref.putFile(image);

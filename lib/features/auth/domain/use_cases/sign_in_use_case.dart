@@ -18,11 +18,16 @@ class SignInUseCase {
     try {
       final userModel =
           await _authRepository.signInWithEmailAndPassword(email, password);
+      print(userModel);
+      final avatarUrl = userModel.avatarUrl;
+      print('avatarUrl $avatarUrl');
       await _storeUserUseCase.execute(userModel);
-      await _avatarGetUseCase.execute();
+      print('storeUserUseCase $userModel');
+      await _avatarGetUseCase.execute(avatarUrl!);
+      
     } catch (e) {
       _logger.severe('Error al iniciar sesión: $e');
-      throw Exception('Error al iniciar sesión');
+      throw Exception('Error al iniciar sesión $e');
     }
   }
 }
