@@ -14,13 +14,15 @@ class AvatarGetUseCase {
 
   AvatarGetUseCase(this._localRepository, this._bucketRepository);
 
-  Future<File> execute() async {
+  Future<File> execute(String imageName) async {
     try {
-      return await _localRepository.getAvatar();
+      final image = await _localRepository.getAvatar();
+      print('Avatar from local storage: $image');
+      return image;
     } catch (e) {
       print('Error getting avatar from local storage: $e');
       // If the avatar is not found in local storage, try to get it from the bucket and save it locally
-      final avatar = await _bucketRepository.getUserAvatar();
+      final avatar = await _bucketRepository.getUserAvatar(imageName);
       await _localRepository.saveAvatar(avatar);
       return avatar;
     }

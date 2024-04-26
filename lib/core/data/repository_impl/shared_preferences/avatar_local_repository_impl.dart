@@ -27,7 +27,7 @@ class AvatarLocalRepositoryImpl implements AvatarLocalRepository {
   }
 
   @override
-  Future<void> saveAvatar(File avatar) async {
-    await _avatarLocalDataSource.saveAvatar(avatar);
+  Future<void> saveAvatar(File avatar, {String? userName}) async {
+    await _avatarLocalDataSource.saveAvatar(avatar, userName: userName);
   }
 }

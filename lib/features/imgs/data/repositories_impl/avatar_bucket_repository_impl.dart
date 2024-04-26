@@ -19,13 +19,13 @@ class AvatarBucketRepositoryImpl implements AvatarBucketRepository {
   AvatarBucketRepositoryImpl(this._avatarBucketDataSource);
 
   @override
-  Future<String> uploadUserAvatar(File image) {
-    return _avatarBucketDataSource.uploadImage(image);
+  Future<String> uploadUserAvatar(File image, {String? userName}) {
+    return _avatarBucketDataSource.uploadImage(image, userName: userName);
   }
 
   @override
-  Future<File> getUserAvatar() {
-    return _avatarBucketDataSource.getImage();
+  Future<File> getUserAvatar(String userName) {
+    return _avatarBucketDataSource.getImage(userName);
   }
 
 

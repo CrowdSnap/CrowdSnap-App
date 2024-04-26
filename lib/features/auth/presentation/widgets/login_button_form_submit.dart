@@ -22,8 +22,8 @@ class LoginButtonFormSubmit extends ConsumerWidget {
               formState.startLoading();
               final signInSuccess = await authNotifier.signIn(
                   formValues.email, formValues.password);
-              if (signInSuccess) {
-                authState.profileComplete();
+              if (signInSuccess == SignUpResult.emailAlreadyInUse) {
+                authState.loggedIn();
               } else {
                 // ignore: use_build_context_synchronously
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(

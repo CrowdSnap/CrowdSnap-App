@@ -32,7 +32,7 @@ class RegisterButtonFormSubmit extends ConsumerWidget {
                 formValues.age
               );
               if (signUpResult == SignUpResult.success) {
-                authState.loggedIn();
+                authState.avatarUpload();
               } else {
                 String errorMessage;
                 switch (signUpResult) {

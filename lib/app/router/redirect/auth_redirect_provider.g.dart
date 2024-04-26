@@ -6,7 +6,7 @@ part of 'auth_redirect_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$authRedirectHash() => r'91b9e7b3b598a9c432d135a2972a310288f427c3';
+String _$authRedirectHash() => r'3efdd25c5e48f44a361ed767f181daf5a6d8c137';
 
 /// See also [authRedirect].
 @ProviderFor(authRedirect)

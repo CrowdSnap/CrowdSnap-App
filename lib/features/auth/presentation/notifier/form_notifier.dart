@@ -13,6 +13,7 @@ class FormState {
   final bool isPasswordValid;
   final bool isAgeValid;
   final bool isLoading;
+  final bool isLoadingGoogle;
 
   FormState(
       {this.name = '',
@@ -22,8 +23,11 @@ class FormState {
       this.age = 0,
       this.showPassword = false,
       this.isPasswordValid = false,
+      this.isLoading = false,
+      this.isLoadingGoogle = false
       this.isAgeValid = false,
-      this.isLoading = false});
+      });
+
 
   FormState copyWith({
     String? name,
@@ -35,6 +39,7 @@ class FormState {
     bool? isPasswordValid,
     bool? isAgeValid,
     bool? isLoading,
+    bool? isLoadingGoogle,
   }) {
     return FormState(
       name: name ?? this.name,
@@ -46,6 +51,7 @@ class FormState {
       isPasswordValid: isPasswordValid ?? this.isPasswordValid,
       isAgeValid: isAgeValid ?? this.isAgeValid,
       isLoading: isLoading ?? this.isLoading,
+      isLoadingGoogle: isLoadingGoogle ?? this.isLoadingGoogle,
     );
   }
 }
@@ -83,6 +89,14 @@ class FormNotifier extends _$FormNotifier {
 
   void togglePasswordVisibility() {
     state = state.copyWith(showPassword: !state.showPassword);
+  }
+
+  void startGoogleLoading() {
+    state = state.copyWith(isLoadingGoogle: true);
+  }
+
+  void stopGoogleLoading() {
+    state = state.copyWith(isLoadingGoogle: false);
   }
 
   void startLoading() {

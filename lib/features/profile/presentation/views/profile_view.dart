@@ -29,10 +29,10 @@ class ProfileView extends ConsumerWidget {
     });
   }
 
-  void _getAvatarUser(BuildContext context, WidgetRef ref) {
+  void _getAvatarUser(BuildContext context, WidgetRef ref, String userName) {
     final getAvatarUseCase = ref.read(avatarGetUseCaseProvider);
     final profileNotifier = ref.read(profileNotifierProvider.notifier);
-    getAvatarUseCase.execute().then((avatar) {
+    getAvatarUseCase.execute(userName).then((avatar) {
       profileNotifier.updateImage(avatar);
     });
   }
@@ -98,7 +98,7 @@ class ProfileView extends ConsumerWidget {
           ElevatedButton(
               onPressed: () {
                 _getUser(context, ref);
-                _getAvatarUser(context, ref);
+                _getAvatarUser(context, ref, profileNotifier.userName);
               },
               child: const Text('Get User')),
           ElevatedButton(

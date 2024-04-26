@@ -1,25 +1,26 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'sign_in_use_case.dart';
+part of 'google_user_repository_impl.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$signInUseCaseHash() => r'cb8ce6f2f7678d948abfbf1b67a8a5e346421880';
+String _$googleUserRepositoryHash() =>
+    r'eed73dc8e042f4de97301a53f3142e31c54baa86';
 
-/// See also [signInUseCase].
-@ProviderFor(signInUseCase)
-final signInUseCaseProvider = AutoDisposeProvider<SignInUseCase>.internal(
-  signInUseCase,
-  name: r'signInUseCaseProvider',
+/// See also [googleUserRepository].
+@ProviderFor(googleUserRepository)
+final googleUserRepositoryProvider = Provider<GoogleUserRepository>.internal(
+  googleUserRepository,
+  name: r'googleUserRepositoryProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$signInUseCaseHash,
+      : _$googleUserRepositoryHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef SignInUseCaseRef = AutoDisposeProviderRef<SignInUseCase>;
+typedef GoogleUserRepositoryRef = ProviderRef<GoogleUserRepository>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

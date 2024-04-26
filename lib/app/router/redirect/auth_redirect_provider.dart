@@ -16,14 +16,17 @@ void authRedirect(AuthRedirectRef ref) {
   authStatus.when(
     data: (status) {
       switch (status) {
-        case AuthStatus.unauthenticated:
+        case AuthStatus.loggedOut:
           router.go('/login');
           break;
-        case AuthStatus.loggedIn:
+        case AuthStatus.avatarUpload:
           router.go('/avatar-upload');
           break;
-        case AuthStatus.profileComplete:
+        case AuthStatus.loggedIn:
           router.go('/');
+          break;
+        case AuthStatus.googleSignUp:
+          router.go('/google-sign-up');
           break;
       }
     },
