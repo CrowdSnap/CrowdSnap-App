@@ -37,6 +37,7 @@ class GoogleSignUpUseCase {
         await dio.download(avatar!, avatarFile.path);
         userAvatar = await _avatarUploadUseCase.execute(avatarFile, userName: userName);
       } else {
+        print('Uploading user selected avatar $userImage');
         userAvatar = await _avatarUploadUseCase.execute(File(userImage), userName: userName);
       }
       print('UserImage: $userAvatar');

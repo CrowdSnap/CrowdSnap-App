@@ -34,6 +34,7 @@ class ProfileView extends ConsumerWidget {
     final getAvatarUseCase = ref.read(avatarGetUseCaseProvider);
     final profileNotifier = ref.read(profileNotifierProvider.notifier);
     getAvatarUseCase.execute(userName).then((avatar) {
+      print('Avatar from local storage: $avatar');
       profileNotifier.updateImage(avatar);
     });
   }

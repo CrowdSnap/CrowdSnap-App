@@ -24,6 +24,7 @@ class UserModelDataSourceImpl implements UserModelDataSource {
   Future<void> saveUserModel(UserModel userModel) async {
     final prefs = await SharedPreferences.getInstance();
     String userModelJson = jsonEncode(userModel.toJson());
+    print('Saving user model: $userModel');
     await prefs.setString('userModel', userModelJson);
   }
 

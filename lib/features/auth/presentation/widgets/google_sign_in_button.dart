@@ -22,8 +22,12 @@ class GoogleSignInButton extends ConsumerWidget {
         final signInSuccess = await authNotifier.signInWithGoogle();
         if (signInSuccess == SignUpResult.success) {
           authState.loggedIn();
-        } else {
+          formState.stopGoogleLoading();
+        } else if (signInSuccess == SignUpResult.googleSignUp) {
           authState.googleSignUp();
+          formState.stopGoogleLoading();
+        } else {
+          formState.stopGoogleLoading();
         }
         formState.stopGoogleLoading();
       },
@@ -38,23 +42,19 @@ class GoogleSignInButton extends ConsumerWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (formValues.isLoading)
-            const Padding(
-              padding: EdgeInsets.only(right: 8.0),
-              child: SizedBox(
-                width: 12,
-                height: 12,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                ),
-              ),
-            ),
-          const Padding(
-            padding: EdgeInsets.only(right: 8.0),
-            child: Image(
-              image: AssetImage('assets/icons/google_icon.png'),
-              height: 24,
-            ),
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: formValues.isLoadingGoogle
+                ? const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 3,
+                    ))
+                : const Image(
+                    image: AssetImage('assets/icons/google_icon.png'),
+                    height: 24,
+                  ),
           ),
           const Text('Sign in with Google'),
         ],

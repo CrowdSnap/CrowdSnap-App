@@ -23,6 +23,7 @@ class AvatarLocalDataSourceImpl implements AvatarLocalDataSource {
 
   @override
   Future<void> saveAvatar(File avatar, {String? userName}) async {
+    print('Saving avatar for user $userName');
     if (userName == null) {
       final user = await _getUserUseCase.execute();
       userName = user.username;

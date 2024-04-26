@@ -18,10 +18,10 @@ class SignOutUseCase {
       this._avatarLocalRepository, this._authStateNotifier);
 
   Future<void> execute() async {
+    _authStateNotifier.loggedOut();
     await _authRepository.signOut();
     await _avatarLocalRepository.deleteAvatar();
     await _deleteUserUseCase.execute();
-    _authStateNotifier.loggedOut();
   }
 }
 

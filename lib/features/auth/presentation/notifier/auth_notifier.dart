@@ -38,8 +38,8 @@ class AuthNotifier extends _$AuthNotifier {
     }
   }
 
-  Future<SignUpResult> signUp(
-      String email, String password, String username, String name, int age) async {
+  Future<SignUpResult> signUp(String email, String password, String username,
+      String name, int age) async {
     state = const AsyncValue.loading();
     try {
       await ref
@@ -68,10 +68,15 @@ class AuthNotifier extends _$AuthNotifier {
 
   Future<SignUpResult> signInWithGoogle() async {
     state = const AsyncValue.loading();
-    final registered = await ref.read(googleSignInUseCaseProvider).execute();
-    if (!registered) {
+    try {
+      final registered = await ref.read(googleSignInUseCaseProvider).execute();
+      if (!registered) {
       state = const AsyncValue.data(null);
       return SignUpResult.googleSignUp;
+    }
+    } catch (e) {
+      state = AsyncValue.error(e, StackTrace.current);
+      return SignUpResult.error;
     }
     return SignUpResult.success;
   }
