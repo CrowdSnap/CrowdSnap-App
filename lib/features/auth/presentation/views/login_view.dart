@@ -69,9 +69,9 @@ class LoginView extends ConsumerWidget {
                 ),
               ),
             ),
-            ElevatedButton(
-                onPressed: () => context.push('/avatar-upload'),
-                child: const Text('Avatar Upload')),
+            TextButton(
+                onPressed: () => context.push('/forgot-password'),
+                child: const Text('¿Olvidaste tu contraseña?')),
             const Divider(),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
