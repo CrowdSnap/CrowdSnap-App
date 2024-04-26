@@ -9,8 +9,7 @@ part 'auth_data_source.g.dart';
 
 abstract class AuthDataSource {
   Future<UserModel> signInWithEmailAndPassword(String email, String password);
-  Future<UserModel> createUserWithEmailAndPassword(
-      String email, String password, String username, String name);
+  Future<UserModel> createUserWithEmailAndPassword(String email, String password, String username, String name, int age);
   Future<void> signOut();
   bool isAuthenticated();
   Future<void> recoverPassword(String email);
@@ -59,8 +58,7 @@ class AuthDataSourceImpl implements AuthDataSource {
   }
 
   @override
-  Future<UserModel> createUserWithEmailAndPassword(
-      String email, String password, String username, String name) async {
+  Future<UserModel> createUserWithEmailAndPassword(String email, String password, String username, String name, int age) async {
     final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
       email: email,
       password: password,
@@ -73,6 +71,7 @@ class AuthDataSourceImpl implements AuthDataSource {
         name: name,
         username: username,
         email: user.email!,
+        age: age,
         firstTime: true,
         joinedAt: DateTime.now(),
       );

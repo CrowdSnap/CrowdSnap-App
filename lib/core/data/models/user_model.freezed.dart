@@ -25,6 +25,7 @@ mixin _$UserModel {
   String get name => throw _privateConstructorUsedError;
   String get email => throw _privateConstructorUsedError;
   DateTime get joinedAt => throw _privateConstructorUsedError;
+  int get age => throw _privateConstructorUsedError;
   bool get firstTime => throw _privateConstructorUsedError;
   String? get avatarUrl => throw _privateConstructorUsedError;
 
@@ -45,6 +46,7 @@ abstract class $UserModelCopyWith<$Res> {
       String name,
       String email,
       DateTime joinedAt,
+      int age,
       bool firstTime,
       String? avatarUrl});
 }
@@ -67,6 +69,7 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
     Object? name = null,
     Object? email = null,
     Object? joinedAt = null,
+    Object? age = null,
     Object? firstTime = null,
     Object? avatarUrl = freezed,
   }) {
@@ -91,6 +94,10 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
           ? _value.joinedAt
           : joinedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      age: null == age
+          ? _value.age
+          : age // ignore: cast_nullable_to_non_nullable
+              as int,
       firstTime: null == firstTime
           ? _value.firstTime
           : firstTime // ignore: cast_nullable_to_non_nullable
@@ -117,6 +124,7 @@ abstract class _$$UserModelImplCopyWith<$Res>
       String name,
       String email,
       DateTime joinedAt,
+      int age,
       bool firstTime,
       String? avatarUrl});
 }
@@ -137,6 +145,7 @@ class __$$UserModelImplCopyWithImpl<$Res>
     Object? name = null,
     Object? email = null,
     Object? joinedAt = null,
+    Object? age = null,
     Object? firstTime = null,
     Object? avatarUrl = freezed,
   }) {
@@ -161,6 +170,10 @@ class __$$UserModelImplCopyWithImpl<$Res>
           ? _value.joinedAt
           : joinedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      age: null == age
+          ? _value.age
+          : age // ignore: cast_nullable_to_non_nullable
+              as int,
       firstTime: null == firstTime
           ? _value.firstTime
           : firstTime // ignore: cast_nullable_to_non_nullable
@@ -182,6 +195,7 @@ class _$UserModelImpl implements _UserModel {
       required this.name,
       required this.email,
       required this.joinedAt,
+      required this.age,
       required this.firstTime,
       this.avatarUrl});
 
@@ -199,13 +213,15 @@ class _$UserModelImpl implements _UserModel {
   @override
   final DateTime joinedAt;
   @override
+  final int age;
+  @override
   final bool firstTime;
   @override
   final String? avatarUrl;
 
   @override
   String toString() {
-    return 'UserModel(userId: $userId, username: $username, name: $name, email: $email, joinedAt: $joinedAt, firstTime: $firstTime, avatarUrl: $avatarUrl)';
+    return 'UserModel(userId: $userId, username: $username, name: $name, email: $email, joinedAt: $joinedAt, age: $age, firstTime: $firstTime, avatarUrl: $avatarUrl)';
   }
 
   @override
@@ -220,6 +236,7 @@ class _$UserModelImpl implements _UserModel {
             (identical(other.email, email) || other.email == email) &&
             (identical(other.joinedAt, joinedAt) ||
                 other.joinedAt == joinedAt) &&
+            (identical(other.age, age) || other.age == age) &&
             (identical(other.firstTime, firstTime) ||
                 other.firstTime == firstTime) &&
             (identical(other.avatarUrl, avatarUrl) ||
@@ -229,7 +246,7 @@ class _$UserModelImpl implements _UserModel {
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, userId, username, name, email,
-      joinedAt, firstTime, avatarUrl);
+      joinedAt, age, firstTime, avatarUrl);
 
   @JsonKey(ignore: true)
   @override
@@ -252,6 +269,7 @@ abstract class _UserModel implements UserModel {
       required final String name,
       required final String email,
       required final DateTime joinedAt,
+      required final int age,
       required final bool firstTime,
       final String? avatarUrl}) = _$UserModelImpl;
 
@@ -268,6 +286,8 @@ abstract class _UserModel implements UserModel {
   String get email;
   @override
   DateTime get joinedAt;
+  @override
+  int get age;
   @override
   bool get firstTime;
   @override

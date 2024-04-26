@@ -34,9 +34,9 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<UserModel> createUserWithEmailAndPassword(
-      String email, String password, String username, String name) async {
+      String email, String password, String username, String name, int age) async {
     final userModel = await _authDataSource.createUserWithEmailAndPassword(
-        email, password, username, name);
+        email, password, username, name, age);
     _logger.info('UserModel: $userModel Desde el repositorio');
     return userModel;
   }
@@ -44,6 +44,7 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<GoogleUserModel> signInWithGoogle() async {
     return await _googleAuthDataSource.signInWithGoogle();
+
   }
 
   @override

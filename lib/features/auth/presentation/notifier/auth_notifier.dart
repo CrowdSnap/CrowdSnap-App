@@ -39,12 +39,12 @@ class AuthNotifier extends _$AuthNotifier {
   }
 
   Future<SignUpResult> signUp(
-      String email, String password, String username, String name) async {
+      String email, String password, String username, String name, int age) async {
     state = const AsyncValue.loading();
     try {
       await ref
           .read(signUpUseCaseProvider)
-          .execute(email, password, username, name);
+          .execute(email, password, username, name, age);
       state = const AsyncValue.data(null);
       return SignUpResult.success;
     } catch (e, stackTrace) {
