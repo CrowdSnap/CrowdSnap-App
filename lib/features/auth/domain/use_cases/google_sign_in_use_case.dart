@@ -32,6 +32,11 @@ class GoogleSignInUseCase {
     try {
       final UserModel userModel =
           await _firestoreRepository.getUser(googleUserModel.userId);
+      if (userModel.firstTime) {
+        final updatedUserModel = userModel.copyWith(firstTime: false);
+        await _firestoreRepository.saveUser(updatedUserModel);
+        print('User updated false fistTime: $updatedUserModel');
+      }
       await _storeUserUseCase.execute(userModel);
       try {
         await _avatarGetUseCase.execute(userModel.avatarUrl!);
