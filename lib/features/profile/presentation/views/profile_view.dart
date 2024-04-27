@@ -46,7 +46,9 @@ class ProfileView extends ConsumerWidget {
     try {
       await ref.read(firestoreRepositoryProvider).deleteUser(userId);
       await FirebaseAuth.instance.currentUser?.delete();
-      await ref.read(avatarBucketRepositoryProvider).deleteUserAvatar(userModel.avatarUrl!);
+      await ref
+          .read(avatarBucketRepositoryProvider)
+          .deleteUserAvatar(userModel.avatarUrl!);
       if (context.mounted) {
         ref.read(signOutUseCaseProvider).execute();
       }

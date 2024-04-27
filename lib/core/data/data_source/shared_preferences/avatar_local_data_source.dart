@@ -28,7 +28,9 @@ class AvatarLocalDataSourceImpl implements AvatarLocalDataSource {
       final user = await _getUserUseCase.execute();
       userName = user.username;
     }
-    final imageName = 'avatar-$userName.jpeg';
+    final imageName =
+        'avatar-$userName-${DateTime.now().millisecondsSinceEpoch}.jpeg';
+
     final directory = await getApplicationDocumentsDirectory();
     await avatar.copy('${directory.path}/$imageName');
     print('Avatar saved');
@@ -41,26 +43,20 @@ class AvatarLocalDataSourceImpl implements AvatarLocalDataSource {
     final user = await _getUserUseCase.execute();
     final userName = user.username;
 
-    if (files.isNotEmpty) {
-      // Find the avatar file and return it
-      try {
-        final avatarFile = files.firstWhere(
-          (file) => file.path.contains('avatar-$userName.jpeg'),
-        );
-        print('Returning avatar file: ${avatarFile.path}');
-        return File(avatarFile.path);
-      } on StateError {
-        // Avatar file not found, handle the exception if needed
-        print('Avatar file not found for user $userName');
-        throw Exception('Avatar file not found');
-      } catch (e) {
-        // Avatar file not found, handle the exception if needed
-        print('Exception: $e');
-        throw Exception(e.toString());
-      }
+    final avatarFiles = files
+        .where((file) =>
+            file.path.contains('avatar-$userName') &&
+            file.path.endsWith('.jpeg'))
+        .toList();
+
+    if (avatarFiles.isNotEmpty) {
+      avatarFiles.sort(
+          (a, b) => b.statSync().modified.compareTo(a.statSync().modified));
+      final avatarFile = avatarFiles.first;
+      print('Avatar file found: ${avatarFile.path}');
+      return File(avatarFile.path);
     } else {
-      // Avatar file not found, handle the exception if needed
-      print('Avatar file not found');
+      print('Avatar file not found for user $userName');
       throw Exception('Avatar file not found');
     }
   }
@@ -72,24 +68,21 @@ class AvatarLocalDataSourceImpl implements AvatarLocalDataSource {
     final user = await _getUserUseCase.execute();
     final userName = user.username;
 
-    if (files.isNotEmpty) {
-      // Find the avatar file and delete it
-      try {
-        final avatarFile = files.firstWhere(
-          (file) => file.path.contains('avatar-$userName.jpeg'),
-        );
-        print('Deleting avatar file: ${avatarFile.path}');
-        await avatarFile.delete();
-        print('Avatar file deleted');
-      } on StateError {
-        // Avatar file not found, handle the exception if needed
-        print('Avatar file not found for user $userName');
-        throw Exception('Avatar file not found');
-      } catch (e) {
-        // Avatar file not found, handle the exception if needed
-        print('Avatar file not found');
-        throw Exception('Avatar file not found');
-      }
+    final avatarFiles = files
+        .where((file) =>
+            file.path.contains('avatar-$userName') &&
+            file.path.endsWith('.jpeg'))
+        .toList();
+
+    if (avatarFiles.isNotEmpty) {
+      avatarFiles.sort(
+          (a, b) => b.statSync().modified.compareTo(a.statSync().modified));
+      final avatarFile = avatarFiles.first;
+      print('Avatar file deleted: ${avatarFile.path}');
+      await File(avatarFile.path).delete();
+    } else {
+      print('Avatar file not found for user $userName');
+      throw Exception('Avatar file not found');
     }
   }
 }
