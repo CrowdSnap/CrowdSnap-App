@@ -20,7 +20,7 @@ class GoogleRegisterButtonSubmit extends ConsumerWidget {
         final signUpResult = await authNotifier.signUpWithGoogle(
           formValues.name,
           formValues.userName,
-          formValues.age,
+          formValues.birthDate!,
           formValues.userImage,
         );
         if (signUpResult == SignUpResult.success) {
@@ -33,12 +33,12 @@ class GoogleRegisterButtonSubmit extends ConsumerWidget {
       style: ElevatedButton.styleFrom(
         backgroundColor: formValues.name.isNotEmpty &&
                 formValues.userName.isNotEmpty &&
-                formValues.age >= 18
+                formValues.isBirthDateValid
             ? Theme.of(context).colorScheme.surface
             : Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
         foregroundColor: formValues.name.isNotEmpty &&
                 formValues.userName.isNotEmpty &&
-                formValues.age >= 18
+                formValues.isBirthDateValid
             ? Theme.of(context).colorScheme.primary
             : Theme.of(context).colorScheme.onSurface.withOpacity(0.38),
       ),

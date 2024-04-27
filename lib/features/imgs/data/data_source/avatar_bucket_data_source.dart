@@ -10,7 +10,7 @@ part 'avatar_bucket_data_source.g.dart';
 abstract class AvatarBucketDataSource {
   Future<String> uploadImage(File image, {String? userName});
   Future<File> getImage(String userName);
-  Future<String> deleteImage(String imageUrl);
+  Future<void> deleteImage(String imageUrl);
   Future<String> updateImage(File image, String imageUrl);
 }
 
@@ -58,10 +58,14 @@ class AvatarBucketDataSourceImpl implements AvatarBucketDataSource {
   }
 
   @override
-  Future<String> deleteImage(String imageUrl) async {
-    final ref = _firebaseStorage.refFromURL(imageUrl);
-    await ref.delete();
-    return imageUrl;
+  Future<void> deleteImage(String imageUrl) async {
+    try {
+      final ref = _firebaseStorage.refFromURL(imageUrl);
+      await ref.delete();
+    } on Exception catch (e) {
+      print('Error deleting image: $e');
+      throw Exception('Error deleting image from Firebase Storage ${e.toString()}');
+    }
   }
 
   @override

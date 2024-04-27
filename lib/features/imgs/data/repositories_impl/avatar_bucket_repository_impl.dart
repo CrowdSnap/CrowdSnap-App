@@ -30,7 +30,7 @@ class AvatarBucketRepositoryImpl implements AvatarBucketRepository {
 
 
   @override
-  Future<String> deleteUserAvatar(String imageUrl) {
+  Future<void> deleteUserAvatar(String imageUrl) {
     return _avatarBucketDataSource.deleteImage(imageUrl);
   }
 

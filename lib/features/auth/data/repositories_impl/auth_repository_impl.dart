@@ -34,9 +34,9 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<UserModel> createUserWithEmailAndPassword(
-      String email, String password, String username, String name, int age) async {
+      String email, String password, String username, String name, DateTime birthDate) async {
     final userModel = await _authDataSource.createUserWithEmailAndPassword(
-        email, password, username, name, age);
+        email, password, username, name, birthDate);
     _logger.info('UserModel: $userModel Desde el repositorio');
     return userModel;
   }

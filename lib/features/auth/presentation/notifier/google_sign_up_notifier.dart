@@ -13,42 +13,43 @@ Future<GoogleUserModel> googleUser(GoogleUserRef ref) async {
 class GoogleSignUpState {
   final String name;
   final String email;
-  final int age;
+  final DateTime? birthDate;
   final String userName;
   final bool isLoading;
   final String googleImage;
   final String userImage;
-  final bool isAgeValid;
+  final bool isBirthDateValid;
 
-  GoogleSignUpState(
-      {this.name = '',
-      this.email = '',
-      this.age = 0,
-      this.userName = '',
-      this.isLoading = false,
-      this.googleImage = '',
-      this.userImage = '',
-      this.isAgeValid = false,});
+  GoogleSignUpState({
+    this.name = '',
+    this.email = '',
+    this.birthDate,
+    this.userName = '',
+    this.isLoading = false,
+    this.googleImage = '',
+    this.userImage = '',
+    this.isBirthDateValid = false,
+  });
 
   GoogleSignUpState copyWith({
     String? name,
     String? email,
-    int? age,
+    DateTime? birthDate,
     String? userName,
     bool? isLoading,
     String? googleImage,
     String? userImage,
-    bool? isAgeValid,
+    bool? isBirthDateValid,
   }) {
     return GoogleSignUpState(
       name: name ?? this.name,
       email: email ?? this.email,
-      age: age ?? this.age,
+      birthDate: birthDate ?? this.birthDate,
       userName: userName ?? this.userName,
       isLoading: isLoading ?? this.isLoading,
       googleImage: googleImage ?? this.googleImage,
       userImage: userImage ?? this.userImage,
-      isAgeValid: isAgeValid ?? this.isAgeValid,
+      isBirthDateValid: isBirthDateValid ?? this.isBirthDateValid,
     );
   }
 }
@@ -61,19 +62,18 @@ class GoogleSignUpNotifier extends _$GoogleSignUpNotifier {
   }
 
   Future<void> initialize() async {
-  try {
-    final googleUser = await ref.watch(googleUserProvider.future);
-    state = GoogleSignUpState(
-      name: googleUser.name ?? '',
-      email: googleUser.email ?? '',
-      userName: googleUser.email?.split('@').first ?? '',
-      googleImage: googleUser.avatarUrl ?? '',
-    );
-  } catch (e) {
-    print('Error initializing Google User: $e');
+    try {
+      final googleUser = await ref.watch(googleUserProvider.future);
+      state = GoogleSignUpState(
+        name: googleUser.name ?? '',
+        email: googleUser.email ?? '',
+        userName: googleUser.email?.split('@').first ?? '',
+        googleImage: googleUser.avatarUrl ?? '',
+      );
+    } catch (e) {
+      print('Error initializing Google User: $e');
+    }
   }
-}
-
 
   void updateNombre(String nombre) {
     state = state.copyWith(name: nombre);
@@ -83,8 +83,8 @@ class GoogleSignUpNotifier extends _$GoogleSignUpNotifier {
     state = state.copyWith(email: email);
   }
 
-  void updateAge(int age) {
-    state = state.copyWith(age: age);
+  void updateBirthDate(DateTime birthDate) {
+    state = state.copyWith(birthDate: birthDate);
   }
 
   void updateUserName(String userName) {
@@ -103,8 +103,16 @@ class GoogleSignUpNotifier extends _$GoogleSignUpNotifier {
     state = state.copyWith(isLoading: isLoading);
   }
 
-  void validateAgeVisual() {
-    state = state.copyWith(isAgeValid: state.age >= 18);
+  void validateBirthDateVisual() {
+    final now = DateTime.now();
+    final age = now.year - state.birthDate!.year;
+    if (state.birthDate!.month > now.month ||
+        (state.birthDate!.month == now.month &&
+            state.birthDate!.day > now.day)) {
+      state = state.copyWith(isBirthDateValid: age > 18);
+    } else {
+      state = state.copyWith(isBirthDateValid: age >= 18);
+    }
   }
 
   void reset() {

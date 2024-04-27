@@ -21,7 +21,7 @@ class RegisterButtonFormSubmit extends ConsumerWidget {
               formValues.email.isNotEmpty &&
               formValues.userName.isNotEmpty &&
               formValues.name.isNotEmpty &&
-              formValues.isAgeValid
+              formValues.isBirthDateValid
           ? () async {
               formState.startLoading();
               final signUpResult = await authNotifier.signUp(
@@ -29,7 +29,7 @@ class RegisterButtonFormSubmit extends ConsumerWidget {
                 formValues.password,
                 formValues.userName,
                 formValues.name,
-                formValues.age
+                formValues.birthDate!,
               );
               if (signUpResult == SignUpResult.success) {
                 authState.avatarUpload();
@@ -70,14 +70,14 @@ class RegisterButtonFormSubmit extends ConsumerWidget {
                 formValues.email.isNotEmpty &&
                 formValues.userName.isNotEmpty &&
                 formValues.name.isNotEmpty &&
-                formValues.isAgeValid
+                formValues.isBirthDateValid
             ? Theme.of(context).colorScheme.surface
             : Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
         foregroundColor: formValues.isPasswordValid &&
                 formValues.email.isNotEmpty &&
                 formValues.userName.isNotEmpty &&
                 formValues.name.isNotEmpty &&
-                formValues.isAgeValid
+                formValues.isBirthDateValid
             ? Theme.of(context).colorScheme.primary
             : Theme.of(context).colorScheme.onSurface.withOpacity(0.38),
       ),

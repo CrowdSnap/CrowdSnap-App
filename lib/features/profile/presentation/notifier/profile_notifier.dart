@@ -9,7 +9,7 @@ class ProfileState {
   final String name;
   final String email;
   final String userName;
-  final int age;
+  final DateTime? birthDate;
   final File? image;
 
   ProfileState(
@@ -17,7 +17,7 @@ class ProfileState {
       this.name = '',
       this.email = '',
       this.userName = '',
-      this.age = 0,
+      this.birthDate,
       this.image});
 
   ProfileState copyWith({
@@ -25,7 +25,7 @@ class ProfileState {
     String? name,
     String? email,
     String? userName,
-    int? age,
+    DateTime? birthDate,
     File? image,
   }) {
     return ProfileState(
@@ -33,7 +33,7 @@ class ProfileState {
       name: name ?? this.name,
       email: email ?? this.email,
       userName: userName ?? this.userName,
-      age: age ?? this.age,
+      birthDate: birthDate ?? this.birthDate,
       image: image ?? this.image,
     );
   }
@@ -62,8 +62,8 @@ class ProfileNotifier extends _$ProfileNotifier {
     state = state.copyWith(userName: userName);
   }
 
-  void updateAge(int age) {
-    state = state.copyWith(age: age);
+  void updateAge(DateTime birthDate) {
+    state = state.copyWith(birthDate: birthDate);
   }
 
   void updateImage(File image) {

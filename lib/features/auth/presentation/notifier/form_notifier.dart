@@ -8,36 +8,35 @@ class FormState {
   final String email;
   final String password;
   final String userName;
-  final int age;
+  final DateTime? birthDate;
   final bool showPassword;
   final bool isPasswordValid;
-  final bool isAgeValid;
+  final bool isBirthDateValid;
   final bool isLoading;
   final bool isLoadingGoogle;
 
-  FormState(
-      {this.name = '',
-      this.email = '',
-      this.password = '',
-      this.userName = '',
-      this.age = 0,
-      this.showPassword = false,
-      this.isPasswordValid = false,
-      this.isLoading = false,
-      this.isLoadingGoogle = false,
-      this.isAgeValid = false,
-      });
-
+  FormState({
+    this.name = '',
+    this.email = '',
+    this.password = '',
+    this.userName = '',
+    this.birthDate,
+    this.showPassword = false,
+    this.isPasswordValid = false,
+    this.isLoading = false,
+    this.isLoadingGoogle = false,
+    this.isBirthDateValid = false,
+  });
 
   FormState copyWith({
     String? name,
     String? email,
     String? password,
     String? userName,
-    int? age,
+    DateTime? birthDate,
     bool? showPassword,
     bool? isPasswordValid,
-    bool? isAgeValid,
+    bool? isBirthDateValid,
     bool? isLoading,
     bool? isLoadingGoogle,
   }) {
@@ -46,10 +45,10 @@ class FormState {
       email: email ?? this.email,
       password: password ?? this.password,
       userName: userName ?? this.userName,
-      age: age ?? this.age,
+      birthDate: birthDate ?? this.birthDate,
       showPassword: showPassword ?? this.showPassword,
       isPasswordValid: isPasswordValid ?? this.isPasswordValid,
-      isAgeValid: isAgeValid ?? this.isAgeValid,
+      isBirthDateValid: isBirthDateValid ?? this.isBirthDateValid,
       isLoading: isLoading ?? this.isLoading,
       isLoadingGoogle: isLoadingGoogle ?? this.isLoadingGoogle,
     );
@@ -79,8 +78,8 @@ class FormNotifier extends _$FormNotifier {
     state = state.copyWith(userName: userName);
   }
 
-  void updateAge(int age) {
-    state = state.copyWith(age: age);
+  void updateBirthDate(DateTime birthDate) {
+    state = state.copyWith(birthDate: birthDate);
   }
 
   void reset() {
@@ -121,7 +120,15 @@ class FormNotifier extends _$FormNotifier {
     state = state.copyWith(isPasswordValid: isValid);
   }
 
-  void validateAgeVisual() {
-    state = state.copyWith(isAgeValid: state.age >= 18);
+  void validateBirthDateVisual() {
+    final now = DateTime.now();
+    final age = now.year - state.birthDate!.year;
+    if (state.birthDate!.month > now.month ||
+        (state.birthDate!.month == now.month &&
+            state.birthDate!.day > now.day)) {
+      state = state.copyWith(isBirthDateValid: age > 18);
+    } else {
+      state = state.copyWith(isBirthDateValid: age >= 18);
+    }
   }
 }

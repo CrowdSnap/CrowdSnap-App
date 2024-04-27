@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crowd_snap/features/auth/data/data_sources/firestore_data_source.dart';
 import 'package:crowd_snap/core/data/models/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,7 +8,7 @@ part 'auth_data_source.g.dart';
 
 abstract class AuthDataSource {
   Future<UserModel> signInWithEmailAndPassword(String email, String password);
-  Future<UserModel> createUserWithEmailAndPassword(String email, String password, String username, String name, int age);
+  Future<UserModel> createUserWithEmailAndPassword(String email, String password, String username, String name, DateTime birthDate);
   Future<void> signOut();
   bool isAuthenticated();
   Future<void> recoverPassword(String email);
@@ -58,7 +57,7 @@ class AuthDataSourceImpl implements AuthDataSource {
   }
 
   @override
-  Future<UserModel> createUserWithEmailAndPassword(String email, String password, String username, String name, int age) async {
+  Future<UserModel> createUserWithEmailAndPassword(String email, String password, String username, String name, DateTime birthDate) async {
     final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
       email: email,
       password: password,
@@ -71,21 +70,14 @@ class AuthDataSourceImpl implements AuthDataSource {
         name: name,
         username: username,
         email: user.email!,
-        age: age,
+        birthDate: birthDate,
         firstTime: true,
         joinedAt: DateTime.now(),
       );
-      await _saveUserToFirestore(userModel);
       return userModel;
     } else {
       throw Exception('User creation failed');
     }
-  }
-
-  Future<void> _saveUserToFirestore(UserModel user) async {
-    final userDoc =
-        FirebaseFirestore.instance.collection('users').doc(user.userId);
-    await userDoc.set(user.toJson());
   }
 
   @override

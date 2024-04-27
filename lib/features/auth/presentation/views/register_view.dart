@@ -1,6 +1,6 @@
 import 'package:crowd_snap/app/router/app_router.dart';
 import 'package:crowd_snap/features/auth/presentation/notifier/form_notifier.dart';
-import 'package:crowd_snap/features/auth/presentation/widgets/age/age_input_register.dart';
+import 'package:crowd_snap/features/auth/presentation/widgets/age/birth_date_input_register.dart';
 import 'package:crowd_snap/features/auth/presentation/widgets/google_sign_in_button.dart';
 import 'package:crowd_snap/features/auth/presentation/widgets/password/password_input.dart';
 import 'package:crowd_snap/core/constants.dart';
@@ -63,7 +63,7 @@ class RegisterView extends ConsumerWidget {
                                   formState.updateEmail(value),
                               keyboardType: TextInputType.emailAddress,
                             ),
-                            const AgeInputRegister(),
+                            const BirthDateInputRegister(),
                             const PasswordInput(),
                             const SizedBox(height: 30),
                             const RegisterButtonFormSubmit(),

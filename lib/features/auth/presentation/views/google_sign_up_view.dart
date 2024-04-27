@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:crowd_snap/features/auth/presentation/notifier/google_sign_up_notifier.dart';
-import 'package:crowd_snap/features/auth/presentation/widgets/age/age_input_google_sign_up.dart';
+import 'package:crowd_snap/features/auth/presentation/widgets/age/birth_date_input_google_sign_up.dart';
 import 'package:crowd_snap/features/auth/presentation/widgets/google_register_button_submit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -165,7 +165,7 @@ class _GoogleSignUpScreenState extends ConsumerState<GoogleSignUpView>
                         decoration: const InputDecoration(labelText: 'Username'),
                         onChanged: (value) => formValues.updateUserName(value),
                       ),
-                      const AgeInputGoogleSignUp(),
+                      const BirthDateInputGoogleSignUp(),
                       const SizedBox(height: 16),
                       const GoogleRegisterButtonSubmit(),
                     ],

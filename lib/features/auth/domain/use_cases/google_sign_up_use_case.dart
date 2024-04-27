@@ -24,7 +24,7 @@ class GoogleSignUpUseCase {
       this._avatarUploadUseCase, this._googleUserRepository);
 
   Future<void> execute(
-      String name, String userName, int age, String userImage) async {
+      String name, String userName, DateTime birthDate, String userImage) async {
     try {
       final googleUser = await _googleUserRepository.getGoogleUser();
       final String userAvatar;
@@ -46,7 +46,7 @@ class GoogleSignUpUseCase {
         username: userName,
         name: name,
         email: googleUser.email!,
-        age: age,
+        birthDate: birthDate,
         joinedAt: DateTime.now(),
         firstTime: true,
         avatarUrl: userAvatar,

@@ -6,7 +6,7 @@ part of 'sign_out_use_case.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$signOutUseCaseHash() => r'5fac412520236c96acc77782f975e851f6e0b4a5';
+String _$signOutUseCaseHash() => r'428443da0b65954a53cedab7f3c879be8437e4a0';
 
 /// See also [signOutUseCase].
 @ProviderFor(signOutUseCase)

@@ -21,7 +21,7 @@ final googleUserProvider = AutoDisposeFutureProvider<GoogleUserModel>.internal(
 
 typedef GoogleUserRef = AutoDisposeFutureProviderRef<GoogleUserModel>;
 String _$googleSignUpNotifierHash() =>
-    r'f851c66ecaa9aae195184bac5efd7e8f94a180a0';
+    r'0b27268933acafb728e264216d4004fc7bad73e3';
 
 /// See also [GoogleSignUpNotifier].
 @ProviderFor(GoogleSignUpNotifier)
