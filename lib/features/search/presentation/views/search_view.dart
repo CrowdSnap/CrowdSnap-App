@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class SettingsView extends ConsumerWidget {
-  const SettingsView({super.key});
+class SearchView extends ConsumerWidget {
+  const SearchView({super.key});
 
   void _goHome(BuildContext context, WidgetRef ref) {
     context.go('/');
@@ -23,10 +23,10 @@ class SettingsView extends ConsumerWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Settings')
+          title: const Text('Search')
         ),
         body: const Center(
-          child: Text('Settings View'),
+          child: Text('Search View'),
         ),
       ),
     );
