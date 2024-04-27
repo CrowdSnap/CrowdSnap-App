@@ -26,7 +26,7 @@ class ProfileView extends ConsumerWidget {
       profileNotifier.updateName(user.name);
       profileNotifier.updateEmail(user.email);
       profileNotifier.updateUserName(user.username);
-      profileNotifier.updateAge(user.age);
+      profileNotifier.updateAge(user.birthDate);
     });
   }
 
@@ -44,15 +44,14 @@ class ProfileView extends ConsumerWidget {
     final userModel = await ref.read(getUserUseCaseProvider).execute();
     print('Deleting user: $userModel');
     try {
-      await ref.read(firestoreRepositoryProvider).deleteUser(userId);
-      await FirebaseAuth.instance.currentUser?.delete();
       await ref
           .read(avatarBucketRepositoryProvider)
           .deleteUserAvatar(userModel.avatarUrl!);
-      if (context.mounted) {
-        ref.read(signOutUseCaseProvider).execute();
-      }
+      await FirebaseAuth.instance.currentUser?.delete();
+      await ref.read(firestoreRepositoryProvider).deleteUser(userId);
+      ref.read(signOutUseCaseProvider).execute();
     } catch (e) {
+      print('Error deleting user: $e');
       if (context.mounted) {
         showDialog(
           context: context,
@@ -101,7 +100,7 @@ class ProfileView extends ConsumerWidget {
           Text('Name: ${profileNotifier.name}'),
           Text('Email: ${profileNotifier.email}'),
           Text('Username: ${profileNotifier.userName}'),
-          Text('Age: ${profileNotifier.age}'),
+          Text('Age: ${profileNotifier.birthDate}'),
           ElevatedButton(
               onPressed: () {
                 _getUser(context, ref);

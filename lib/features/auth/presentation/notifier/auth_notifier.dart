@@ -39,12 +39,12 @@ class AuthNotifier extends _$AuthNotifier {
   }
 
   Future<SignUpResult> signUp(String email, String password, String username,
-      String name, int age) async {
+      String name, DateTime birthDate) async {
     state = const AsyncValue.loading();
     try {
       await ref
           .read(signUpUseCaseProvider)
-          .execute(email, password, username, name, age);
+          .execute(email, password, username, name, birthDate);
       state = const AsyncValue.data(null);
       return SignUpResult.success;
     } catch (e, stackTrace) {
@@ -82,12 +82,12 @@ class AuthNotifier extends _$AuthNotifier {
   }
 
   Future<SignUpResult> signUpWithGoogle(
-      String name, String userName, int age, String userImage) async {
+      String name, String userName, DateTime birthDate, String userImage) async {
     state = const AsyncValue.loading();
     try {
       await ref
           .read(googleSignUpUseCaseProvider)
-          .execute(name, userName, age, userImage);
+          .execute(name, userName, birthDate, userImage);
       state = const AsyncValue.data(null);
       print('SignUpWithGoogle: Success');
       return SignUpResult.success;
