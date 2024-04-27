@@ -18,6 +18,7 @@ class GoogleSignUpState {
   final bool isLoading;
   final String googleImage;
   final String userImage;
+  final bool isAgeValid;
 
   GoogleSignUpState(
       {this.name = '',
@@ -26,7 +27,8 @@ class GoogleSignUpState {
       this.userName = '',
       this.isLoading = false,
       this.googleImage = '',
-      this.userImage = '',});
+      this.userImage = '',
+      this.isAgeValid = false,});
 
   GoogleSignUpState copyWith({
     String? name,
@@ -36,6 +38,7 @@ class GoogleSignUpState {
     bool? isLoading,
     String? googleImage,
     String? userImage,
+    bool? isAgeValid,
   }) {
     return GoogleSignUpState(
       name: name ?? this.name,
@@ -45,6 +48,7 @@ class GoogleSignUpState {
       isLoading: isLoading ?? this.isLoading,
       googleImage: googleImage ?? this.googleImage,
       userImage: userImage ?? this.userImage,
+      isAgeValid: isAgeValid ?? this.isAgeValid,
     );
   }
 }
@@ -97,6 +101,10 @@ class GoogleSignUpNotifier extends _$GoogleSignUpNotifier {
 
   void updateIsLoading(bool isLoading) {
     state = state.copyWith(isLoading: isLoading);
+  }
+
+  void validateAgeVisual() {
+    state = state.copyWith(isAgeValid: state.age >= 18);
   }
 
   void reset() {

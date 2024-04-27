@@ -33,12 +33,12 @@ class GoogleRegisterButtonSubmit extends ConsumerWidget {
       style: ElevatedButton.styleFrom(
         backgroundColor: formValues.name.isNotEmpty &&
                 formValues.userName.isNotEmpty &&
-                formValues.age >= 16
+                formValues.age >= 18
             ? Theme.of(context).colorScheme.surface
             : Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
         foregroundColor: formValues.name.isNotEmpty &&
                 formValues.userName.isNotEmpty &&
-                formValues.age >= 16
+                formValues.age >= 18
             ? Theme.of(context).colorScheme.primary
             : Theme.of(context).colorScheme.onSurface.withOpacity(0.38),
       ),

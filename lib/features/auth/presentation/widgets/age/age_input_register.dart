@@ -3,8 +3,8 @@ import 'package:crowd_snap/features/auth/presentation/notifier/form_notifier.dar
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AgeInput extends ConsumerWidget {
-  const AgeInput({super.key});
+class AgeInputRegister extends ConsumerWidget {
+  const AgeInputRegister({super.key});
 
   InputBorder _getBorder(
       BuildContext context, form_notifier.FormState formValues,

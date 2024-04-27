@@ -1,6 +1,7 @@
 import 'dart:io';
-import 'package:crowd_snap/app/router/app_router.dart';
 import 'package:crowd_snap/features/auth/presentation/notifier/google_sign_up_notifier.dart';
+import 'package:crowd_snap/features/auth/presentation/widgets/age/age_input_google_sign_up.dart';
+import 'package:crowd_snap/features/auth/presentation/widgets/age/age_input_register.dart';
 import 'package:crowd_snap/features/auth/presentation/widgets/google_register_button_submit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -46,7 +47,7 @@ class _GoogleSignUpScreenState extends ConsumerState<GoogleSignUpView> {
   @override
   Widget build(BuildContext context) {
     final formState = ref.watch(googleSignUpNotifierProvider);
-    final router = ref.watch(appRouterProvider);
+    final formValues = ref.watch(googleSignUpNotifierProvider.notifier);
 
     return Scaffold(
         appBar: AppBar(
@@ -95,10 +96,12 @@ class _GoogleSignUpScreenState extends ConsumerState<GoogleSignUpView> {
                           child: CircleAvatar(
                             radius: 50,
                             backgroundImage: formState.userImage.isNotEmpty
-                              ? FileImage(File(formState.userImage)) as ImageProvider<Object>?
-                              : formState.googleImage.isNotEmpty
-                                ? NetworkImage(formState.googleImage) as ImageProvider<Object>?
-                                : null,
+                                ? FileImage(File(formState.userImage))
+                                    as ImageProvider<Object>?
+                                : formState.googleImage.isNotEmpty
+                                    ? NetworkImage(formState.googleImage)
+                                        as ImageProvider<Object>?
+                                    : null,
                             child: formState.userImage.isEmpty &&
                                     formState.googleImage.isEmpty
                                 ? const Icon(Icons.person, size: 50)
@@ -109,33 +112,17 @@ class _GoogleSignUpScreenState extends ConsumerState<GoogleSignUpView> {
                         TextFormField(
                           initialValue: formState.name,
                           decoration: const InputDecoration(labelText: 'Name'),
-                          onChanged: (value) => ref
-                              .read(googleSignUpNotifierProvider.notifier)
-                              .updateNombre(value),
+                          onChanged: (value) => formValues.updateNombre(value),
                         ),
                         TextFormField(
                           initialValue: formState.userName,
                           decoration:
                               const InputDecoration(labelText: 'Username'),
-                          onChanged: (value) => ref
-                              .read(googleSignUpNotifierProvider.notifier)
-                              .updateUserName(value),
+                          onChanged: (value) => formValues.updateUserName(value),
                         ),
-                        TextFormField(
-                          decoration: const InputDecoration(labelText: 'Age'),
-                          onChanged: (value) => ref
-                              .read(googleSignUpNotifierProvider.notifier)
-                              .updateAge(int.parse(value)),
-                          keyboardType: TextInputType.number,
-                        ),
+                        const AgeInputGoogleSignUp(),
                         const SizedBox(height: 16),
                         const GoogleRegisterButtonSubmit(),
-                        ElevatedButton(
-                          onPressed: () {
-                            router.go('/');
-                          },
-                          child: const Text('Home'),
-                        )
                       ],
                     ),
                   ),
