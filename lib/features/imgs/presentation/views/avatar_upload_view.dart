@@ -31,7 +31,8 @@ class AvatarUploadView extends ConsumerWidget {
     final avatarUpload = ref.watch(avatarUploadUseCaseProvider);
     final firestoreRepository = ref.watch(firestoreRepositoryProvider);
     final userRepository = ref.watch(userRepositoryProvider);
-    final image = await avatarUpload.execute(imageState!);
+    final userModel = await userRepository.getUser();
+    final image = await avatarUpload.execute(imageState!, userName: userModel.username);
     firestoreRepository.updateUserAvatar(image);
     userRepository.updateUserAvatar(image);
   }

@@ -56,12 +56,12 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
     final userModel = await ref.read(getUserUseCaseProvider).execute();
     print('Deleting user: $userModel');
     try {
-      await ref
-          .read(avatarBucketRepositoryProvider)
-          .deleteUserAvatar(userModel.avatarUrl!);
       await FirebaseAuth.instance.currentUser?.delete();
       await ref.read(firestoreRepositoryProvider).deleteUser(userId);
       ref.read(signOutUseCaseProvider).execute();
+      await ref
+          .read(avatarBucketRepositoryProvider)
+          .deleteUserAvatar(userModel.avatarUrl!);
     } catch (e) {
       print('Error deleting user: $e');
       if (mounted) {
@@ -69,7 +69,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
           context: context,
           builder: (context) => AlertDialog(
             title: const Text('Error'),
-            content: const Text('Failed to delete user. Please try again.'),
+            content: Text('Failed to delete user. $e'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
