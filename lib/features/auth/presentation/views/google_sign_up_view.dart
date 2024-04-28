@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:crowd_snap/features/auth/presentation/notifier/google_sign_up_notifier.dart';
 import 'package:crowd_snap/features/auth/presentation/widgets/age/birth_date_input_google_sign_up.dart';
 import 'package:crowd_snap/features/auth/presentation/widgets/google_register_button_submit.dart';
-import 'package:crowd_snap/features/imgs/presentation/notifier/image_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -83,8 +82,6 @@ class _GoogleSignUpScreenState extends ConsumerState<GoogleSignUpView>
   Widget build(BuildContext context) {
     final formState = ref.watch(googleSignUpNotifierProvider);
     final formValues = ref.watch(googleSignUpNotifierProvider.notifier);
-    final imageNotifier = ref.watch(imageNotifierProvider.notifier);
-
 
     return Scaffold(
       appBar: AppBar(
@@ -138,7 +135,7 @@ class _GoogleSignUpScreenState extends ConsumerState<GoogleSignUpView>
                           children: [
                             ElevatedButton.icon(
                               onPressed: () {
-                                imageNotifier.getCamera();
+                                _getCamera(ref);
                               },
                               icon: const Icon(Icons.camera_alt),
                               label: const Text('Camera'),
@@ -146,7 +143,7 @@ class _GoogleSignUpScreenState extends ConsumerState<GoogleSignUpView>
                             const SizedBox(width: 20),
                             ElevatedButton.icon(
                               onPressed: () {
-                                imageNotifier.getGallery();
+                                _getGallery(ref);
                               },
                               icon: const Icon(Icons.photo_library),
                               label: const Text('Gallery'),
