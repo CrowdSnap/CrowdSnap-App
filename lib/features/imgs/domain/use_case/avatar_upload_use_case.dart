@@ -13,14 +13,23 @@ class AvatarUploadUseCase {
   final AvatarLocalRepository _localRepository;
   final ImageCompressUseCase _imageCompressUseCase;
 
-  AvatarUploadUseCase(this._bucketRepository, this._localRepository, this._imageCompressUseCase);
+  AvatarUploadUseCase(this._bucketRepository, this._localRepository,
+      this._imageCompressUseCase);
 
-  Future<String> execute(File image, {String? userName}) async {
+  Future<String> execute(File image,
+      {String? userName, bool? googleAvatar}) async {
     await _localRepository.saveAvatar(image, userName: userName);
+    final File imageCompressed;
     print('Avatar saved locally without compressing');
-    final imageCompressed = await _imageCompressUseCase.execute(image, userName!);
+    if (googleAvatar != null) {
+      imageCompressed = image;
+    } else {
+      imageCompressed =
+          await _imageCompressUseCase.execute(image, userName!);
+    }
     print('Avatar compressed');
-    return await _bucketRepository.uploadUserAvatar(imageCompressed, userName: userName);
+    return await _bucketRepository.uploadUserAvatar(imageCompressed,
+        userName: userName);
   }
 }
 
