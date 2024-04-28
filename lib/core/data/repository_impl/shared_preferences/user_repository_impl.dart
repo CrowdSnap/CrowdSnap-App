@@ -37,6 +37,15 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
+  Future<void> updateUserAvatar(String avatarUrl) async {
+    try {
+      await _userModelDataSource.updateUserAvatar(avatarUrl);
+    } catch (e) {
+      throw Exception('Failed to update user avatar in SharedPreferences');
+    }
+  }
+
+  @override
   Future<void> deleteUser() async {
     try {
       await _userModelDataSource.deleteUserModel();

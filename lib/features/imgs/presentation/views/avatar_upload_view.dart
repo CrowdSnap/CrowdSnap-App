@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:crowd_snap/app/router/redirect/auth_state_provider.dart';
+import 'package:crowd_snap/core/data/repository_impl/shared_preferences/user_repository_impl.dart';
 import 'package:crowd_snap/features/auth/data/repositories_impl/firestore_repository_impl.dart';
 import 'package:crowd_snap/features/imgs/domain/use_case/avatar_upload_use_case.dart';
 import 'package:crowd_snap/features/imgs/presentation/notifier/image_picker_state.dart';
@@ -29,8 +30,10 @@ class AvatarUploadView extends ConsumerWidget {
   Future<void> _saveImage(File? imageState, WidgetRef ref) async {
     final avatarUpload = ref.watch(avatarUploadUseCaseProvider);
     final firestoreRepository = ref.watch(firestoreRepositoryProvider);
+    final userRepository = ref.watch(userRepositoryProvider);
     final image = await avatarUpload.execute(imageState!);
     firestoreRepository.updateUserAvatar(image);
+    userRepository.updateUserAvatar(image);
   }
 
   @override
