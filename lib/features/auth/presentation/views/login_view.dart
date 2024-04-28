@@ -1,18 +1,18 @@
 import 'package:crowd_snap/app/router/app_router.dart';
 import 'package:crowd_snap/features/auth/presentation/notifier/form_notifier.dart';
+import 'package:crowd_snap/features/auth/presentation/widgets/login_button_form_submit.dart';
 import 'package:crowd_snap/features/auth/presentation/widgets/google_sign_in_button.dart';
-import 'package:crowd_snap/features/auth/presentation/widgets/password_input.dart';
-import 'package:crowd_snap/global/constants.dart';
+import 'package:crowd_snap/features/auth/presentation/widgets/password/password_input.dart';
+import 'package:crowd_snap/core/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:crowd_snap/features/auth/presentation/notifier/auth_notifier.dart';
+import 'package:go_router/go_router.dart';
 
 class LoginView extends ConsumerWidget {
   const LoginView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authNotifier = ref.watch(authNotifierProvider.notifier);
     final formState = ref.watch(formNotifierProvider.notifier);
     final formValues = ref.watch(formNotifierProvider);
     final router = ref.watch(appRouterProvider);
@@ -49,47 +49,18 @@ class LoginView extends ConsumerWidget {
                             const PasswordInput(
                                 showPasswordRequirements: false),
                             const SizedBox(height: 30),
-                            ElevatedButton(
-                              onPressed: formValues.isPasswordValid &&
-                                      formValues.email.isNotEmpty
-                                  ? () {
-                                      authNotifier.signIn(formValues.email,
-                                          formValues.password);
-                                    }
-                                  : null,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: formValues.isPasswordValid &&
-                                        formValues.email.isNotEmpty
-                                    ? Theme.of(context).colorScheme.surface
-                                    : Theme.of(context)
-                                        .colorScheme
-                                        .onSurface
-                                        .withOpacity(0.12),
-                                foregroundColor: formValues.isPasswordValid &&
-                                        formValues.email.isNotEmpty
-                                    ? Theme.of(context).colorScheme.primary
-                                    : Theme.of(context)
-                                        .colorScheme
-                                        .onSurface
-                                        .withOpacity(0.38),
-                              ),
-                              child: const Text('Login'),
-                            ),
+                            const LoginButtonFormSubmit(),
                             const SizedBox(height: 30),
                             const Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Expanded(child: Divider()),
-                                Text('   O   ',
-                                    style: TextStyle(fontSize: 14)),
+                                Text('   O   ', style: TextStyle(fontSize: 14)),
                                 Expanded(child: Divider()),
                               ],
                             ),
                             const SizedBox(height: 30),
-                            GoogleSignInButton(onPressed: () {
-                              // Call signInWithGoogle method
-                              authNotifier.signInWithGoogle();
-                            }),
+                            const GoogleSignInButton(),
                           ],
                         ),
                       ),
@@ -98,6 +69,9 @@ class LoginView extends ConsumerWidget {
                 ),
               ),
             ),
+            TextButton(
+                onPressed: () => context.push('/forgot-password'),
+                child: const Text('¿Olvidaste tu contraseña?')),
             const Divider(),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,

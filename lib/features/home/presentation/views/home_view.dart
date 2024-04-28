@@ -12,6 +12,7 @@ class HomeView extends ConsumerWidget {
     final isDarkMode = ref.watch(darkModeProvider);
     final authNotifier = ref.read(authNotifierProvider.notifier);
 
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home'),

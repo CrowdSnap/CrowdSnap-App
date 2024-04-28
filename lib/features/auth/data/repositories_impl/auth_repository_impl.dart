@@ -1,8 +1,7 @@
-// lib/features/auth/data/repositories/auth_repository_impl.dart
-
+import 'package:crowd_snap/core/data/models/google_user_model.dart';
 import 'package:crowd_snap/features/auth/data/data_sources/auth_data_source.dart';
 import 'package:crowd_snap/features/auth/data/data_sources/google_auth_data_source.dart';
-import 'package:crowd_snap/features/auth/data/models/user_model.dart';
+import 'package:crowd_snap/core/data/models/user_model.dart';
 import 'package:crowd_snap/features/auth/domain/repositories/auth_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:logging/logging.dart';
@@ -30,38 +29,22 @@ class AuthRepositoryImpl implements AuthRepository {
     final userModel =
         await _authDataSource.signInWithEmailAndPassword(email, password);
     _logger.info('UserModel: $userModel Desde el repositorio');
-    return UserModel(
-        userId: userModel.userId,
-        username: userModel.username,
-        name: userModel.name,
-        email: userModel.email,
-        joinedAt: userModel.joinedAt);
+    return userModel;
   }
 
   @override
   Future<UserModel> createUserWithEmailAndPassword(
-      String email, String password, String username, String name) async {
+      String email, String password, String username, String name, DateTime birthDate) async {
     final userModel = await _authDataSource.createUserWithEmailAndPassword(
-        email, password, username, name);
+        email, password, username, name, birthDate);
     _logger.info('UserModel: $userModel Desde el repositorio');
-    return UserModel(
-        userId: userModel.userId,
-        username: userModel.username,
-        name: userModel.name,
-        email: userModel.email,
-        joinedAt: userModel.joinedAt);
+    return userModel;
   }
 
   @override
-  Future<UserModel> signInWithGoogle() async {
-    final userModel = await _googleAuthDataSource.signInWithGoogle();
-    _logger.info('UserModel: $userModel Desde el repositorio');
-    return UserModel(
-        userId: userModel.userId,
-        username: userModel.username,
-        name: userModel.name,
-        email: userModel.email,
-        joinedAt: userModel.joinedAt);
+  Future<GoogleUserModel> signInWithGoogle() async {
+    return await _googleAuthDataSource.signInWithGoogle();
+
   }
 
   @override

@@ -1,18 +1,18 @@
 import 'package:crowd_snap/app/router/app_router.dart';
 import 'package:crowd_snap/features/auth/presentation/notifier/form_notifier.dart';
+import 'package:crowd_snap/features/auth/presentation/widgets/age/birth_date_input_register.dart';
 import 'package:crowd_snap/features/auth/presentation/widgets/google_sign_in_button.dart';
-import 'package:crowd_snap/features/auth/presentation/widgets/password_input.dart';
-import 'package:crowd_snap/global/constants.dart';
+import 'package:crowd_snap/features/auth/presentation/widgets/password/password_input.dart';
+import 'package:crowd_snap/core/constants.dart';
+import 'package:crowd_snap/features/auth/presentation/widgets/register_button_form_submit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:crowd_snap/features/auth/presentation/notifier/auth_notifier.dart';
 
 class RegisterView extends ConsumerWidget {
   const RegisterView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authNotifier = ref.watch(authNotifierProvider.notifier);
     final formState = ref.watch(formNotifierProvider.notifier);
     final formValues = ref.watch(formNotifierProvider);
     final router = ref.watch(appRouterProvider);
@@ -63,49 +63,21 @@ class RegisterView extends ConsumerWidget {
                                   formState.updateEmail(value),
                               keyboardType: TextInputType.emailAddress,
                             ),
+                            const BirthDateInputRegister(),
                             const PasswordInput(),
                             const SizedBox(height: 30),
-                            ElevatedButton(
-                              onPressed: formValues.isPasswordValid &&
-                                      formValues.email.isNotEmpty
-                                  ? () {
-                                      authNotifier.signUp(formValues.email,
-                                          formValues.password, formValues.userName, formValues.name);
-                                    }
-                                  : null,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: formValues.isPasswordValid &&
-                                        formValues.email.isNotEmpty
-                                    ? Theme.of(context).colorScheme.surface
-                                    : Theme.of(context)
-                                        .colorScheme
-                                        .onSurface
-                                        .withOpacity(0.12),
-                                foregroundColor: formValues.isPasswordValid &&
-                                        formValues.email.isNotEmpty
-                                    ? Theme.of(context).colorScheme.primary
-                                    : Theme.of(context)
-                                        .colorScheme
-                                        .onSurface
-                                        .withOpacity(0.38),
-                              ),
-                              child: const Text('Registro'),
-                            ),
+                            const RegisterButtonFormSubmit(),
                             const SizedBox(height: 30),
                             const Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Expanded(child: Divider()),
-                                Text('   O   ',
-                                    style: TextStyle(fontSize: 14)),
+                                Text('   O   ', style: TextStyle(fontSize: 14)),
                                 Expanded(child: Divider()),
                               ],
                             ),
                             const SizedBox(height: 30),
-                            GoogleSignInButton(onPressed: () {
-                              // Call signInWithGoogle method
-                              authNotifier.signInWithGoogle();
-                            }),
+                            const GoogleSignInButton(),
                           ],
                         ),
                       ),

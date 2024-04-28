@@ -1,4 +1,4 @@
-import 'package:crowd_snap/features/auth/data/models/user_model.dart';
+import 'package:crowd_snap/core/data/models/google_user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -6,7 +6,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'google_auth_data_source.g.dart';
 
 abstract class GoogleAuthDataSource {
-  Future<UserModel> signInWithGoogle();
+  Future<GoogleUserModel> signInWithGoogle();
 }
 
 @Riverpod(keepAlive: true)
@@ -23,7 +23,7 @@ class GoogleAuthDataSourceImpl implements GoogleAuthDataSource {
   GoogleAuthDataSourceImpl(this._firebaseAuth, this._googleSignIn);
 
   @override
-  Future<UserModel> signInWithGoogle() async {
+  Future<GoogleUserModel> signInWithGoogle() async {
     final googleUser = await _googleSignIn.signIn();
     final googleAuth = await googleUser?.authentication;
 
@@ -34,18 +34,17 @@ class GoogleAuthDataSourceImpl implements GoogleAuthDataSource {
 
     final userCredential = await _firebaseAuth.signInWithCredential(credential);
     final user = userCredential.user;
-
+    
     if (user != null) {
-      return UserModel(
+      return GoogleUserModel(
         userId: user.uid,
-        username: user.displayName ?? '',
-        name: user.displayName ?? '',
-        email: user.email ?? '',
+        email: user.email,
+        name: user.displayName,
+        avatarUrl: user.photoURL,
         joinedAt: DateTime.now(),
       );
     } else {
-      throw Exception('Google sign-in failed');
+      throw Exception('User not found');
     }
   }
-
 }
