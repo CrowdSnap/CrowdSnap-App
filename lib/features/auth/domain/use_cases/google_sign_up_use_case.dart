@@ -35,7 +35,7 @@ class GoogleSignUpUseCase {
         final directory = await getApplicationDocumentsDirectory();
         final avatarFile = File('${directory.path}/$avatar');
         await dio.download(avatar!, avatarFile.path);
-        userAvatar = await _avatarUploadUseCase.execute(avatarFile, userName: userName);
+        userAvatar = await _avatarUploadUseCase.execute(avatarFile, userName: userName, googleAvatar: true);
       } else {
         print('Uploading user selected avatar $userImage');
         userAvatar = await _avatarUploadUseCase.execute(File(userImage), userName: userName);
