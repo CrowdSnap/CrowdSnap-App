@@ -16,10 +16,11 @@ class ImageCompressUseCase {
 
     final result = await FlutterImageCompress.compressAndGetFile(
       image.path,
-      '${directory.path}/compressed-avatar-$userName${DateTime.now().millisecondsSinceEpoch}.webp',
-      format: CompressFormat.webp,
+      '${directory.path}/compressed-avatar-$userName${DateTime.now().millisecondsSinceEpoch}.jpeg',
       keepExif: false,
-      quality: 20,
+      quality: 30,
+      minHeight: 800,
+      minWidth: 600,
     );
 
     // Obtener el tamaño de la imagen comprimida
