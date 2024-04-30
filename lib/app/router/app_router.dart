@@ -1,6 +1,7 @@
 import 'package:crowd_snap/features/auth/presentation/views/forgot_password_view.dart';
 import 'package:crowd_snap/features/auth/presentation/views/google_sign_up_view.dart';
 import 'package:crowd_snap/features/imgs/presentation/views/avatar_upload_view.dart';
+import 'package:crowd_snap/features/imgs/presentation/views/image_upload_view.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:crowd_snap/features/auth/presentation/views/login_view.dart';
@@ -68,9 +69,7 @@ class AppRouter extends _$AppRouter {
             ),
             GoRoute(
               path: '/picture-upload',
-              builder: (context, state) => const Center(
-                child: Text('Picture Upload View'),
-              )
+              builder: (context, state) => const ImageUploadView()
             )
           ],
         ),

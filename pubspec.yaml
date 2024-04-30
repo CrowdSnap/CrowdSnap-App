@@ -29,6 +29,7 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   cloud_firestore: ^4.17.0
+  crypto: ^3.0.3
   cupertino_icons: ^1.0.2
   dio: ^5.4.3+1
   firebase_auth: ^4.19.2
@@ -99,3 +100,4 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - .env

@@ -1,12 +1,14 @@
 import 'dart:io';
 
+import 'package:crowd_snap/features/imgs/data/data_source/image_bucket_data_source.dart';
+import 'package:crowd_snap/features/imgs/data/repositories_impl/image_bucket_repository_impl.dart';
 import 'package:crowd_snap/features/imgs/presentation/notifier/image_picker_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
-class PictureUploadView extends ConsumerWidget {
-  const PictureUploadView({super.key});
+class ImageUploadView extends ConsumerWidget {
+  const ImageUploadView({super.key});
 
   Future<void> _getCamera(WidgetRef ref) async {
     final picker = ImagePicker();
@@ -25,10 +27,10 @@ class PictureUploadView extends ConsumerWidget {
   }
 
   Future<void> _saveImage(File? imageState, WidgetRef ref) async {
-    final pictureUpload = ref.watch(pictureUploadUseCaseProvider);
-    final firestoreRepository = ref.watch(firestoreRepositoryProvider);
-    final image = await pictureUpload.execute(imageState!);
-    firestoreRepository.updateUserPicture(image);
+    print(imageState!.path);
+    final image =
+        await ref.watch(imageBucketRepositoryProvider).uploadImage(imageState!);
+    print(image);
   }
 
   @override
@@ -76,6 +78,13 @@ class PictureUploadView extends ConsumerWidget {
                 icon: const Icon(Icons.save),
                 label: const Text('Save'),
               ),
+            ElevatedButton(
+                onPressed: () async {
+                  await ref
+                      .watch(imageBucketDataSourceProvider)
+                      .checkConnection();
+                },
+                child: const Text('Check Connection'))
           ],
         ),
       ),

@@ -11,6 +11,9 @@ import 'package:logging/logging.dart';
 void main() async {
   final logger = Logger('main');
   await dotenv.load(fileName: '.env');
+  dotenv.env.forEach((key, value) {
+    print('$key: $value');
+  });
   // Inicializa Firebase antes de ejecutar la aplicación.
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
