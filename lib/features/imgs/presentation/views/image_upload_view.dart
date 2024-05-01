@@ -29,7 +29,7 @@ class ImageUploadView extends ConsumerWidget {
   Future<void> _saveImage(File? imageState, WidgetRef ref) async {
     print(imageState!.path);
     final image =
-        await ref.watch(imageBucketRepositoryProvider).uploadImage(imageState!);
+        await ref.watch(imageBucketRepositoryProvider).uploadImage(imageState);
     print(image);
   }
 
