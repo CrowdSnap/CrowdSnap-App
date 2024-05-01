@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:crowd_snap/features/imgs/data/data_source/image_bucket_data_source.dart';
+import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_use_case.dart';
 import 'package:crowd_snap/features/imgs/data/repositories_impl/image_bucket_repository_impl.dart';
 import 'package:crowd_snap/features/imgs/presentation/notifier/image_picker_state.dart';
 import 'package:flutter/material.dart';
@@ -27,9 +27,10 @@ class ImageUploadView extends ConsumerWidget {
   }
 
   Future<void> _saveImage(File? imageState, WidgetRef ref) async {
-    print(imageState!.path);
-    final image =
-        await ref.watch(imageBucketRepositoryProvider).uploadImage(imageState);
+    final userModel = await ref.watch(getUserUseCaseProvider).execute();
+    final userName = userModel.username;
+    final image = 
+        await ref.watch(imageBucketRepositoryProvider).uploadImage(imageState!, userName);
     print(image);
   }
 
@@ -77,14 +78,7 @@ class ImageUploadView extends ConsumerWidget {
                 onPressed: () => _saveImage(imageState, ref),
                 icon: const Icon(Icons.save),
                 label: const Text('Save'),
-              ),
-            ElevatedButton(
-                onPressed: () async {
-                  await ref
-                      .watch(imageBucketDataSourceProvider)
-                      .checkConnection();
-                },
-                child: const Text('Check Connection'))
+              )
           ],
         ),
       ),

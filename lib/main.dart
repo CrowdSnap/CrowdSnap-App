@@ -1,3 +1,4 @@
+import 'package:crowd_snap/features/imgs/data/data_source/image_bucket_data_source.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -11,9 +12,8 @@ import 'package:logging/logging.dart';
 void main() async {
   final logger = Logger('main');
   await dotenv.load(fileName: '.env');
-  dotenv.env.forEach((key, value) {
-    print('$key: $value');
-  });
+  final ImageBucketDataSourceImpl imageBucketDataSource = ImageBucketDataSourceImpl();
+  await imageBucketDataSource.loadEnvVariables();
   // Inicializa Firebase antes de ejecutar la aplicación.
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -22,7 +22,11 @@ void main() async {
 
   runApp(
     // El widget ProviderScope permitirá que toda tu aplicación tenga acceso a los proveedores de Riverpod.
-    ProviderScope(child: Consumer(
+    ProviderScope(
+      overrides: [
+        imageBucketDataSourceProvider.overrideWithValue(imageBucketDataSource),
+      ],
+      child: Consumer(
       builder: (context, ref, child) {
         ref.watch(authRedirectProvider);
         return const MyApp();

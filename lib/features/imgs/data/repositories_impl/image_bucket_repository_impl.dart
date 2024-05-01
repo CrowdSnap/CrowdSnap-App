@@ -15,13 +15,8 @@ class ImageBucketRepositoryImpl implements ImageBucketRepository {
   ImageBucketRepositoryImpl(this._imageBucketDataSource);
 
   @override
-  Future<String> uploadImage(File image, {String? userName, Function(int, int)? onSendProgress}) {
-    return _imageBucketDataSource.uploadImage(image, userName: userName, onSendProgress: onSendProgress);
-  }
-
-  @override
-  Future<File> getImage(String imageName, {Function(int, int)? onReceiveProgress}) {
-    return _imageBucketDataSource.getImage(imageName, onReceiveProgress: onReceiveProgress);
+  Future<String> uploadImage(File image, String userName) {
+    return _imageBucketDataSource.uploadImage(image, userName);
   }
 
   @override
