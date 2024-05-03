@@ -50,10 +50,10 @@ class NavBar extends ConsumerWidget {
           label: 'Buscar',
         ),
         NavigationDestination(
-          tooltip: 'Perfil de usuario',
+          tooltip: 'Publicar imagen',
           icon: Icon(Icons.add_box_outlined),
           selectedIcon: Icon(Icons.add_box),
-          label: 'Perfil',
+          label: 'Publicar',
         ),
         NavigationDestination(
           tooltip: 'Chats de usuario',

@@ -1,11 +1,13 @@
 import 'dart:io';
 
 import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_use_case.dart';
+import 'package:crowd_snap/core/navbar/providers/navbar_provider.dart';
 import 'package:crowd_snap/features/imgs/domain/use_case/image_upload_use_case.dart';
 import 'package:crowd_snap/features/imgs/presentation/notifier/image_picker_state.dart';
 import 'package:crowd_snap/features/imgs/presentation/notifier/image_upload_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ImageUploadView extends ConsumerWidget {
@@ -40,12 +42,25 @@ class ImageUploadView extends ConsumerWidget {
     }
   }
 
+  void _goHome(BuildContext context, WidgetRef ref) {
+    context.go('/');
+    ref.read(navBarIndexNotifierProvider.notifier).updateIndex(0);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final imageState = ref.watch(imageStateProvider);
     final isLoading = ref.watch(imageUploadNotifierProvider).isLoading;
 
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
+        _goHome(context, ref);
+      },
+      child:Scaffold(
       appBar: AppBar(
         title: const Text('Picture Upload'),
       ),
@@ -115,7 +130,7 @@ class ImageUploadView extends ConsumerWidget {
                   ))
           ],
         ),
-      ),
+      ),)
     );
   }
 }
