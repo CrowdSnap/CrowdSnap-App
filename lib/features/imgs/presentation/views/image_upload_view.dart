@@ -37,7 +37,9 @@ class ImageUploadView extends ConsumerWidget {
       await ref
           .watch(imageUploadUseCaseProvider)
           .execute(imageState!, userName: userName);
+      ref.watch(imageUploadNotifierProvider.notifier).updateIsLoading(false);
     } catch (e) {
+      ref.watch(imageUploadNotifierProvider.notifier).updateIsLoading(false);
       rethrow;
     }
   }
@@ -53,84 +55,84 @@ class ImageUploadView extends ConsumerWidget {
     final isLoading = ref.watch(imageUploadNotifierProvider).isLoading;
 
     return PopScope(
-      canPop: false,
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          return;
-        }
-        _goHome(context, ref);
-      },
-      child:Scaffold(
-      appBar: AppBar(
-        title: const Text('Picture Upload'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            imageState != null
-                ? Image.file(
-                    imageState,
-                    width: 200,
-                    height: 200,
-                    fit: BoxFit.cover,
-                  )
-                : const Icon(
-                    Icons.account_circle,
-                    size: 200,
-                  ),
-            const SizedBox(height: 20),
-            if (imageState == null)
-              Column(
-                children: [
-                  ElevatedButton.icon(
-                    onPressed: () => _getCamera(ref),
-                    icon: const Icon(Icons.camera),
-                    label: const Text('Camera'),
-                  ),
-                  ElevatedButton.icon(
-                    onPressed: () => _getGallery(ref),
-                    icon: const Icon(Icons.photo),
-                    label: const Text('Gallery'),
-                  ),
-                ],
-              ),
-            if (imageState != null)
-              ElevatedButton(
-                  onPressed: () {
-                    try {
-                      _saveImage(imageState, ref);
-                    } on Exception catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Error uploading image: $e'),
-                          duration: const Duration(seconds: 2),
-                          behavior: SnackBarBehavior.floating,
-                        ),
-                      );
-                    }
-                  },
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
+        canPop: false,
+        onPopInvoked: (didPop) async {
+          if (didPop) {
+            return;
+          }
+          _goHome(context, ref);
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text('Picture Upload'),
+          ),
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                imageState != null
+                    ? Image.file(
+                        imageState,
+                        width: 200,
+                        height: 200,
+                        fit: BoxFit.cover,
+                      )
+                    : const Icon(
+                        Icons.account_circle,
+                        size: 200,
+                      ),
+                const SizedBox(height: 20),
+                if (imageState == null)
+                  Column(
                     children: [
-                      if (isLoading)
-                        const Padding(
-                          padding: EdgeInsets.only(right: 8.0),
-                          child: SizedBox(
-                            width: 12,
-                            height: 12,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                            ),
-                          ),
-                        ),
-                      const Icon(Icons.upload),
-                      const Text('Upload Image'),
+                      ElevatedButton.icon(
+                        onPressed: () => _getCamera(ref),
+                        icon: const Icon(Icons.camera),
+                        label: const Text('Camera'),
+                      ),
+                      ElevatedButton.icon(
+                        onPressed: () => _getGallery(ref),
+                        icon: const Icon(Icons.photo),
+                        label: const Text('Gallery'),
+                      ),
                     ],
-                  ))
-          ],
-        ),
-      ),)
-    );
+                  ),
+                if (imageState != null)
+                  ElevatedButton(
+                      onPressed: () {
+                        try {
+                          _saveImage(imageState, ref);
+                        } on Exception catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Error uploading image: $e'),
+                              duration: const Duration(seconds: 2),
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                        }
+                      },
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (isLoading)
+                            const Padding(
+                              padding: EdgeInsets.only(right: 8.0),
+                              child: SizedBox(
+                                width: 12,
+                                height: 12,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              ),
+                            ),
+                          const Icon(Icons.upload),
+                          const Text('Upload Image'),
+                        ],
+                      ))
+              ],
+            ),
+          ),
+        ));
   }
 }
