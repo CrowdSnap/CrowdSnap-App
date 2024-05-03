@@ -3,11 +3,13 @@ import 'package:crowd_snap/features/imgs/data/data_source/image_bucket_data_sour
 import 'package:crowd_snap/features/imgs/domain/repository/image_bucket_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+part 'image_bucket_repository_impl.g.dart';
 
-final imageBucketRepositoryProvider = Provider<ImageBucketRepositoryImpl>((ref) {
+@Riverpod(keepAlive: true)
+ImageBucketRepositoryImpl imageBucketRepository(ImageBucketRepositoryRef ref){
   final imageBucketDataSource = ref.watch(imageBucketDataSourceProvider);
   return ImageBucketRepositoryImpl(imageBucketDataSource);
-});
+}
 
 class ImageBucketRepositoryImpl implements ImageBucketRepository {
   final ImageBucketDataSource _imageBucketDataSource;

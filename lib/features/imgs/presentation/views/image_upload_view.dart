@@ -1,8 +1,9 @@
 import 'dart:io';
 
 import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_use_case.dart';
-import 'package:crowd_snap/features/imgs/data/repositories_impl/image_bucket_repository_impl.dart';
+import 'package:crowd_snap/features/imgs/domain/use_case/image_upload_use_case.dart';
 import 'package:crowd_snap/features/imgs/presentation/notifier/image_picker_state.dart';
+import 'package:crowd_snap/features/imgs/presentation/notifier/image_upload_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -27,16 +28,22 @@ class ImageUploadView extends ConsumerWidget {
   }
 
   Future<void> _saveImage(File? imageState, WidgetRef ref) async {
+    ref.watch(imageUploadNotifierProvider.notifier).updateIsLoading(true);
     final userModel = await ref.watch(getUserUseCaseProvider).execute();
     final userName = userModel.username;
-    final image = 
-        await ref.watch(imageBucketRepositoryProvider).uploadImage(imageState!, userName);
-    print(image);
+    try {
+      await ref
+          .watch(imageUploadUseCaseProvider)
+          .execute(imageState!, userName: userName);
+    } catch (e) {
+      rethrow;
+    }
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final imageState = ref.watch(imageStateProvider);
+    final isLoading = ref.watch(imageUploadNotifierProvider).isLoading;
 
     return Scaffold(
       appBar: AppBar(
@@ -74,11 +81,38 @@ class ImageUploadView extends ConsumerWidget {
                 ],
               ),
             if (imageState != null)
-              ElevatedButton.icon(
-                onPressed: () => _saveImage(imageState, ref),
-                icon: const Icon(Icons.save),
-                label: const Text('Save'),
-              )
+              ElevatedButton(
+                  onPressed: () {
+                    try {
+                      _saveImage(imageState, ref);
+                    } on Exception catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Error uploading image: $e'),
+                          duration: const Duration(seconds: 2),
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                    }
+                  },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (isLoading)
+                        const Padding(
+                          padding: EdgeInsets.only(right: 8.0),
+                          child: SizedBox(
+                            width: 12,
+                            height: 12,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                            ),
+                          ),
+                        ),
+                      const Icon(Icons.upload),
+                      const Text('Upload Image'),
+                    ],
+                  ))
           ],
         ),
       ),

@@ -36,19 +36,16 @@ class ImageBucketDataSourceImpl implements ImageBucketDataSource {
 
   @override
   Future<String> uploadImage(File image, String userName) async {
+    final fileName = '$userName-${DateTime.now().millisecondsSinceEpoch}.jpeg';
 
-    final fileName =
-        '$userName-${DateTime.now().millisecondsSinceEpoch}.jpeg';
-
-    final formData = FormData.fromMap({
-      'file': await MultipartFile.fromFile(image.path, filename: fileName),
-    });
+    final bytes = await image.readAsBytes();
 
     final response = await dio.put(
       '$_endpointUrl/$fileName',
-      data: formData,
+      data: Stream.fromIterable(bytes.map((e) => [e])),
       options: Options(
         headers: {
+          'Content-Type': 'image/jpeg',
           'X-Access-Key': _accessKey,
           'X-Secret-Key': _secretKey,
         },
@@ -64,7 +61,6 @@ class ImageBucketDataSourceImpl implements ImageBucketDataSource {
 
   @override
   Future<void> deleteImage(String imageName) async {
-
     final response = await dio.delete(
       '$_endpointUrl/$imageName',
       options: Options(
@@ -82,7 +78,6 @@ class ImageBucketDataSourceImpl implements ImageBucketDataSource {
 
   @override
   Future<String> updateImage(File image, String imageName) async {
-
     final formData = FormData.fromMap({
       'file': await MultipartFile.fromFile(image.path, filename: imageName),
     });
