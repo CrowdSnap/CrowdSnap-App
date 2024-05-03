@@ -1,5 +1,6 @@
 import 'package:crowd_snap/features/auth/presentation/views/forgot_password_view.dart';
 import 'package:crowd_snap/features/auth/presentation/views/google_sign_up_view.dart';
+import 'package:crowd_snap/features/chats/presentation/chats_view.dart';
 import 'package:crowd_snap/features/imgs/presentation/views/avatar_upload_view.dart';
 import 'package:crowd_snap/features/imgs/presentation/views/image_upload_view.dart';
 import 'package:flutter/material.dart';
@@ -63,9 +64,7 @@ class AppRouter extends _$AppRouter {
             ),
             GoRoute(
               path: '/chats',
-              builder: (context, state) => const Center(
-                child: Text('Chats View'),
-              ),
+              builder: (context, state) => const ChatsView()
             ),
             GoRoute(
               path: '/picture-upload',
