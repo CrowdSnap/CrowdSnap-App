@@ -8,7 +8,6 @@ part of 'post_model.dart';
 
 _$PostModelImpl _$$PostModelImplFromJson(Map<String, dynamic> json) =>
     _$PostModelImpl(
-      postId: json['postId'] as String,
       userId: json['userId'] as String,
       imageUrl: json['imageUrl'] as String,
       taggedUserIds: (json['taggedUserIds'] as List<dynamic>)
@@ -20,7 +19,6 @@ _$PostModelImpl _$$PostModelImplFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$$PostModelImplToJson(_$PostModelImpl instance) =>
     <String, dynamic>{
-      'postId': instance.postId,
       'userId': instance.userId,
       'imageUrl': instance.imageUrl,
       'taggedUserIds': instance.taggedUserIds,

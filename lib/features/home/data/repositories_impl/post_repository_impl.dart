@@ -23,7 +23,7 @@ class PostRepositoryImpl implements PostRepository {
   }
 
   @override
-  Future<void> createPost(PostModel post, String city) {
-    return _postDataSource.createPost(post, city);
+  Future<void> createPost(PostModel post) {
+    return _postDataSource.createPost(post);
   }
 }

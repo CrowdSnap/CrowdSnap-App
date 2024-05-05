@@ -20,7 +20,6 @@ PostModel _$PostModelFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$PostModel {
-  String get postId => throw _privateConstructorUsedError;
   String get userId => throw _privateConstructorUsedError;
   String get imageUrl => throw _privateConstructorUsedError;
   List<String> get taggedUserIds => throw _privateConstructorUsedError;
@@ -39,8 +38,7 @@ abstract class $PostModelCopyWith<$Res> {
       _$PostModelCopyWithImpl<$Res, PostModel>;
   @useResult
   $Res call(
-      {String postId,
-      String userId,
+      {String userId,
       String imageUrl,
       List<String> taggedUserIds,
       String location,
@@ -60,7 +58,6 @@ class _$PostModelCopyWithImpl<$Res, $Val extends PostModel>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? postId = null,
     Object? userId = null,
     Object? imageUrl = null,
     Object? taggedUserIds = null,
@@ -68,10 +65,6 @@ class _$PostModelCopyWithImpl<$Res, $Val extends PostModel>
     Object? createdAt = null,
   }) {
     return _then(_value.copyWith(
-      postId: null == postId
-          ? _value.postId
-          : postId // ignore: cast_nullable_to_non_nullable
-              as String,
       userId: null == userId
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
@@ -105,8 +98,7 @@ abstract class _$$PostModelImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String postId,
-      String userId,
+      {String userId,
       String imageUrl,
       List<String> taggedUserIds,
       String location,
@@ -124,7 +116,6 @@ class __$$PostModelImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? postId = null,
     Object? userId = null,
     Object? imageUrl = null,
     Object? taggedUserIds = null,
@@ -132,10 +123,6 @@ class __$$PostModelImplCopyWithImpl<$Res>
     Object? createdAt = null,
   }) {
     return _then(_$PostModelImpl(
-      postId: null == postId
-          ? _value.postId
-          : postId // ignore: cast_nullable_to_non_nullable
-              as String,
       userId: null == userId
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
@@ -164,8 +151,7 @@ class __$$PostModelImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$PostModelImpl implements _PostModel {
   const _$PostModelImpl(
-      {required this.postId,
-      required this.userId,
+      {required this.userId,
       required this.imageUrl,
       required final List<String> taggedUserIds,
       required this.location,
@@ -175,8 +161,6 @@ class _$PostModelImpl implements _PostModel {
   factory _$PostModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$PostModelImplFromJson(json);
 
-  @override
-  final String postId;
   @override
   final String userId;
   @override
@@ -196,7 +180,7 @@ class _$PostModelImpl implements _PostModel {
 
   @override
   String toString() {
-    return 'PostModel(postId: $postId, userId: $userId, imageUrl: $imageUrl, taggedUserIds: $taggedUserIds, location: $location, createdAt: $createdAt)';
+    return 'PostModel(userId: $userId, imageUrl: $imageUrl, taggedUserIds: $taggedUserIds, location: $location, createdAt: $createdAt)';
   }
 
   @override
@@ -204,7 +188,6 @@ class _$PostModelImpl implements _PostModel {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$PostModelImpl &&
-            (identical(other.postId, postId) || other.postId == postId) &&
             (identical(other.userId, userId) || other.userId == userId) &&
             (identical(other.imageUrl, imageUrl) ||
                 other.imageUrl == imageUrl) &&
@@ -218,7 +201,7 @@ class _$PostModelImpl implements _PostModel {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, postId, userId, imageUrl,
+  int get hashCode => Object.hash(runtimeType, userId, imageUrl,
       const DeepCollectionEquality().hash(_taggedUserIds), location, createdAt);
 
   @JsonKey(ignore: true)
@@ -237,8 +220,7 @@ class _$PostModelImpl implements _PostModel {
 
 abstract class _PostModel implements PostModel {
   const factory _PostModel(
-      {required final String postId,
-      required final String userId,
+      {required final String userId,
       required final String imageUrl,
       required final List<String> taggedUserIds,
       required final String location,
@@ -247,8 +229,6 @@ abstract class _PostModel implements PostModel {
   factory _PostModel.fromJson(Map<String, dynamic> json) =
       _$PostModelImpl.fromJson;
 
-  @override
-  String get postId;
   @override
   String get userId;
   @override

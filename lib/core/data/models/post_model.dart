@@ -6,7 +6,6 @@ part 'post_model.g.dart';
 @freezed
 class PostModel with _$PostModel {
   const factory PostModel({
-    required String postId,
     required String userId,
     required String imageUrl,
     required List<String> taggedUserIds,
