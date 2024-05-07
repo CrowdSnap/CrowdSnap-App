@@ -52,7 +52,7 @@ class PostDataSourceImpl implements PostDataSource {
       {
         '\$match': {
           'location': location,
-          'createdAt': {'\$gte': startDate, '\$lte': endDate}
+          'createdAt': {'\$gte': startDate.toString(), '\$lte': endDate.toString()}
         }
       },
       {

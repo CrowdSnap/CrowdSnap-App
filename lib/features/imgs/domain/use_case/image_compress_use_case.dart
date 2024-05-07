@@ -7,7 +7,7 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 part 'image_compress_use_case.g.dart';
 
 class ImageCompressUseCase {
-  Future<File> execute(File image, String userName) async {
+  Future<File> execute(File image, String userName, int quality, bool isAvatar) async {
     final directory = await getApplicationDocumentsDirectory();
 
     // Obtener el tamaño de la imagen original
@@ -16,9 +16,11 @@ class ImageCompressUseCase {
 
     final result = await FlutterImageCompress.compressAndGetFile(
       image.path,
-      '${directory.path}/compressed-avatar-$userName${DateTime.now().millisecondsSinceEpoch}.jpeg',
+      isAvatar
+          ? '${directory.path}/compressed-avatar-$userName${DateTime.now().millisecondsSinceEpoch}.jpeg'
+          : '${directory.path}/compressed-image-$userName.jpeg',
       keepExif: false,
-      quality: 30,
+      quality: quality,
       minHeight: 800,
       minWidth: 600,
     );

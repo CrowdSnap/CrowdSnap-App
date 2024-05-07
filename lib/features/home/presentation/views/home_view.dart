@@ -1,48 +1,31 @@
-import 'package:crowd_snap/features/imgs/data/data_source/post_data_source.dart';
-import 'package:crowd_snap/features/imgs/domain/use_case/post_get_use_case.dart';
+import 'package:crowd_snap/features/home/presentation/provider/post_provider.dart';
+import 'package:crowd_snap/features/imgs/presentation/widgets/post_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:crowd_snap/app/theme/notifier/theme_notifier.dart';
-import 'package:crowd_snap/features/auth/presentation/notifier/auth_notifier.dart';
 
 class HomeView extends ConsumerWidget {
   const HomeView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDarkMode = ref.watch(darkModeProvider);
-    final authNotifier = ref.read(authNotifierProvider.notifier);
+    final postListAsyncValue = ref.watch(postListProvider);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Modo Oscuro: $isDarkMode',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            ElevatedButton(
-              onPressed: () {
-                ref.read(darkModeProvider.notifier).toggleDarkMode();
-              },
-              child: const Text('Cambiar Modo'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                authNotifier.signOut();
-              },
-              child: const Text('Logout'),
-            ),
-            ElevatedButton(
-              onPressed: () => ref.watch(postDataSourceProvider).getAll(),
-              child: const Text('Get Posts')
-            )
-          ],
-        ),
+      body: postListAsyncValue.when(
+        data: (postList) {
+          return ListView.builder(
+            itemCount: postList.length,
+            itemBuilder: (context, index) {
+              final post = postList[index];
+              return PostCard(post: post);
+            },
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stackTrace) => Center(child: Text('Error: $error')),
       ),
     );
   }

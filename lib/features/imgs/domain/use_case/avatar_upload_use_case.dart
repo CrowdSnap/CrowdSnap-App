@@ -24,7 +24,7 @@ class AvatarUploadUseCase {
     if (googleAvatar != null) {
       imageCompressed = image;
     } else {
-      imageCompressed = await _imageCompressUseCase.execute(image, userName!);
+      imageCompressed = await _imageCompressUseCase.execute(image, userName!, 30, true);
     }
     print('Avatar compressed');
     return await _bucketRepository.uploadUserAvatar(imageCompressed,

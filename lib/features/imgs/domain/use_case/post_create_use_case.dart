@@ -24,6 +24,8 @@ class CreatePostUseCase {
         await _imageUploadUseCase.execute(image, userName: userName);
     final post = PostModel(
       userId: userModel.userId,
+      userName: userName,
+      userAvatarUrl: userModel.avatarUrl!,
       location: 'Madrid', //TODO: get location method
       taggedUserIds: [],
       imageUrl: imageUrl,

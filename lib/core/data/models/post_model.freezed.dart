@@ -21,10 +21,13 @@ PostModel _$PostModelFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$PostModel {
   String get userId => throw _privateConstructorUsedError;
+  String get userName => throw _privateConstructorUsedError;
+  String get userAvatarUrl => throw _privateConstructorUsedError;
   String get imageUrl => throw _privateConstructorUsedError;
   List<String> get taggedUserIds => throw _privateConstructorUsedError;
   String get location => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
+  String? get description => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -39,10 +42,13 @@ abstract class $PostModelCopyWith<$Res> {
   @useResult
   $Res call(
       {String userId,
+      String userName,
+      String userAvatarUrl,
       String imageUrl,
       List<String> taggedUserIds,
       String location,
-      DateTime createdAt});
+      DateTime createdAt,
+      String? description});
 }
 
 /// @nodoc
@@ -59,15 +65,26 @@ class _$PostModelCopyWithImpl<$Res, $Val extends PostModel>
   @override
   $Res call({
     Object? userId = null,
+    Object? userName = null,
+    Object? userAvatarUrl = null,
     Object? imageUrl = null,
     Object? taggedUserIds = null,
     Object? location = null,
     Object? createdAt = null,
+    Object? description = freezed,
   }) {
     return _then(_value.copyWith(
       userId: null == userId
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
+              as String,
+      userName: null == userName
+          ? _value.userName
+          : userName // ignore: cast_nullable_to_non_nullable
+              as String,
+      userAvatarUrl: null == userAvatarUrl
+          ? _value.userAvatarUrl
+          : userAvatarUrl // ignore: cast_nullable_to_non_nullable
               as String,
       imageUrl: null == imageUrl
           ? _value.imageUrl
@@ -85,6 +102,10 @@ class _$PostModelCopyWithImpl<$Res, $Val extends PostModel>
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      description: freezed == description
+          ? _value.description
+          : description // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -99,10 +120,13 @@ abstract class _$$PostModelImplCopyWith<$Res>
   @useResult
   $Res call(
       {String userId,
+      String userName,
+      String userAvatarUrl,
       String imageUrl,
       List<String> taggedUserIds,
       String location,
-      DateTime createdAt});
+      DateTime createdAt,
+      String? description});
 }
 
 /// @nodoc
@@ -117,15 +141,26 @@ class __$$PostModelImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? userId = null,
+    Object? userName = null,
+    Object? userAvatarUrl = null,
     Object? imageUrl = null,
     Object? taggedUserIds = null,
     Object? location = null,
     Object? createdAt = null,
+    Object? description = freezed,
   }) {
     return _then(_$PostModelImpl(
       userId: null == userId
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
+              as String,
+      userName: null == userName
+          ? _value.userName
+          : userName // ignore: cast_nullable_to_non_nullable
+              as String,
+      userAvatarUrl: null == userAvatarUrl
+          ? _value.userAvatarUrl
+          : userAvatarUrl // ignore: cast_nullable_to_non_nullable
               as String,
       imageUrl: null == imageUrl
           ? _value.imageUrl
@@ -143,6 +178,10 @@ class __$$PostModelImplCopyWithImpl<$Res>
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      description: freezed == description
+          ? _value.description
+          : description // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -152,10 +191,13 @@ class __$$PostModelImplCopyWithImpl<$Res>
 class _$PostModelImpl implements _PostModel {
   const _$PostModelImpl(
       {required this.userId,
+      required this.userName,
+      required this.userAvatarUrl,
       required this.imageUrl,
       required final List<String> taggedUserIds,
       required this.location,
-      required this.createdAt})
+      required this.createdAt,
+      this.description})
       : _taggedUserIds = taggedUserIds;
 
   factory _$PostModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -163,6 +205,10 @@ class _$PostModelImpl implements _PostModel {
 
   @override
   final String userId;
+  @override
+  final String userName;
+  @override
+  final String userAvatarUrl;
   @override
   final String imageUrl;
   final List<String> _taggedUserIds;
@@ -177,10 +223,12 @@ class _$PostModelImpl implements _PostModel {
   final String location;
   @override
   final DateTime createdAt;
+  @override
+  final String? description;
 
   @override
   String toString() {
-    return 'PostModel(userId: $userId, imageUrl: $imageUrl, taggedUserIds: $taggedUserIds, location: $location, createdAt: $createdAt)';
+    return 'PostModel(userId: $userId, userName: $userName, userAvatarUrl: $userAvatarUrl, imageUrl: $imageUrl, taggedUserIds: $taggedUserIds, location: $location, createdAt: $createdAt, description: $description)';
   }
 
   @override
@@ -189,6 +237,10 @@ class _$PostModelImpl implements _PostModel {
         (other.runtimeType == runtimeType &&
             other is _$PostModelImpl &&
             (identical(other.userId, userId) || other.userId == userId) &&
+            (identical(other.userName, userName) ||
+                other.userName == userName) &&
+            (identical(other.userAvatarUrl, userAvatarUrl) ||
+                other.userAvatarUrl == userAvatarUrl) &&
             (identical(other.imageUrl, imageUrl) ||
                 other.imageUrl == imageUrl) &&
             const DeepCollectionEquality()
@@ -196,13 +248,23 @@ class _$PostModelImpl implements _PostModel {
             (identical(other.location, location) ||
                 other.location == location) &&
             (identical(other.createdAt, createdAt) ||
-                other.createdAt == createdAt));
+                other.createdAt == createdAt) &&
+            (identical(other.description, description) ||
+                other.description == description));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, userId, imageUrl,
-      const DeepCollectionEquality().hash(_taggedUserIds), location, createdAt);
+  int get hashCode => Object.hash(
+      runtimeType,
+      userId,
+      userName,
+      userAvatarUrl,
+      imageUrl,
+      const DeepCollectionEquality().hash(_taggedUserIds),
+      location,
+      createdAt,
+      description);
 
   @JsonKey(ignore: true)
   @override
@@ -221,16 +283,23 @@ class _$PostModelImpl implements _PostModel {
 abstract class _PostModel implements PostModel {
   const factory _PostModel(
       {required final String userId,
+      required final String userName,
+      required final String userAvatarUrl,
       required final String imageUrl,
       required final List<String> taggedUserIds,
       required final String location,
-      required final DateTime createdAt}) = _$PostModelImpl;
+      required final DateTime createdAt,
+      final String? description}) = _$PostModelImpl;
 
   factory _PostModel.fromJson(Map<String, dynamic> json) =
       _$PostModelImpl.fromJson;
 
   @override
   String get userId;
+  @override
+  String get userName;
+  @override
+  String get userAvatarUrl;
   @override
   String get imageUrl;
   @override
@@ -239,6 +308,8 @@ abstract class _PostModel implements PostModel {
   String get location;
   @override
   DateTime get createdAt;
+  @override
+  String? get description;
   @override
   @JsonKey(ignore: true)
   _$$PostModelImplCopyWith<_$PostModelImpl> get copyWith =>

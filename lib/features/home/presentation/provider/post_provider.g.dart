@@ -1,24 +1,24 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'theme_notifier.dart';
+part of 'post_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$darkModeHash() => r'fb55abb3d4346122784322d06c40f99d26ea6576';
+String _$postListHash() => r'dc804e9d66ca07e0220a5999224a751129f19901';
 
-/// See also [DarkMode].
-@ProviderFor(DarkMode)
-final darkModeProvider = AutoDisposeNotifierProvider<DarkMode, bool>.internal(
-  DarkMode.new,
-  name: r'darkModeProvider',
+/// See also [postList].
+@ProviderFor(postList)
+final postListProvider = AutoDisposeFutureProvider<List<PostModel>>.internal(
+  postList,
+  name: r'postListProvider',
   debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$darkModeHash,
+      const bool.fromEnvironment('dart.vm.product') ? null : _$postListHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$DarkMode = AutoDisposeNotifier<bool>;
+typedef PostListRef = AutoDisposeFutureProviderRef<List<PostModel>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
