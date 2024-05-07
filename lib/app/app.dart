@@ -9,7 +9,6 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-
     final isDarkMode = ref.watch(darkModeProvider);
     final appRouter = ref.read(appRouterProvider);
 
