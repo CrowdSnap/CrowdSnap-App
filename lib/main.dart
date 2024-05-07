@@ -26,6 +26,7 @@ void main() async {
     )),
   );
 
+  // Escucha los cambios en la autenticación de Firebase.
   FirebaseAuth.instance.authStateChanges().listen((User? user) {
     if (user == null) {
       logger.info('No user is signed in.');
