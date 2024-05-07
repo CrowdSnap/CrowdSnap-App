@@ -23,6 +23,7 @@ class ImageBucketDataSourceImpl implements ImageBucketDataSource {
   String? _accessKey;
   String? _secretKey;
   String? _endpointUrl;
+  String? _r2PublicUrl;
 
   ImageBucketDataSourceImpl();
 
@@ -32,6 +33,7 @@ class ImageBucketDataSourceImpl implements ImageBucketDataSource {
     _accessKey = dotenv.env['R2_ACCESS_KEY'];
     _secretKey = dotenv.env['R2_SECRET_ACCESS_KEY'];
     _endpointUrl = dotenv.env['R2_URL'];
+    _r2PublicUrl = dotenv.env['R2_PUBLIC_URL'];
   }
 
   @override
@@ -52,8 +54,10 @@ class ImageBucketDataSourceImpl implements ImageBucketDataSource {
       ),
     );
 
+    final imageUrl = '$_r2PublicUrl/$fileName';
+
     if (response.statusCode == 200) {
-      return fileName;
+      return imageUrl;
     } else {
       throw Exception('Failed to upload image');
     }
