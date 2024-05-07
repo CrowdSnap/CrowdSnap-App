@@ -7,7 +7,8 @@ part 'post_data_source.g.dart';
 
 abstract class PostDataSource {
   Future<List<PostModel>> getPostsRandomByDateRange(
-      String city, DateTime startDate, DateTime endDate, int limit);
+      String location, DateTime startDate, DateTime endDate, int limit);
+  Future<List<PostModel>> getAll();
   Future<void> createPost(PostModel post);
   Future<void> loadEnvVariables();
 }
@@ -27,16 +28,30 @@ class PostDataSourceImpl implements PostDataSource {
   }
 
   @override
+  Future<List<PostModel>> getAll() async {
+    final Db db = await Db.create("mongodb+srv://crowd_snap_app:N5nImjcPyNbYJAzf@cluster0.miqyblk.mongodb.net/CrowdSnap?retryWrites=true&w=majority&appName=Cluster0");
+    await db.open();
+    final postsCollection = db.collection('posts');
+
+    final postsData = await postsCollection.find().toList();
+    await db.close();
+
+    print('postsData: $postsData');
+
+    return postsData.map((json) => PostModel.fromJson(json)).toList();
+  }
+
+  @override
   Future<List<PostModel>> getPostsRandomByDateRange(
-      String city, DateTime startDate, DateTime endDate, int limit) async {
-    final Db db = await Db.create(_mongoUrl!);
+      String location, DateTime startDate, DateTime endDate, int limit) async {
+    final Db db = await Db.create("mongodb+srv://crowd_snap_app:N5nImjcPyNbYJAzf@cluster0.miqyblk.mongodb.net/CrowdSnap?retryWrites=true&w=majority&appName=Cluster0");
     await db.open();
     final postsCollection = db.collection('posts');
 
     final pipeline = [
       {
         '\$match': {
-          'city': city,
+          'location': location,
           'createdAt': {'\$gte': startDate, '\$lte': endDate}
         }
       },
@@ -48,13 +63,15 @@ class PostDataSourceImpl implements PostDataSource {
     final postsData =
         await postsCollection.aggregateToStream(pipeline).toList();
     await db.close();
+  
+    print('postsData: $postsData');
 
     return postsData.map((json) => PostModel.fromJson(json)).toList();
   }
 
   @override
   Future<void> createPost(PostModel post) async {
-    final Db db = await Db.create(_mongoUrl!);
+    final Db db = await Db.create("mongodb+srv://crowd_snap_app:N5nImjcPyNbYJAzf@cluster0.miqyblk.mongodb.net/CrowdSnap?retryWrites=true&w=majority&appName=Cluster0");
     await db.open();
     final postsCollection = db.collection('posts');
 

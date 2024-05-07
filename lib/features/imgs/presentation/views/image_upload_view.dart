@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:crowd_snap/core/navbar/providers/navbar_provider.dart';
-import 'package:crowd_snap/features/home/domain/use_cases/post_create_use_case.dart';
+import 'package:crowd_snap/features/imgs/domain/use_case/post_create_use_case.dart';
 import 'package:crowd_snap/features/imgs/presentation/notifier/image_picker_state.dart';
 import 'package:crowd_snap/features/imgs/presentation/notifier/image_upload_notifier.dart';
 import 'package:flutter/material.dart';

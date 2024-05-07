@@ -1,10 +1,11 @@
+import 'package:crowd_snap/features/imgs/data/data_source/post_data_source.dart';
+import 'package:crowd_snap/features/imgs/domain/use_case/post_get_use_case.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:crowd_snap/app/theme/notifier/theme_notifier.dart';
 import 'package:crowd_snap/features/auth/presentation/notifier/auth_notifier.dart';
 
 class HomeView extends ConsumerWidget {
-
   const HomeView({super.key});
 
   @override
@@ -31,15 +32,18 @@ class HomeView extends ConsumerWidget {
               child: const Text('Cambiar Modo'),
             ),
             ElevatedButton(
-          onPressed: () {
-            authNotifier.signOut();
-          },
-          child: const Text('Logout'),
-        ),
+              onPressed: () {
+                authNotifier.signOut();
+              },
+              child: const Text('Logout'),
+            ),
+            ElevatedButton(
+              onPressed: () => ref.watch(postDataSourceProvider).getAll(),
+              child: const Text('Get Posts')
+            )
           ],
         ),
       ),
     );
   }
-  
 }

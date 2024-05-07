@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:crowd_snap/core/data/models/post_model.dart';
 import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_use_case.dart';
-import 'package:crowd_snap/features/home/data/repositories_impl/post_repository_impl.dart';
-import 'package:crowd_snap/features/home/domain/repositories/post_repository.dart';
+import 'package:crowd_snap/features/imgs/data/repositories_impl/post_repository_impl.dart';
+import 'package:crowd_snap/features/imgs/domain/repository/post_repository.dart';
 import 'package:crowd_snap/features/imgs/domain/use_case/image_upload_use_case.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
