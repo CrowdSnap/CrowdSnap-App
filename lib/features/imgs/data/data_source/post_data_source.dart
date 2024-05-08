@@ -11,6 +11,8 @@ abstract class PostDataSource {
   Future<List<PostModel>> getAll();
   Future<void> createPost(PostModel post);
   Future<void> loadEnvVariables();
+  Future<void> addLikeToPost(String postId, String userId);
+  Future<void> removeLikeFromPost(String postId, String userId);
 }
 
 @Riverpod(keepAlive: true)
@@ -29,7 +31,8 @@ class PostDataSourceImpl implements PostDataSource {
 
   @override
   Future<List<PostModel>> getAll() async {
-    final Db db = await Db.create("mongodb+srv://crowd_snap_app:N5nImjcPyNbYJAzf@cluster0.miqyblk.mongodb.net/CrowdSnap?retryWrites=true&w=majority&appName=Cluster0");
+    final Db db = await Db.create(
+        "mongodb+srv://crowd_snap_app:N5nImjcPyNbYJAzf@cluster0.miqyblk.mongodb.net/CrowdSnap?retryWrites=true&w=majority&appName=Cluster0");
     await db.open();
     final postsCollection = db.collection('posts');
 
@@ -44,7 +47,8 @@ class PostDataSourceImpl implements PostDataSource {
   @override
   Future<List<PostModel>> getPostsRandomByDateRange(
       String location, DateTime startDate, DateTime endDate, int limit) async {
-    final Db db = await Db.create("mongodb+srv://crowd_snap_app:N5nImjcPyNbYJAzf@cluster0.miqyblk.mongodb.net/CrowdSnap?retryWrites=true&w=majority&appName=Cluster0");
+    final Db db = await Db.create(
+        "mongodb+srv://crowd_snap_app:N5nImjcPyNbYJAzf@cluster0.miqyblk.mongodb.net/CrowdSnap?retryWrites=true&w=majority&appName=Cluster0");
     await db.open();
     final postsCollection = db.collection('posts');
 
@@ -52,7 +56,10 @@ class PostDataSourceImpl implements PostDataSource {
       {
         '\$match': {
           'location': location,
-          'createdAt': {'\$gte': startDate.toString(), '\$lte': endDate.toString()}
+          'createdAt': {
+            '\$gte': startDate.toString(),
+            '\$lte': endDate.toString()
+          }
         }
       },
       {
@@ -63,21 +70,59 @@ class PostDataSourceImpl implements PostDataSource {
     final postsData =
         await postsCollection.aggregateToStream(pipeline).toList();
     await db.close();
-  
-    print('postsData: $postsData');
 
-    return postsData.map((json) => PostModel.fromJson(json)).toList();
+    return postsData.map((json) {
+      final id =
+          json['_id'].toString().split('"')[1]; // Extract the ObjectId value
+      final postJson = {
+        ...json,
+        'mongoId': id,
+      };
+      print('postJson: $postJson');
+      return PostModel.fromJson(postJson);
+    }).toList();
   }
 
   @override
   Future<void> createPost(PostModel post) async {
-    final Db db = await Db.create("mongodb+srv://crowd_snap_app:N5nImjcPyNbYJAzf@cluster0.miqyblk.mongodb.net/CrowdSnap?retryWrites=true&w=majority&appName=Cluster0");
+    final Db db = await Db.create(
+        "mongodb+srv://crowd_snap_app:N5nImjcPyNbYJAzf@cluster0.miqyblk.mongodb.net/CrowdSnap?retryWrites=true&w=majority&appName=Cluster0");
     await db.open();
     final postsCollection = db.collection('posts');
 
     await postsCollection.insert({
       ...post.toJson(),
     });
+
+    await db.close();
+  }
+
+  @override
+  Future<void> addLikeToPost(String postId, String userId) async {
+    final Db db = await Db.create(
+        "mongodb+srv://crowd_snap_app:N5nImjcPyNbYJAzf@cluster0.miqyblk.mongodb.net/CrowdSnap?retryWrites=true&w=majority&appName=Cluster0");
+    await db.open();
+    final postsCollection = db.collection('posts');
+
+    await postsCollection.updateOne(
+      where.eq('_id', ObjectId.fromHexString(postId)),
+      modify.addToSet('likedUserIds', userId),
+    );
+
+    await db.close();
+  }
+
+  @override
+  Future<void> removeLikeFromPost(String postId, String userId) async {
+    final Db db = await Db.create(
+        "mongodb+srv://crowd_snap_app:N5nImjcPyNbYJAzf@cluster0.miqyblk.mongodb.net/CrowdSnap?retryWrites=true&w=majority&appName=Cluster0");
+    await db.open();
+    final postsCollection = db.collection('posts');
+
+    await postsCollection.updateOne(
+      where.eq('_id', ObjectId.fromHexString(postId)),
+      modify.pull('likedUserIds', userId),
+    );
 
     await db.close();
   }

@@ -26,4 +26,14 @@ class PostRepositoryImpl implements PostRepository {
   Future<void> createPost(PostModel post) {
     return _postDataSource.createPost(post);
   }
+
+  @override
+  Future<void> addLikeToPost(String postId, String userId) {
+    return _postDataSource.addLikeToPost(postId, userId);
+  }
+
+  @override
+  Future<void> removeLikeFromPost(String postId, String userId) {
+    return _postDataSource.removeLikeFromPost(postId, userId);
+  }
 }

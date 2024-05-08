@@ -1,17 +1,18 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'post_provider.dart';
+part of 'post_state_notifier.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$postListHash() => r'320246ec456f48e736d1dfb3e062535eb84686fe';
+String _$postListHash() => r'9f1c506722da2faeba68316246f1e9a5dd4071f3';
 
-/// See also [postList].
-@ProviderFor(postList)
-final postListProvider = AutoDisposeFutureProvider<List<PostModel>>.internal(
-  postList,
+/// See also [PostList].
+@ProviderFor(PostList)
+final postListProvider =
+    AutoDisposeAsyncNotifierProvider<PostList, List<PostModel>>.internal(
+  PostList.new,
   name: r'postListProvider',
   debugGetCreateSourceHash:
       const bool.fromEnvironment('dart.vm.product') ? null : _$postListHash,
@@ -19,6 +20,6 @@ final postListProvider = AutoDisposeFutureProvider<List<PostModel>>.internal(
   allTransitiveDependencies: null,
 );
 
-typedef PostListRef = AutoDisposeFutureProviderRef<List<PostModel>>;
+typedef _$PostList = AutoDisposeAsyncNotifier<List<PostModel>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

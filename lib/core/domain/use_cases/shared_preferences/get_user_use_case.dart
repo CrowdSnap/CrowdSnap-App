@@ -15,7 +15,7 @@ class GetUserUseCase {
   }
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 GetUserUseCase getUserUseCase(GetUserUseCaseRef ref) {
   final userRepository = ref.watch(userRepositoryProvider);
   return GetUserUseCase(userRepository);
