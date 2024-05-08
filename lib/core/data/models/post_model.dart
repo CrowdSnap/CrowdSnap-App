@@ -16,6 +16,7 @@ class PostModel with _$PostModel {
     required DateTime createdAt,
     List<String>? likedUserIds,
     String? description,
+    String? commentId,
   }) = _PostModel;
 
   factory PostModel.fromJson(Map<String, dynamic> json) => _$PostModelFromJson(json);

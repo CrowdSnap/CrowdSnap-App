@@ -1,6 +1,8 @@
-import 'package:crowd_snap/core/data/models/post_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:crowd_snap/core/data/models/post_model.dart';
+import 'package:crowd_snap/core/data/models/user_model.dart';
 import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_use_case.dart';
+import 'package:crowd_snap/features/auth/data/repositories_impl/firestore_repository_impl.dart';
 import 'package:crowd_snap/features/imgs/domain/use_case/post_add_like_use_case.dart';
 import 'package:crowd_snap/features/imgs/domain/use_case/post_remove_like_use_case.dart';
 import 'package:flutter/material.dart';
@@ -56,6 +58,73 @@ class _PostCardState extends ConsumerState<PostCard> {
     }
   }
 
+  void _showLikedUserSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return ClipRRect(
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          child: DraggableScrollableSheet(
+            initialChildSize: 0.2,
+            maxChildSize: 0.7,
+            minChildSize: 0.15,
+            expand: false,
+            builder: (BuildContext context, ScrollController scrollController) {
+              return Column(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0), // Ajusta este valor según tus necesidades
+                      child: ListView.builder(
+                        controller: scrollController,
+                        itemCount: widget.post.likedUserIds?.length ?? 0,
+                        itemBuilder: (BuildContext context, int index) {
+                          final userId = widget.post.likedUserIds![index];
+                          return FutureBuilder<UserModel>(
+                            future: ref
+                                .read(firestoreRepositoryProvider)
+                                .getUser(userId),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const SizedBox(
+                                  height: 50,
+                                  child: Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                );
+                              }
+                              if (snapshot.hasError) {
+                                return Text('Error: ${snapshot.error}');
+                              }
+                              final user = snapshot.data;
+                              if (user == null) {
+                                return const Text('User not found');
+                              }
+                              return ListTile(
+                                leading: CircleAvatar(
+                                  backgroundImage:
+                                      CachedNetworkImageProvider(user.avatarUrl!),
+                                ),
+                                title: Text(user.name),
+                                subtitle: Text(user.username),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -100,7 +169,10 @@ class _PostCardState extends ConsumerState<PostCard> {
                       ),
                       onPressed: _toggleLike,
                     ),
-                    Text('$_likeCount likes'),
+                    GestureDetector(
+                      onTap: _showLikedUserSheet,
+                      child: Text('$_likeCount likes'),
+                    ),
                   ],
                 ),
                 // Add other action buttons like comment, share, etc.
