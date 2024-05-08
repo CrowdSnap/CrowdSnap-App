@@ -13,13 +13,12 @@ class ImageUploadUseCase {
 
   Future<String> execute(File image, {String? userName}) async {
     final File imageCompressed;
-    imageCompressed = await _imageCompressUseCase.execute(image, userName!);
+    imageCompressed = await _imageCompressUseCase.execute(image, userName!, 65, false);
     try {
       return await _imageBucketRepositoryImpl.uploadImage(imageCompressed, userName);
     } catch (e) {
       throw Exception(e);
     }
-
   }
 }
 

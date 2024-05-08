@@ -8,7 +8,7 @@ part 'image_compress_use_case.g.dart';
 
 class ImageCompressUseCase {
   // Método que se encarga de comprimir una imagen.
-  Future<File> execute(File image, String userName) async {
+  Future<File> execute(File image, String userName, int quality, bool isAvatar) async {
     // Obtener el directorio de documentos de la aplicación para almacenar la imagen comprimida.
     final directory = await getApplicationDocumentsDirectory();
 
@@ -18,13 +18,14 @@ class ImageCompressUseCase {
 
     // Comprimir la imagen utilizando la librería FlutterImageCompress.
     final result = await FlutterImageCompress.compressAndGetFile(
-      image.path, // Ruta del archivo de la imagen original.
-      '${directory.path}/compressed-avatar-$userName${DateTime.now().millisecondsSinceEpoch}.jpeg', // Ruta del archivo de la imagen comprimida.
-      keepExif: false, // Indica que no se deben conservar los datos EXIF.
-      quality:
-          30, // Calidad de compresión (un valor más bajo significa mayor compresión).
-      minHeight: 800, // Tamaño mínimo de altura de la imagen comprimida.
-      minWidth: 600, // Tamaño mínimo de ancho de la imagen comprimida.
+      image.path,
+      isAvatar
+          ? '${directory.path}/compressed-avatar-$userName${DateTime.now().millisecondsSinceEpoch}.jpeg'
+          : '${directory.path}/compressed-image-$userName.jpeg',
+      keepExif: false,
+      quality: quality,
+      minHeight: 800,
+      minWidth: 600,
     );
 
     // Obtener el tamaño de la imagen comprimida

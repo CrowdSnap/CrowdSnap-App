@@ -1,6 +1,6 @@
 import 'package:crowd_snap/core/data/models/post_model.dart';
-import 'package:crowd_snap/features/home/data/data_sources/post_data_source.dart';
-import 'package:crowd_snap/features/home/domain/repositories/post_repository.dart';
+import 'package:crowd_snap/features/imgs/data/data_source/post_data_source.dart';
+import 'package:crowd_snap/features/imgs/domain/repository/post_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'post_repository_impl.g.dart';
@@ -18,8 +18,8 @@ class PostRepositoryImpl implements PostRepository {
 
   @override
   Future<List<PostModel>> getPostsRandomByDateRange(
-      String city, DateTime startDate, DateTime endDate, int limit) {
-    return _postDataSource.getPostsRandomByDateRange(city, startDate, endDate, limit);
+      String location, DateTime startDate, DateTime endDate, int limit) {
+    return _postDataSource.getPostsRandomByDateRange(location, startDate, endDate, limit);
   }
 
   @override

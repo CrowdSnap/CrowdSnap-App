@@ -1,4 +1,4 @@
-import 'package:crowd_snap/features/home/data/data_sources/post_data_source.dart';
+import 'package:crowd_snap/features/imgs/data/data_source/post_data_source.dart';
 import 'package:crowd_snap/features/imgs/data/data_source/image_bucket_data_source.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

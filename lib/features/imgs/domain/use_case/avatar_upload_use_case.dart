@@ -40,7 +40,7 @@ class AvatarUploadUseCase {
       imageCompressed =
           image; // Evita compresión innecesaria de imágenes de Google.
     } else {
-      imageCompressed = await _imageCompressUseCase.execute(image, userName!);
+      imageCompressed = await _imageCompressUseCase.execute(image, userName!, 30, true);
     }
     print('Avatar compressed');
     // Sube la imagen comprimida (o la original si proviene de Google) al almacenamiento en la nube.

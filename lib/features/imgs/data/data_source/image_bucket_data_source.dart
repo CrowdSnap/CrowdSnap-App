@@ -57,8 +57,10 @@ class ImageBucketDataSourceImpl implements ImageBucketDataSource {
     final imageUrl = '$_r2PublicUrl/$fileName';
 
     if (response.statusCode == 200) {
+      await image.delete();
       return imageUrl;
     } else {
+      await image.delete();
       throw Exception('Failed to upload image');
     }
   }
