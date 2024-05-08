@@ -8,6 +8,7 @@ part of 'post_model.dart';
 
 _$PostModelImpl _$$PostModelImplFromJson(Map<String, dynamic> json) =>
     _$PostModelImpl(
+      mongoId: json['mongoId'] as String?,
       userId: json['userId'] as String,
       userName: json['userName'] as String,
       userAvatarUrl: json['userAvatarUrl'] as String,
@@ -17,11 +18,15 @@ _$PostModelImpl _$$PostModelImplFromJson(Map<String, dynamic> json) =>
           .toList(),
       location: json['location'] as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
+      likedUserIds: (json['likedUserIds'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
       description: json['description'] as String?,
     );
 
 Map<String, dynamic> _$$PostModelImplToJson(_$PostModelImpl instance) =>
     <String, dynamic>{
+      'mongoId': instance.mongoId,
       'userId': instance.userId,
       'userName': instance.userName,
       'userAvatarUrl': instance.userAvatarUrl,
@@ -29,5 +34,6 @@ Map<String, dynamic> _$$PostModelImplToJson(_$PostModelImpl instance) =>
       'taggedUserIds': instance.taggedUserIds,
       'location': instance.location,
       'createdAt': instance.createdAt.toIso8601String(),
+      'likedUserIds': instance.likedUserIds,
       'description': instance.description,
     };

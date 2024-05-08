@@ -6,6 +6,7 @@ part 'post_model.g.dart';
 @freezed
 class PostModel with _$PostModel {
   const factory PostModel({
+    String? mongoId,
     required String userId,
     required String userName,
     required String userAvatarUrl,
@@ -13,6 +14,7 @@ class PostModel with _$PostModel {
     required List<String> taggedUserIds,
     required String location,
     required DateTime createdAt,
+    List<String>? likedUserIds,
     String? description,
   }) = _PostModel;
 

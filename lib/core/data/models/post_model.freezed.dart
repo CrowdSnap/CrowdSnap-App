@@ -20,6 +20,7 @@ PostModel _$PostModelFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$PostModel {
+  String? get mongoId => throw _privateConstructorUsedError;
   String get userId => throw _privateConstructorUsedError;
   String get userName => throw _privateConstructorUsedError;
   String get userAvatarUrl => throw _privateConstructorUsedError;
@@ -27,6 +28,7 @@ mixin _$PostModel {
   List<String> get taggedUserIds => throw _privateConstructorUsedError;
   String get location => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
+  List<String>? get likedUserIds => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -41,13 +43,15 @@ abstract class $PostModelCopyWith<$Res> {
       _$PostModelCopyWithImpl<$Res, PostModel>;
   @useResult
   $Res call(
-      {String userId,
+      {String? mongoId,
+      String userId,
       String userName,
       String userAvatarUrl,
       String imageUrl,
       List<String> taggedUserIds,
       String location,
       DateTime createdAt,
+      List<String>? likedUserIds,
       String? description});
 }
 
@@ -64,6 +68,7 @@ class _$PostModelCopyWithImpl<$Res, $Val extends PostModel>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? mongoId = freezed,
     Object? userId = null,
     Object? userName = null,
     Object? userAvatarUrl = null,
@@ -71,9 +76,14 @@ class _$PostModelCopyWithImpl<$Res, $Val extends PostModel>
     Object? taggedUserIds = null,
     Object? location = null,
     Object? createdAt = null,
+    Object? likedUserIds = freezed,
     Object? description = freezed,
   }) {
     return _then(_value.copyWith(
+      mongoId: freezed == mongoId
+          ? _value.mongoId
+          : mongoId // ignore: cast_nullable_to_non_nullable
+              as String?,
       userId: null == userId
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
@@ -102,6 +112,10 @@ class _$PostModelCopyWithImpl<$Res, $Val extends PostModel>
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      likedUserIds: freezed == likedUserIds
+          ? _value.likedUserIds
+          : likedUserIds // ignore: cast_nullable_to_non_nullable
+              as List<String>?,
       description: freezed == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
@@ -119,13 +133,15 @@ abstract class _$$PostModelImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String userId,
+      {String? mongoId,
+      String userId,
       String userName,
       String userAvatarUrl,
       String imageUrl,
       List<String> taggedUserIds,
       String location,
       DateTime createdAt,
+      List<String>? likedUserIds,
       String? description});
 }
 
@@ -140,6 +156,7 @@ class __$$PostModelImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? mongoId = freezed,
     Object? userId = null,
     Object? userName = null,
     Object? userAvatarUrl = null,
@@ -147,9 +164,14 @@ class __$$PostModelImplCopyWithImpl<$Res>
     Object? taggedUserIds = null,
     Object? location = null,
     Object? createdAt = null,
+    Object? likedUserIds = freezed,
     Object? description = freezed,
   }) {
     return _then(_$PostModelImpl(
+      mongoId: freezed == mongoId
+          ? _value.mongoId
+          : mongoId // ignore: cast_nullable_to_non_nullable
+              as String?,
       userId: null == userId
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
@@ -178,6 +200,10 @@ class __$$PostModelImplCopyWithImpl<$Res>
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      likedUserIds: freezed == likedUserIds
+          ? _value._likedUserIds
+          : likedUserIds // ignore: cast_nullable_to_non_nullable
+              as List<String>?,
       description: freezed == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
@@ -190,19 +216,24 @@ class __$$PostModelImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$PostModelImpl implements _PostModel {
   const _$PostModelImpl(
-      {required this.userId,
+      {this.mongoId,
+      required this.userId,
       required this.userName,
       required this.userAvatarUrl,
       required this.imageUrl,
       required final List<String> taggedUserIds,
       required this.location,
       required this.createdAt,
+      final List<String>? likedUserIds,
       this.description})
-      : _taggedUserIds = taggedUserIds;
+      : _taggedUserIds = taggedUserIds,
+        _likedUserIds = likedUserIds;
 
   factory _$PostModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$PostModelImplFromJson(json);
 
+  @override
+  final String? mongoId;
   @override
   final String userId;
   @override
@@ -223,12 +254,22 @@ class _$PostModelImpl implements _PostModel {
   final String location;
   @override
   final DateTime createdAt;
+  final List<String>? _likedUserIds;
+  @override
+  List<String>? get likedUserIds {
+    final value = _likedUserIds;
+    if (value == null) return null;
+    if (_likedUserIds is EqualUnmodifiableListView) return _likedUserIds;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
+
   @override
   final String? description;
 
   @override
   String toString() {
-    return 'PostModel(userId: $userId, userName: $userName, userAvatarUrl: $userAvatarUrl, imageUrl: $imageUrl, taggedUserIds: $taggedUserIds, location: $location, createdAt: $createdAt, description: $description)';
+    return 'PostModel(mongoId: $mongoId, userId: $userId, userName: $userName, userAvatarUrl: $userAvatarUrl, imageUrl: $imageUrl, taggedUserIds: $taggedUserIds, location: $location, createdAt: $createdAt, likedUserIds: $likedUserIds, description: $description)';
   }
 
   @override
@@ -236,6 +277,7 @@ class _$PostModelImpl implements _PostModel {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$PostModelImpl &&
+            (identical(other.mongoId, mongoId) || other.mongoId == mongoId) &&
             (identical(other.userId, userId) || other.userId == userId) &&
             (identical(other.userName, userName) ||
                 other.userName == userName) &&
@@ -249,6 +291,8 @@ class _$PostModelImpl implements _PostModel {
                 other.location == location) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
+            const DeepCollectionEquality()
+                .equals(other._likedUserIds, _likedUserIds) &&
             (identical(other.description, description) ||
                 other.description == description));
   }
@@ -257,6 +301,7 @@ class _$PostModelImpl implements _PostModel {
   @override
   int get hashCode => Object.hash(
       runtimeType,
+      mongoId,
       userId,
       userName,
       userAvatarUrl,
@@ -264,6 +309,7 @@ class _$PostModelImpl implements _PostModel {
       const DeepCollectionEquality().hash(_taggedUserIds),
       location,
       createdAt,
+      const DeepCollectionEquality().hash(_likedUserIds),
       description);
 
   @JsonKey(ignore: true)
@@ -282,18 +328,22 @@ class _$PostModelImpl implements _PostModel {
 
 abstract class _PostModel implements PostModel {
   const factory _PostModel(
-      {required final String userId,
+      {final String? mongoId,
+      required final String userId,
       required final String userName,
       required final String userAvatarUrl,
       required final String imageUrl,
       required final List<String> taggedUserIds,
       required final String location,
       required final DateTime createdAt,
+      final List<String>? likedUserIds,
       final String? description}) = _$PostModelImpl;
 
   factory _PostModel.fromJson(Map<String, dynamic> json) =
       _$PostModelImpl.fromJson;
 
+  @override
+  String? get mongoId;
   @override
   String get userId;
   @override
@@ -308,6 +358,8 @@ abstract class _PostModel implements PostModel {
   String get location;
   @override
   DateTime get createdAt;
+  @override
+  List<String>? get likedUserIds;
   @override
   String? get description;
   @override
