@@ -13,11 +13,6 @@ class HomeView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final postListAsyncValue = ref.watch(postListProvider);
-    // Obtiene el estado del modo oscuro del proveedor.
-    final isDarkMode = ref.watch(darkModeProvider);
-
-    // Obtiene una referencia al proveedor de autenticación (solo para lectura).
-    final authNotifier = ref.read(authNotifierProvider.notifier);
 
     // Estructura base del Scaffold con AppBar y cuerpo centrado.
     return Scaffold(
