@@ -22,6 +22,7 @@ _$PostModelImpl _$$PostModelImplFromJson(Map<String, dynamic> json) =>
           ?.map((e) => e as String)
           .toList(),
       description: json['description'] as String?,
+      commentId: json['commentId'] as String?,
     );
 
 Map<String, dynamic> _$$PostModelImplToJson(_$PostModelImpl instance) =>
@@ -36,4 +37,5 @@ Map<String, dynamic> _$$PostModelImplToJson(_$PostModelImpl instance) =>
       'createdAt': instance.createdAt.toIso8601String(),
       'likedUserIds': instance.likedUserIds,
       'description': instance.description,
+      'commentId': instance.commentId,
     };

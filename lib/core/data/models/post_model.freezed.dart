@@ -30,6 +30,7 @@ mixin _$PostModel {
   DateTime get createdAt => throw _privateConstructorUsedError;
   List<String>? get likedUserIds => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
+  String? get commentId => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -52,7 +53,8 @@ abstract class $PostModelCopyWith<$Res> {
       String location,
       DateTime createdAt,
       List<String>? likedUserIds,
-      String? description});
+      String? description,
+      String? commentId});
 }
 
 /// @nodoc
@@ -78,6 +80,7 @@ class _$PostModelCopyWithImpl<$Res, $Val extends PostModel>
     Object? createdAt = null,
     Object? likedUserIds = freezed,
     Object? description = freezed,
+    Object? commentId = freezed,
   }) {
     return _then(_value.copyWith(
       mongoId: freezed == mongoId
@@ -120,6 +123,10 @@ class _$PostModelCopyWithImpl<$Res, $Val extends PostModel>
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
               as String?,
+      commentId: freezed == commentId
+          ? _value.commentId
+          : commentId // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -142,7 +149,8 @@ abstract class _$$PostModelImplCopyWith<$Res>
       String location,
       DateTime createdAt,
       List<String>? likedUserIds,
-      String? description});
+      String? description,
+      String? commentId});
 }
 
 /// @nodoc
@@ -166,6 +174,7 @@ class __$$PostModelImplCopyWithImpl<$Res>
     Object? createdAt = null,
     Object? likedUserIds = freezed,
     Object? description = freezed,
+    Object? commentId = freezed,
   }) {
     return _then(_$PostModelImpl(
       mongoId: freezed == mongoId
@@ -208,6 +217,10 @@ class __$$PostModelImplCopyWithImpl<$Res>
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
               as String?,
+      commentId: freezed == commentId
+          ? _value.commentId
+          : commentId // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -225,7 +238,8 @@ class _$PostModelImpl implements _PostModel {
       required this.location,
       required this.createdAt,
       final List<String>? likedUserIds,
-      this.description})
+      this.description,
+      this.commentId})
       : _taggedUserIds = taggedUserIds,
         _likedUserIds = likedUserIds;
 
@@ -266,10 +280,12 @@ class _$PostModelImpl implements _PostModel {
 
   @override
   final String? description;
+  @override
+  final String? commentId;
 
   @override
   String toString() {
-    return 'PostModel(mongoId: $mongoId, userId: $userId, userName: $userName, userAvatarUrl: $userAvatarUrl, imageUrl: $imageUrl, taggedUserIds: $taggedUserIds, location: $location, createdAt: $createdAt, likedUserIds: $likedUserIds, description: $description)';
+    return 'PostModel(mongoId: $mongoId, userId: $userId, userName: $userName, userAvatarUrl: $userAvatarUrl, imageUrl: $imageUrl, taggedUserIds: $taggedUserIds, location: $location, createdAt: $createdAt, likedUserIds: $likedUserIds, description: $description, commentId: $commentId)';
   }
 
   @override
@@ -294,7 +310,9 @@ class _$PostModelImpl implements _PostModel {
             const DeepCollectionEquality()
                 .equals(other._likedUserIds, _likedUserIds) &&
             (identical(other.description, description) ||
-                other.description == description));
+                other.description == description) &&
+            (identical(other.commentId, commentId) ||
+                other.commentId == commentId));
   }
 
   @JsonKey(ignore: true)
@@ -310,7 +328,8 @@ class _$PostModelImpl implements _PostModel {
       location,
       createdAt,
       const DeepCollectionEquality().hash(_likedUserIds),
-      description);
+      description,
+      commentId);
 
   @JsonKey(ignore: true)
   @override
@@ -337,7 +356,8 @@ abstract class _PostModel implements PostModel {
       required final String location,
       required final DateTime createdAt,
       final List<String>? likedUserIds,
-      final String? description}) = _$PostModelImpl;
+      final String? description,
+      final String? commentId}) = _$PostModelImpl;
 
   factory _PostModel.fromJson(Map<String, dynamic> json) =
       _$PostModelImpl.fromJson;
@@ -362,6 +382,8 @@ abstract class _PostModel implements PostModel {
   List<String>? get likedUserIds;
   @override
   String? get description;
+  @override
+  String? get commentId;
   @override
   @JsonKey(ignore: true)
   _$$PostModelImplCopyWith<_$PostModelImpl> get copyWith =>
