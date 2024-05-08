@@ -3,16 +3,26 @@ import 'package:crowd_snap/features/imgs/presentation/widgets/post_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+// Clase `HomeView` que extiende `ConsumerWidget` para utilizar datos de proveedores.
 class HomeView extends ConsumerWidget {
+  
+  // Constructor simple sin parámetros.
   const HomeView({super.key});
 
+  // Método `build` que define la interfaz de usuario de la pantalla de inicio.
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final postListAsyncValue = ref.watch(postListProvider);
+    // Obtiene el estado del modo oscuro del proveedor.
+    final isDarkMode = ref.watch(darkModeProvider);
 
+    // Obtiene una referencia al proveedor de autenticación (solo para lectura).
+    final authNotifier = ref.read(authNotifierProvider.notifier);
+
+    // Estructura base del Scaffold con AppBar y cuerpo centrado.
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home'),
+        title: const Text('Home'), // Título de la aplicación.
       ),
       body: postListAsyncValue.when(
         data: (postList) {

@@ -6,6 +6,9 @@ import 'package:logging/logging.dart';
 
 part 'firestore_repository_impl.g.dart';
 
+// @Riverpod(keepAlive: true) mantiene viva esta instancia a lo largo del ciclo de vida de la aplicación.
+// Crea y proporciona una instancia de `FirestoreRepository` dentro del árbol de providers de Riverpod.
+// Esta instancia se encarga de interactuar con la base de datos Firestore.
 @Riverpod(keepAlive: true)
 FirestoreRepository firestoreRepository(FirestoreRepositoryRef ref) {
   final firestoreDataSource = ref.watch(firestoreDataSourceProvider);
@@ -19,6 +22,7 @@ class FirestoreRepositoryImpl implements FirestoreRepository {
 
   FirestoreRepositoryImpl(this._firestoreDataSource);
 
+  // Guarda un usuario en Firestore utilizando `firestoreDataSource`.
   @override
   Future<void> saveUser(UserModel user) async {
     try {
@@ -30,6 +34,7 @@ class FirestoreRepositoryImpl implements FirestoreRepository {
     }
   }
 
+  // Obtiene un usuario de Firestore utilizando `firestoreDataSource`.
   @override
   Future<UserModel> getUser(String userId) async {
     try {
@@ -42,6 +47,7 @@ class FirestoreRepositoryImpl implements FirestoreRepository {
     }
   }
 
+  // Actualiza un usuario en Firestore utilizando `firestoreDataSource`.
   @override
   Future<void> updateUser(UserModel user) async {
     try {
@@ -53,6 +59,7 @@ class FirestoreRepositoryImpl implements FirestoreRepository {
     }
   }
 
+  // Actualiza la URL del avatar del usuario en Firestore utilizando `firestoreDataSource`.
   @override
   Future<void> updateUserAvatar(String avatarUrl) async {
     try {
@@ -65,6 +72,7 @@ class FirestoreRepositoryImpl implements FirestoreRepository {
     }
   }
 
+  // Elimina un usuario de Firestore utilizando `firestoreDataSource`.
   @override
   Future<void> deleteUser(String userId) async {
     try {

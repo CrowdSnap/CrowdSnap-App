@@ -5,10 +5,16 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'google_auth_data_source.g.dart';
 
+// Clase abstracta `GoogleAuthDataSource`
+// Define una interfaz para la autenticación de Google en una aplicación.
+// Proporciona un método para iniciar sesión con una cuenta de Google.
 abstract class GoogleAuthDataSource {
   Future<GoogleUserModel> signInWithGoogle();
 }
 
+// Mantiene viva esta instancia a lo largo del ciclo de vida de la aplicación.
+// Crea y proporciona una instancia de `GoogleAuthDataSource` dentro del árbol de providers de Riverpod.
+// Esta instancia es responsable de interactuar con la funcionalidad de inicio de sesión de Google.
 @Riverpod(keepAlive: true)
 GoogleAuthDataSource googleAuthDataSource(GoogleAuthDataSourceRef ref) {
   final firebaseAuth = FirebaseAuth.instance;
@@ -22,6 +28,8 @@ class GoogleAuthDataSourceImpl implements GoogleAuthDataSource {
 
   GoogleAuthDataSourceImpl(this._firebaseAuth, this._googleSignIn);
 
+  // Inicia sesión con Google y devuelve un objeto `GoogleUserModel` si es exitoso.
+  // Lanza una excepción `Exception('User not found')` si el inicio de sesión falla.
   @override
   Future<GoogleUserModel> signInWithGoogle() async {
     final googleUser = await _googleSignIn.signIn();
@@ -34,7 +42,7 @@ class GoogleAuthDataSourceImpl implements GoogleAuthDataSource {
 
     final userCredential = await _firebaseAuth.signInWithCredential(credential);
     final user = userCredential.user;
-    
+
     if (user != null) {
       return GoogleUserModel(
         userId: user.uid,

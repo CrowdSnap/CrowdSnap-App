@@ -6,91 +6,130 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
+// Widget con estado que representa la vista para el registro con Google.
 class GoogleSignUpView extends ConsumerStatefulWidget {
+  // Constructor para el widget `GoogleSignUpView`.
+  //
+  // - `key`: Clave opcional para la identificación del widget.
   const GoogleSignUpView({super.key});
 
+  // Método que crea el estado interno del widget.
+  //
+  // Este método es responsable de crear el estado interno del widget que administrará los datos relacionados con la interfaz de usuario e interactuará con los providers de Riverpod para la lógica.
   @override
   _GoogleSignUpScreenState createState() => _GoogleSignUpScreenState();
 }
 
+// Representa el estado interno del widget `GoogleSignUpView`.
 class _GoogleSignUpScreenState extends ConsumerState<GoogleSignUpView>
     with SingleTickerProviderStateMixin {
+  // Future utilizada para la inicialización del usuario de Google.
   late Future<void> _initializeUserFuture;
+
+  // AnimationController para manejar animaciones.
   late AnimationController _animationController;
+
+  // Animación para escalar la imagen de perfil.
   late Animation<double> _scaleAnimation;
+
+  // Animación para desplazar la imagen de perfil.
   late Animation<Offset> _offsetAnimation;
+
+  // Bandera que indica si la imagen de perfil está expandida.
   bool _isImageExpanded = false;
 
+  // Método llamado en el ciclo de vida del widget cuando se inicializa.
   @override
   void initState() {
     super.initState();
+
+    // Inicializa el Future para la inicialización del usuario de Google utilizando el provider `googleSignUpNotifierProvider.notifier`.
     _initializeUserFuture =
         ref.read(googleSignUpNotifierProvider.notifier).initialize();
 
+    // Crea un AnimationController para manejar animaciones.
     _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 3),
-    )..repeat(reverse: true);
+      vsync: this, // Sincroniza la animación con el ciclo de vida del widget
+      duration:
+          const Duration(seconds: 3), // Duración de la animación (3 segundos)
+    )..repeat(reverse: true); // Repetir la animación en sentido inverso
 
+    // Define la animación para escalar la imagen de perfil.
     _scaleAnimation =
         Tween<double>(begin: 1.0, end: 1.2).animate(_animationController);
 
+    // Define la animación para desplazar la imagen de perfil.
     _offsetAnimation = Tween<Offset>(
       begin: Offset.zero,
-      end: const Offset(0.0, -0.5),
+      end: const Offset(0.0, -0.5), // Desplazamiento vertical hacia abajo
     ).animate(_animationController);
   }
 
+  // Método llamado en el ciclo de vida del widget cuando se elimina.
   @override
   void dispose() {
+    // Libera los recursos utilizados por el AnimationController.
     _animationController.dispose(); // Disponer el AnimationController
     super.dispose();
   }
 
+  // Maneja la selección de la cámara para obtener una imagen de perfil.
   Future<void> _getCamera(WidgetRef ref) async {
-    final picker = ImagePicker();
+    final picker = ImagePicker(); // Crea un picker de imágenes
     final pickedFile = await picker.pickImage(source: ImageSource.camera);
     if (pickedFile != null) {
+      // Actualiza la imagen de perfil del usuario utilizando el provider `googleSignUpNotifierProvider.notifier`.
       ref
           .read(googleSignUpNotifierProvider.notifier)
           .updateUserImage(pickedFile.path);
     }
   }
 
+  // Maneja la selección de la galería para obtener una imagen de perfil.
   Future<void> _getGallery(WidgetRef ref) async {
-    final picker = ImagePicker();
+    final picker = ImagePicker(); // Crea un picker de imágenes
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
+      // Actualiza la imagen de perfil del usuario utilizando el provider `googleSignUpNotifierProvider.notifier`.
       ref
           .read(googleSignUpNotifierProvider.notifier)
           .updateUserImage(pickedFile.path);
     }
   }
 
+  // Controla la expansión y contracción de la imagen de perfil.
   void _toggleImageExpansion() {
     setState(() {
       _isImageExpanded = !_isImageExpanded;
       if (_isImageExpanded) {
+        // Detiene la animación al expandir la imagen.
         _animationController.stop();
       } else {
+        // Reanuda la animación al contraer la imagen.
         _animationController.repeat(reverse: true);
       }
     });
   }
 
+  // Método llamado para construir el widget.
   @override
   Widget build(BuildContext context) {
+    // Obtiene el estado del formulario del provider `googleSignUpNotifierProvider`.
     final formState = ref.watch(googleSignUpNotifierProvider);
+    // Obtiene el notifier del formulario del provider `googleSignUpNotifierProvider`.
     final formValues = ref.watch(googleSignUpNotifierProvider.notifier);
 
+    // Scaffold que representa la estructura principal de la pantalla.
     return Scaffold(
       appBar: AppBar(
+        // Título del AppBar que saluda al usuario por su nombre.
         title: Text('Hola ${formState.name.split(' ')[0]}'),
       ),
       body: FutureBuilder(
         future: _initializeUserFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
+            // Muestra un indicador de progreso circular mientras se inicializa el usuario.
             return const Center(child: CircularProgressIndicator());
           }
           return Consumer(
@@ -100,25 +139,38 @@ class _GoogleSignUpScreenState extends ConsumerState<GoogleSignUpView>
                 child: Form(
                   child: Column(
                     children: [
-                      const Text('Para continuar, por favor completa tu perfil'),
+                      // Texto que indica al usuario que complete su perfil.
+                      const Text(
+                          'Para continuar, por favor completa tu perfil'),
                       const SizedBox(height: 20),
+
+                      // Imagen de perfil con funcionalidad para expandir y cambiar la imagen
                       GestureDetector(
                         onTap: _toggleImageExpansion,
                         child: AnimatedBuilder(
                           animation: _animationController,
                           builder: (context, child) {
+                            // Animación de escala para la imagen de perfil.
                             return Transform.scale(
-                              scale: _isImageExpanded ? 1.0 : _scaleAnimation.value,
+                              scale: _isImageExpanded
+                                  ? 1.0
+                                  : _scaleAnimation.value,
                               child: Transform.translate(
-                                offset: _isImageExpanded ? Offset.zero : _offsetAnimation.value,
+                                offset: _isImageExpanded
+                                    ? Offset.zero
+                                    : _offsetAnimation.value,
                                 child: CircleAvatar(
                                   radius: _isImageExpanded ? 100 : 50,
-                                  backgroundImage: formState.userImage.isNotEmpty
-                                      ? FileImage(File(formState.userImage)) as ImageProvider<Object>?
+                                  backgroundImage: formState
+                                          .userImage.isNotEmpty
+                                      ? FileImage(File(formState.userImage))
+                                          as ImageProvider<Object>?
                                       : formState.googleImage.isNotEmpty
-                                          ? NetworkImage(formState.googleImage) as ImageProvider<Object>?
+                                          ? NetworkImage(formState.googleImage)
+                                              as ImageProvider<Object>?
                                           : null,
-                                  child: formState.userImage.isEmpty && formState.googleImage.isEmpty
+                                  child: formState.userImage.isEmpty &&
+                                          formState.googleImage.isEmpty
                                       ? const Icon(Icons.person, size: 50)
                                       : null,
                                 ),
@@ -127,8 +179,11 @@ class _GoogleSignUpScreenState extends ConsumerState<GoogleSignUpView>
                           },
                         ),
                       ),
-                      if (_isImageExpanded) 
-                        const SizedBox(height: 20),
+
+                      // Botones para seleccionar una imagen de la cámara o galería (solo visibles cuando la imagen está expandida).
+                      if (_isImageExpanded) const SizedBox(height: 20),
+
+                      // Texto que indica como cambiar la imagen (solo visible cuando la imagen no está expandida).
                       if (_isImageExpanded)
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -150,11 +205,14 @@ class _GoogleSignUpScreenState extends ConsumerState<GoogleSignUpView>
                             ),
                           ],
                         ),
+
+                      // Texto que indica como cambiar la imagen (solo visible cuando la imagen no está expandida).
+                      if (!_isImageExpanded) const SizedBox(height: 20),
                       if (!_isImageExpanded)
-                        const SizedBox(height: 20),
-                      if (!_isImageExpanded)
-                        const Text('Pulsando encima de la imagen puedes cambiarla'),
+                        const Text(
+                            'Pulsando encima de la imagen puedes cambiarla'),
                       const SizedBox(height: 16),
+                      // Campos de texto para nombre y usuario.
                       TextFormField(
                         initialValue: formState.name,
                         decoration: const InputDecoration(labelText: 'Name'),
@@ -162,11 +220,14 @@ class _GoogleSignUpScreenState extends ConsumerState<GoogleSignUpView>
                       ),
                       TextFormField(
                         initialValue: formState.userName,
-                        decoration: const InputDecoration(labelText: 'Username'),
+                        decoration:
+                            const InputDecoration(labelText: 'Username'),
                         onChanged: (value) => formValues.updateUserName(value),
                       ),
+                      // Widget personalizado para la entrada de fecha de nacimiento (se asume que existe un widget `BirthDateInputGoogleSignUp`).
                       const BirthDateInputGoogleSignUp(),
                       const SizedBox(height: 16),
+                      // Widget personalizado para el botón de registro
                       const GoogleRegisterButtonSubmit(),
                     ],
                   ),
