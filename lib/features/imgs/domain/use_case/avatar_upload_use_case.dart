@@ -8,34 +8,55 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'avatar_upload_use_case.g.dart';
 
+// Clase `AvatarUploadUseCase` que gestiona la subida de imágenes de avatar del usuario.
 class AvatarUploadUseCase {
+  // Instancia del repositorio de almacenamiento en la nube de avatares (generalmente Firebase Storage).
   final AvatarBucketRepository _bucketRepository;
+
+  // Instancia del repositorio de almacenamiento local de avatares.
   final AvatarLocalRepository _localRepository;
+
+  // Instancia del caso de uso para comprimir imágenes.
   final ImageCompressUseCase _imageCompressUseCase;
 
+  // Constructor que recibe las instancias de los repositorios local y en la nube, y del caso de uso de compresión.
   AvatarUploadUseCase(this._bucketRepository, this._localRepository,
       this._imageCompressUseCase);
 
+  // Método `execute` que se encarga de subir una imagen de avatar del usuario.
+  // Toma los siguientes parámetros:
+  //   - `image`: Archivo de imagen que se quiere subir.
+  //   - `userName` (opcional): Nombre de usuario para nombrar la imagen en el almacenamiento en la nube.
+  //   - `googleAvatar` (opcional): Booleano que indica si la imagen proviene de Google (ya comprimida).
   Future<String> execute(File image,
       {String? userName, bool? googleAvatar}) async {
+    // Guarda la imagen original en el almacenamiento local.
     await _localRepository.saveAvatar(image, userName: userName);
+
+    // Determina si se debe comprimir la imagen.
     final File imageCompressed;
     print('Avatar saved locally without compressing');
     if (googleAvatar != null) {
-      imageCompressed = image;
+      imageCompressed =
+          image; // Evita compresión innecesaria de imágenes de Google.
     } else {
       imageCompressed = await _imageCompressUseCase.execute(image, userName!);
     }
     print('Avatar compressed');
+    // Sube la imagen comprimida (o la original si proviene de Google) al almacenamiento en la nube.
     return await _bucketRepository.uploadUserAvatar(imageCompressed,
         userName: userName);
   }
 }
 
+// Proveedor de Riverpod que crea una instancia de `AvatarUploadUseCase`.
 @riverpod
 AvatarUploadUseCase avatarUploadUseCase(AvatarUploadUseCaseRef ref) {
+  // Obtiene referencias a los proveedores de los repositorios local y en la nube, y del caso de uso de compresión.
   final bucketRepository = ref.watch(avatarBucketRepositoryProvider);
   final localRepository = ref.watch(avatarLocalRepositoryProvider);
   final imagecompress = ref.watch(imageCompressUseCaseProvider);
+
+  // Devuelve una instancia de `AvatarUploadUseCase` inyectando las referencias obtenidas.
   return AvatarUploadUseCase(bucketRepository, localRepository, imagecompress);
 }

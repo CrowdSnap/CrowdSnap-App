@@ -6,6 +6,7 @@ import 'package:logging/logging.dart';
 
 part 'firestore_data_source.g.dart';
 
+// Clase abstracta que define una interfaz para interactuar con Firestore para la gestión de usuarios.
 abstract class FirestoreDataSource {
   Future<void> saveUser(UserModel user);
   Future<UserModel> getUser(String userId);
@@ -15,7 +16,7 @@ abstract class FirestoreDataSource {
 }
 
 final _logger = Logger('FirestoreDataSource');
-
+// Función provider que crea y proporciona una instancia de FirestoreDataSource.
 @Riverpod(keepAlive: true)
 FirestoreDataSource firestoreDataSource(FirestoreDataSourceRef ref) {
   final firestore = FirebaseFirestore.instance;
@@ -23,12 +24,16 @@ FirestoreDataSource firestoreDataSource(FirestoreDataSourceRef ref) {
   return FirestoreDataSourceImpl(firestore, getUserUseCase);
 }
 
+// Implementación concreta de FirestoreDataSource que utiliza Firestore.
 class FirestoreDataSourceImpl implements FirestoreDataSource {
   final FirebaseFirestore _firestore;
   final GetUserUseCase _getUserUseCase;
 
   FirestoreDataSourceImpl(this._firestore, this._getUserUseCase);
 
+  // Implementación del método `saveUser` de FirestoreDataSource.
+  // Guarda un nuevo objeto de usuario (`user`) en Firestore.
+  // Devuelve un `Future<void>` que indica la finalización asincrónica.
   @override
   Future<void> saveUser(UserModel user) async {
     try {
@@ -41,6 +46,9 @@ class FirestoreDataSourceImpl implements FirestoreDataSource {
     }
   }
 
+  // Implementación del método `getUser` de FirestoreDataSource.
+  // Recupera un objeto de usuario de Firestore basado en el `userId` proporcionado.
+  // Devuelve un `Future<UserModel>` que se resuelve al objeto de usuario recuperado o a un error.
   @override
   Future<UserModel> getUser(String userId) async {
     try {
@@ -57,6 +65,9 @@ class FirestoreDataSourceImpl implements FirestoreDataSource {
     }
   }
 
+  // Implementación del método `updateUser` de FirestoreDataSource.
+  // Actualiza un objeto de usuario existente (`user`) en Firestore.
+  // Devuelve un `Future<void>` que indica la finalización asincrónica.
   @override
   Future<void> updateUser(UserModel user) async {
     try {
@@ -69,6 +80,9 @@ class FirestoreDataSourceImpl implements FirestoreDataSource {
     }
   }
 
+  // Implementación del método `updateUserAvatar` de FirestoreDataSource.
+  // Actualiza solo la URL del avatar del usuario actual en Firestore.
+  // Devuelve un `Future<void>` que indica la finalización asincrónica.
   @override
   Future<void> updateUserAvatar(String avatarUrl) async {
     final userModel = await _getUserUseCase.execute();
@@ -86,6 +100,9 @@ class FirestoreDataSourceImpl implements FirestoreDataSource {
     }
   }
 
+  // Implementación del método `deleteUser` de FirestoreDataSource.
+  // Elimina el usuario identificado por el `userId` proporcionado de Firestore.
+  // Devuelve un `Future<void>` que indica la finalización asincrónica.
   @override
   Future<void> deleteUser(String userId) async {
     try {
