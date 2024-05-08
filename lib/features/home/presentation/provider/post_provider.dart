@@ -7,5 +7,5 @@ part 'post_provider.g.dart';
 @riverpod
 Future<List<PostModel>> postList(PostListRef ref) async {
   final postDataSource = ref.watch(postDataSourceProvider);
-  return postDataSource.getAll();
+  return postDataSource.getPostsRandomByDateRange('Madrid', DateTime(2024,05,05), DateTime(2024,05,09), 10);
 }

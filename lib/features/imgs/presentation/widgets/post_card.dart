@@ -20,6 +20,7 @@ class PostCard extends StatelessWidget {
               children: [
                 CircleAvatar(
                   backgroundImage: CachedNetworkImageProvider(post.userAvatarUrl),
+                  onBackgroundImageError: (exception, stackTrace) => const Icon(Icons.person)
                 ),
                 const SizedBox(width: 12.0),
                 Text(
