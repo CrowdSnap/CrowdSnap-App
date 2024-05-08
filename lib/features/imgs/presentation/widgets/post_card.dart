@@ -171,7 +171,7 @@ class _PostCardState extends ConsumerState<PostCard> {
                     ),
                     GestureDetector(
                       onTap: _showLikedUserSheet,
-                      child: Text('$_likeCount likes'),
+                      child: Text(_likeCount == 1 ? '$_likeCount like' : '$_likeCount likes'),
                     ),
                   ],
                 ),
