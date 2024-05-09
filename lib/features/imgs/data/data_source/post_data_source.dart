@@ -8,7 +8,7 @@ part 'post_data_source.g.dart';
 abstract class PostDataSource {
   Future<List<PostModel>> getPostsRandomByDateRange(
       String location, DateTime startDate, DateTime endDate, int limit);
-  Future<List<PostModel>> getAll();
+  Future<List<PostModel>> getPostsByUser(String userId);
   Future<void> createPost(PostModel post);
   Future<void> loadEnvVariables();
   Future<void> addLikeToPost(String postId, String userId);
@@ -30,13 +30,13 @@ class PostDataSourceImpl implements PostDataSource {
   }
 
   @override
-  Future<List<PostModel>> getAll() async {
-    final Db db = await Db.create(
-        "mongodb+srv://crowd_snap_app:N5nImjcPyNbYJAzf@cluster0.miqyblk.mongodb.net/CrowdSnap?retryWrites=true&w=majority&appName=Cluster0");
+  Future<List<PostModel>> getPostsByUser(String userId) async {
+    final Db db = await Db.create(_mongoUrl!);
     await db.open();
     final postsCollection = db.collection('posts');
 
-    final postsData = await postsCollection.find().toList();
+    final postsData =
+        await postsCollection.find(where.eq('userId', userId)).toList();
     await db.close();
 
     print('postsData: $postsData');
@@ -47,8 +47,7 @@ class PostDataSourceImpl implements PostDataSource {
   @override
   Future<List<PostModel>> getPostsRandomByDateRange(
       String location, DateTime startDate, DateTime endDate, int limit) async {
-    final Db db = await Db.create(
-        "mongodb+srv://crowd_snap_app:N5nImjcPyNbYJAzf@cluster0.miqyblk.mongodb.net/CrowdSnap?retryWrites=true&w=majority&appName=Cluster0");
+    final Db db = await Db.create(_mongoUrl!);
     await db.open();
     final postsCollection = db.collection('posts');
 
@@ -85,8 +84,7 @@ class PostDataSourceImpl implements PostDataSource {
 
   @override
   Future<void> createPost(PostModel post) async {
-    final Db db = await Db.create(
-        "mongodb+srv://crowd_snap_app:N5nImjcPyNbYJAzf@cluster0.miqyblk.mongodb.net/CrowdSnap?retryWrites=true&w=majority&appName=Cluster0");
+    final Db db = await Db.create(_mongoUrl!);
     await db.open();
     final postsCollection = db.collection('posts');
 
@@ -99,8 +97,7 @@ class PostDataSourceImpl implements PostDataSource {
 
   @override
   Future<void> addLikeToPost(String postId, String userId) async {
-    final Db db = await Db.create(
-        "mongodb+srv://crowd_snap_app:N5nImjcPyNbYJAzf@cluster0.miqyblk.mongodb.net/CrowdSnap?retryWrites=true&w=majority&appName=Cluster0");
+    final Db db = await Db.create(_mongoUrl!);
     await db.open();
     final postsCollection = db.collection('posts');
 
@@ -114,8 +111,7 @@ class PostDataSourceImpl implements PostDataSource {
 
   @override
   Future<void> removeLikeFromPost(String postId, String userId) async {
-    final Db db = await Db.create(
-        "mongodb+srv://crowd_snap_app:N5nImjcPyNbYJAzf@cluster0.miqyblk.mongodb.net/CrowdSnap?retryWrites=true&w=majority&appName=Cluster0");
+    final Db db = await Db.create(_mongoUrl!);
     await db.open();
     final postsCollection = db.collection('posts');
 

@@ -13,6 +13,7 @@ class UserModel with _$UserModel {
     required DateTime joinedAt,
     required DateTime birthDate,
     required bool firstTime,
+    String? statusString,
     String? avatarUrl,
   }) = _UserModel;
 

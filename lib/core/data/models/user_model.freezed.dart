@@ -27,6 +27,7 @@ mixin _$UserModel {
   DateTime get joinedAt => throw _privateConstructorUsedError;
   DateTime get birthDate => throw _privateConstructorUsedError;
   bool get firstTime => throw _privateConstructorUsedError;
+  String? get statusString => throw _privateConstructorUsedError;
   String? get avatarUrl => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -48,6 +49,7 @@ abstract class $UserModelCopyWith<$Res> {
       DateTime joinedAt,
       DateTime birthDate,
       bool firstTime,
+      String? statusString,
       String? avatarUrl});
 }
 
@@ -71,6 +73,7 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
     Object? joinedAt = null,
     Object? birthDate = null,
     Object? firstTime = null,
+    Object? statusString = freezed,
     Object? avatarUrl = freezed,
   }) {
     return _then(_value.copyWith(
@@ -102,6 +105,10 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
           ? _value.firstTime
           : firstTime // ignore: cast_nullable_to_non_nullable
               as bool,
+      statusString: freezed == statusString
+          ? _value.statusString
+          : statusString // ignore: cast_nullable_to_non_nullable
+              as String?,
       avatarUrl: freezed == avatarUrl
           ? _value.avatarUrl
           : avatarUrl // ignore: cast_nullable_to_non_nullable
@@ -126,6 +133,7 @@ abstract class _$$UserModelImplCopyWith<$Res>
       DateTime joinedAt,
       DateTime birthDate,
       bool firstTime,
+      String? statusString,
       String? avatarUrl});
 }
 
@@ -147,6 +155,7 @@ class __$$UserModelImplCopyWithImpl<$Res>
     Object? joinedAt = null,
     Object? birthDate = null,
     Object? firstTime = null,
+    Object? statusString = freezed,
     Object? avatarUrl = freezed,
   }) {
     return _then(_$UserModelImpl(
@@ -178,6 +187,10 @@ class __$$UserModelImplCopyWithImpl<$Res>
           ? _value.firstTime
           : firstTime // ignore: cast_nullable_to_non_nullable
               as bool,
+      statusString: freezed == statusString
+          ? _value.statusString
+          : statusString // ignore: cast_nullable_to_non_nullable
+              as String?,
       avatarUrl: freezed == avatarUrl
           ? _value.avatarUrl
           : avatarUrl // ignore: cast_nullable_to_non_nullable
@@ -197,6 +210,7 @@ class _$UserModelImpl implements _UserModel {
       required this.joinedAt,
       required this.birthDate,
       required this.firstTime,
+      this.statusString,
       this.avatarUrl});
 
   factory _$UserModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -217,11 +231,13 @@ class _$UserModelImpl implements _UserModel {
   @override
   final bool firstTime;
   @override
+  final String? statusString;
+  @override
   final String? avatarUrl;
 
   @override
   String toString() {
-    return 'UserModel(userId: $userId, username: $username, name: $name, email: $email, joinedAt: $joinedAt, birthDate: $birthDate, firstTime: $firstTime, avatarUrl: $avatarUrl)';
+    return 'UserModel(userId: $userId, username: $username, name: $name, email: $email, joinedAt: $joinedAt, birthDate: $birthDate, firstTime: $firstTime, statusString: $statusString, avatarUrl: $avatarUrl)';
   }
 
   @override
@@ -240,6 +256,8 @@ class _$UserModelImpl implements _UserModel {
                 other.birthDate == birthDate) &&
             (identical(other.firstTime, firstTime) ||
                 other.firstTime == firstTime) &&
+            (identical(other.statusString, statusString) ||
+                other.statusString == statusString) &&
             (identical(other.avatarUrl, avatarUrl) ||
                 other.avatarUrl == avatarUrl));
   }
@@ -247,7 +265,7 @@ class _$UserModelImpl implements _UserModel {
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, userId, username, name, email,
-      joinedAt, birthDate, firstTime, avatarUrl);
+      joinedAt, birthDate, firstTime, statusString, avatarUrl);
 
   @JsonKey(ignore: true)
   @override
@@ -272,6 +290,7 @@ abstract class _UserModel implements UserModel {
       required final DateTime joinedAt,
       required final DateTime birthDate,
       required final bool firstTime,
+      final String? statusString,
       final String? avatarUrl}) = _$UserModelImpl;
 
   factory _UserModel.fromJson(Map<String, dynamic> json) =
@@ -291,6 +310,8 @@ abstract class _UserModel implements UserModel {
   DateTime get birthDate;
   @override
   bool get firstTime;
+  @override
+  String? get statusString;
   @override
   String? get avatarUrl;
   @override
