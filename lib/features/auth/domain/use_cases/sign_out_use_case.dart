@@ -4,6 +4,7 @@ import 'package:crowd_snap/core/domain/repositories/shared_preferences/avatar_lo
 import 'package:crowd_snap/core/domain/use_cases/shared_preferences/delete_user_use_case.dart';
 import 'package:crowd_snap/features/auth/data/repositories_impl/auth_repository_impl.dart';
 import 'package:crowd_snap/features/auth/domain/repositories/auth_repository.dart';
+import 'package:crowd_snap/features/profile/presentation/notifier/profile_notifier.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'sign_out_use_case.g.dart';
@@ -13,15 +14,17 @@ class SignOutUseCase {
   final DeleteUserUseCase _deleteUserUseCase;
   final AvatarLocalRepository _avatarLocalRepository;
   final AuthState _authStateNotifier;
+  final ProfileNotifier _profileNotifier;
 
   SignOutUseCase(this._authRepository, this._deleteUserUseCase,
-      this._avatarLocalRepository, this._authStateNotifier);
+      this._avatarLocalRepository, this._authStateNotifier, this._profileNotifier);
 
   Future<void> execute() async {
     _authStateNotifier.loggedOut();
     await _authRepository.signOut();
     await _avatarLocalRepository.deleteAvatar();
     await _deleteUserUseCase.execute();
+    _profileNotifier.clear();
   }
 }
 
@@ -31,6 +34,7 @@ SignOutUseCase signOutUseCase(SignOutUseCaseRef ref) {
   final deleteUserUseCase = ref.watch(deleteUserUseCaseProvider);
   final deleteDeleteAvatarLocal = ref.watch(avatarLocalRepositoryProvider);
   final authState = ref.watch(authStateProvider.notifier);
+  final profileNotifier = ref.read(profileNotifierProvider.notifier);
   return SignOutUseCase(
-      authRepository, deleteUserUseCase, deleteDeleteAvatarLocal, authState);
+      authRepository, deleteUserUseCase, deleteDeleteAvatarLocal, authState, profileNotifier);
 }

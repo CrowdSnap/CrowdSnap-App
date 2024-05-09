@@ -75,7 +75,8 @@ class _PostCardState extends ConsumerState<PostCard> {
                 children: [
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.all(8.0), // Ajusta este valor según tus necesidades
+                      padding: const EdgeInsets.all(
+                          8.0), // Ajusta este valor según tus necesidades
                       child: ListView.builder(
                         controller: scrollController,
                         itemCount: widget.post.likedUserIds?.length ?? 0,
@@ -104,8 +105,8 @@ class _PostCardState extends ConsumerState<PostCard> {
                               }
                               return ListTile(
                                 leading: CircleAvatar(
-                                  backgroundImage:
-                                      CachedNetworkImageProvider(user.avatarUrl!),
+                                  backgroundImage: CachedNetworkImageProvider(
+                                      user.avatarUrl!),
                                 ),
                                 title: Text(user.name),
                                 subtitle: Text(user.username),
@@ -138,11 +139,19 @@ class _PostCardState extends ConsumerState<PostCard> {
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 children: [
-                  CircleAvatar(
-                      backgroundImage:
-                          CachedNetworkImageProvider(widget.post.userAvatarUrl),
-                      onBackgroundImageError: (exception, stackTrace) =>
-                          const Icon(Icons.person)),
+                  SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: CachedNetworkImage(
+                      imageUrl: widget.post.userAvatarUrl,
+                      placeholder: (context, url) =>
+                          const CircularProgressIndicator(),
+                      errorWidget: (context, url, error) => const Icon(Icons.person),
+                      imageBuilder: (context, imageProvider) => CircleAvatar(
+                        backgroundImage: imageProvider,
+                      ),
+                    ),
+                  ),
                   const SizedBox(width: 12.0),
                   Text(
                     widget.post.userName,
@@ -171,7 +180,9 @@ class _PostCardState extends ConsumerState<PostCard> {
                     ),
                     GestureDetector(
                       onTap: _showLikedUserSheet,
-                      child: Text(_likeCount == 1 ? '$_likeCount like' : '$_likeCount likes'),
+                      child: Text(_likeCount == 1
+                          ? '$_likeCount like'
+                          : '$_likeCount likes'),
                     ),
                   ],
                 ),

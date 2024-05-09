@@ -97,4 +97,9 @@ class ProfileNotifier extends _$ProfileNotifier {
   void updateIndex(int index) {
     state = state.copyWith(index: index);
   }
+
+  // Limpia el estado del notificador.
+  void clear() {
+    state = ProfileState();
+  }
 }

@@ -40,28 +40,36 @@ void main() async {
         builder: (context, ref, child) {
           ref.watch(authRedirectProvider);
 
-          // Obtiene la información del usuario y sus posts al iniciar la aplicación.
-          final getUserUseCase = ref.read(getUserUseCaseProvider);
-          final profileNotifier = ref.read(profileNotifierProvider.notifier);
-          final postRepository = ref.read(postRepositoryProvider);
-          final getAvatarUseCase = ref.read(avatarGetUseCaseProvider);
+          final User? user = FirebaseAuth.instance.currentUser;
+          if (user != null) {
+            try {
+              // Obtiene la información del usuario y sus posts al iniciar la aplicación.
+              final getUserUseCase = ref.read(getUserUseCaseProvider);
+              final profileNotifier =
+                  ref.read(profileNotifierProvider.notifier);
+              final postRepository = ref.read(postRepositoryProvider);
+              final getAvatarUseCase = ref.read(avatarGetUseCaseProvider);
 
-          getUserUseCase.execute().then((user) {
-            profileNotifier.updateUserId(user.userId);
-            profileNotifier.updateName(user.name);
-            profileNotifier.updateEmail(user.email);
-            profileNotifier.updateUserName(user.username);
-            profileNotifier.updateAge(user.birthDate);
+              getUserUseCase.execute().then((user) {
+                profileNotifier.updateUserId(user.userId);
+                profileNotifier.updateName(user.name);
+                profileNotifier.updateEmail(user.email);
+                profileNotifier.updateUserName(user.username);
+                profileNotifier.updateAge(user.birthDate);
 
-            // Obtiene los posts del usuario y los actualiza en el profileNotifier
-            postRepository.getPostsByUser(user.userId).then((posts) {
-              profileNotifier.updatePosts(posts);
-            });
-          });
+                // Obtiene los posts del usuario y los actualiza en el profileNotifier
+                postRepository.getPostsByUser(user.userId).then((posts) {
+                  profileNotifier.updatePosts(posts);
+                });
+              });
 
-          getAvatarUseCase.execute(userName).then((avatar) {
-            profileNotifier.updateImage(avatar); // Actualiza el estado del perfil con el avatar.
-          });
+              getAvatarUseCase.execute(userName).then((avatar) {
+                profileNotifier.updateImage(avatar);
+              });
+            } catch (e) {
+              print('Error: $e');
+            }
+          }
 
           return const MyApp();
         },
