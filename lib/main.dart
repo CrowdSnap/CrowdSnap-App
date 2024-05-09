@@ -63,8 +63,6 @@ void main() async {
             profileNotifier.updateImage(avatar); // Actualiza el estado del perfil con el avatar.
           });
 
-          
-
           return const MyApp();
         },
       ),
