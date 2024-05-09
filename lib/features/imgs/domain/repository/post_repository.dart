@@ -7,4 +7,6 @@ abstract class PostRepository {
   Future<void> addLikeToPost(String postId, String userId);
   Future<void> removeLikeFromPost(String postId, String userId);
   Future<List<PostModel>> getPostsByUser(String userId);
+  Future<void> incrementCommentCount(String postId);
+  Future<void> decrementCommentCount(String postId);
 }

@@ -1,5 +1,7 @@
 import 'package:crowd_snap/core/constants.dart';
 import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_use_case.dart';
+import 'package:crowd_snap/features/imgs/data/data_source/comment_data_source.dart';
+import 'package:crowd_snap/features/imgs/data/data_source/like_data_source.dart';
 import 'package:crowd_snap/features/imgs/data/data_source/post_data_source.dart';
 import 'package:crowd_snap/features/imgs/data/data_source/image_bucket_data_source.dart';
 import 'package:crowd_snap/features/imgs/data/repositories_impl/post_repository_impl.dart';
@@ -23,6 +25,10 @@ void main() async {
   await imageBucketDataSource.loadEnvVariables();
   final PostDataSourceImpl postDataSource = PostDataSourceImpl();
   await postDataSource.loadEnvVariables();
+  final CommentDataSourceImpl commentDataSource = CommentDataSourceImpl();
+  await commentDataSource.loadEnvVariables();
+  final LikeDataSourceImpl likeDataSource = LikeDataSourceImpl();
+  await likeDataSource.loadEnvVariables();
   // Inicializa Firebase antes de ejecutar la aplicación.
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -35,6 +41,8 @@ void main() async {
       overrides: [
         imageBucketDataSourceProvider.overrideWithValue(imageBucketDataSource),
         postDataSourceProvider.overrideWithValue(postDataSource),
+        commentDataSourceProvider.overrideWithValue(commentDataSource),
+        likeDataSourceProvider.overrideWithValue(likeDataSource),
       ],
       child: Consumer(
         builder: (context, ref, child) {

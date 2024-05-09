@@ -6,7 +6,7 @@ part of 'sign_in_use_case.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$signInUseCaseHash() => r'cb8ce6f2f7678d948abfbf1b67a8a5e346421880';
+String _$signInUseCaseHash() => r'492d175c69093879742589aa8b1d8d0bef0c94cc';
 
 /// See also [signInUseCase].
 @ProviderFor(signInUseCase)

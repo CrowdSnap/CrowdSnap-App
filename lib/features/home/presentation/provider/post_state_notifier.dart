@@ -14,7 +14,7 @@ class PostList extends _$PostList {
   Future<List<PostModel>> _fetchPosts() async {
     final postDataSource = ref.watch(postDataSourceProvider);
     return postDataSource.getPostsRandomByDateRange(
-        'Madrid', DateTime(2024, 05, 05), DateTime(2024, 05, 09), 2);
+        'Madrid', DateTime(2024, 05, 05), DateTime(2024, 05, 11), 2);
   }
 
   Future<void> loadMorePosts() async {
