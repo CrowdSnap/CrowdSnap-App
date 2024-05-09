@@ -1,5 +1,10 @@
+import 'package:crowd_snap/core/constants.dart';
+import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_use_case.dart';
 import 'package:crowd_snap/features/imgs/data/data_source/post_data_source.dart';
 import 'package:crowd_snap/features/imgs/data/data_source/image_bucket_data_source.dart';
+import 'package:crowd_snap/features/imgs/data/repositories_impl/post_repository_impl.dart';
+import 'package:crowd_snap/features/imgs/domain/use_case/avatar_get_use_case.dart';
+import 'package:crowd_snap/features/profile/presentation/notifier/profile_notifier.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -13,7 +18,8 @@ import 'package:logging/logging.dart';
 void main() async {
   final logger = Logger('main');
   await dotenv.load(fileName: '.env');
-  final ImageBucketDataSourceImpl imageBucketDataSource = ImageBucketDataSourceImpl();
+  final ImageBucketDataSourceImpl imageBucketDataSource =
+      ImageBucketDataSourceImpl();
   await imageBucketDataSource.loadEnvVariables();
   final PostDataSourceImpl postDataSource = PostDataSourceImpl();
   await postDataSource.loadEnvVariables();
@@ -28,13 +34,41 @@ void main() async {
     ProviderScope(
       overrides: [
         imageBucketDataSourceProvider.overrideWithValue(imageBucketDataSource),
+        postDataSourceProvider.overrideWithValue(postDataSource),
       ],
       child: Consumer(
-      builder: (context, ref, child) {
-        ref.watch(authRedirectProvider);
-        return const MyApp();
-      },
-    )),
+        builder: (context, ref, child) {
+          ref.watch(authRedirectProvider);
+
+          // Obtiene la información del usuario y sus posts al iniciar la aplicación.
+          final getUserUseCase = ref.read(getUserUseCaseProvider);
+          final profileNotifier = ref.read(profileNotifierProvider.notifier);
+          final postRepository = ref.read(postRepositoryProvider);
+          final getAvatarUseCase = ref.read(avatarGetUseCaseProvider);
+
+          getUserUseCase.execute().then((user) {
+            profileNotifier.updateUserId(user.userId);
+            profileNotifier.updateName(user.name);
+            profileNotifier.updateEmail(user.email);
+            profileNotifier.updateUserName(user.username);
+            profileNotifier.updateAge(user.birthDate);
+
+            // Obtiene los posts del usuario y los actualiza en el profileNotifier
+            postRepository.getPostsByUser(user.userId).then((posts) {
+              profileNotifier.updatePosts(posts);
+            });
+          });
+
+          getAvatarUseCase.execute(userName).then((avatar) {
+            profileNotifier.updateImage(avatar); // Actualiza el estado del perfil con el avatar.
+          });
+
+          
+
+          return const MyApp();
+        },
+      ),
+    ),
   );
 
   // Escucha los cambios en la autenticación de Firebase.

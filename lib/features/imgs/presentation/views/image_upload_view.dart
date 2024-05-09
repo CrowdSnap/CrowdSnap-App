@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:crowd_snap/app/router/app_router.dart';
 import 'package:crowd_snap/core/navbar/providers/navbar_provider.dart';
 import 'package:crowd_snap/features/imgs/domain/use_case/post_create_use_case.dart';
 import 'package:crowd_snap/features/imgs/presentation/notifier/image_picker_state.dart';

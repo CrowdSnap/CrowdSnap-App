@@ -3,6 +3,7 @@ import 'package:crowd_snap/features/auth/presentation/views/google_sign_up_view.
 import 'package:crowd_snap/features/chats/presentation/chats_view.dart';
 import 'package:crowd_snap/features/imgs/presentation/views/avatar_upload_view.dart';
 import 'package:crowd_snap/features/imgs/presentation/views/image_upload_view.dart';
+import 'package:crowd_snap/features/profile/presentation/views/settings_view.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:crowd_snap/features/auth/presentation/views/login_view.dart';
@@ -30,17 +31,14 @@ class AppRouter extends _$AppRouter {
           builder: (context, state) => const RegisterView(),
         ),
         GoRoute(
-          path: '/forgot-password',
-          builder: (context, state) => const ForgotPasswordView()
-        ),
+            path: '/forgot-password',
+            builder: (context, state) => const ForgotPasswordView()),
         GoRoute(
-          path:'/avatar-upload',
-          builder: (context, state) => const AvatarUploadView()
-        ),
+            path: '/avatar-upload',
+            builder: (context, state) => const AvatarUploadView()),
         GoRoute(
           path: '/google-sign-up',
           builder: (context, state) => const GoogleSignUpView(),
-
         ),
         ShellRoute(
           builder: (context, state, child) {
@@ -63,17 +61,16 @@ class AppRouter extends _$AppRouter {
               builder: (context, state) => const ProfileView(),
             ),
             GoRoute(
-              path: '/chats',
-              builder: (context, state) => const ChatsView()
-            ),
+                path: '/chats', builder: (context, state) => const ChatsView()),
             GoRoute(
-              path: '/picture-upload',
-              builder: (context, state) => const ImageUploadView()
-            )
+                path: '/picture-upload',
+                builder: (context, state) => const ImageUploadView()),
+            GoRoute(
+                path: '/settings',
+                builder: (context, state) => const SettingsView())
           ],
         ),
       ],
-      
     );
   }
 }

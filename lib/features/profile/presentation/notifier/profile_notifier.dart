@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:crowd_snap/core/data/models/post_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'profile_notifier.g.dart';
@@ -11,6 +12,8 @@ class ProfileState {
   final String userName;
   final DateTime? birthDate;
   final File? image;
+  final List<PostModel> posts;
+  final int index;
 
   ProfileState(
       {this.userId = '',
@@ -18,7 +21,9 @@ class ProfileState {
       this.email = '',
       this.userName = '',
       this.birthDate,
-      this.image});
+      this.image,
+      this.posts = const [],
+      this.index = 0});
 
   // Crea una copia del estado actual con las propiedades modificadas.
   ProfileState copyWith({
@@ -28,6 +33,8 @@ class ProfileState {
     String? userName,
     DateTime? birthDate,
     File? image,
+    List<PostModel>? posts,
+    int? index,
   }) {
     return ProfileState(
       userId: userId ?? this.userId,
@@ -36,11 +43,13 @@ class ProfileState {
       userName: userName ?? this.userName,
       birthDate: birthDate ?? this.birthDate,
       image: image ?? this.image,
+      posts: posts ?? this.posts,
+      index: index ?? this.index,
     );
   }
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class ProfileNotifier extends _$ProfileNotifier {
   // Constructor para el notificador de perfil.
   // Inicializa el estado con un `ProfileState` vacío.
@@ -77,5 +86,15 @@ class ProfileNotifier extends _$ProfileNotifier {
   // Actualiza la imagen de perfil del usuario en el estado.
   void updateImage(File image) {
     state = state.copyWith(image: image);
+  }
+
+  // Actualiza la lista de publicaciones del usuario en el estado.
+  void updatePosts(List<PostModel> posts) {
+    state = state.copyWith(posts: posts);
+  }
+
+  // Actualiza el índice de la grid seleccionada en el estado.
+  void updateIndex(int index) {
+    state = state.copyWith(index: index);
   }
 }
