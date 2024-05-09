@@ -1,9 +1,11 @@
 import 'dart:io';
 import 'package:crowd_snap/app/router/redirect/auth_state_provider.dart';
 import 'package:crowd_snap/core/data/repository_impl/shared_preferences/user_repository_impl.dart';
+import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_use_case.dart';
 import 'package:crowd_snap/features/auth/data/repositories_impl/firestore_repository_impl.dart';
 import 'package:crowd_snap/features/imgs/domain/use_case/avatar_upload_use_case.dart';
 import 'package:crowd_snap/features/imgs/presentation/notifier/image_picker_state.dart';
+import 'package:crowd_snap/features/profile/presentation/notifier/profile_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -49,6 +51,8 @@ class AvatarUploadView extends ConsumerWidget {
     final avatarUpload = ref.watch(avatarUploadUseCaseProvider);
     final firestoreRepository = ref.watch(firestoreRepositoryProvider);
     final userRepository = ref.watch(userRepositoryProvider);
+    final profileNotifier = ref.read(profileNotifierProvider.notifier);
+    final getUserUseCase = ref.read(getUserUseCaseProvider);
 
     // Obtiene el usuario actual del repositorio de usuarios.
     final userModel = await userRepository.getUser();
@@ -63,6 +67,16 @@ class AvatarUploadView extends ConsumerWidget {
 
     // Actualiza el avatar del usuario en el modelo de usuario local.
     userRepository.updateUserAvatar(image);
+
+    getUserUseCase.execute().then((user) {
+        profileNotifier.updateUserId(user.userId);
+        profileNotifier.updateName(user.name);
+        profileNotifier.updateEmail(user.email);
+        profileNotifier.updateUserName(user.username);
+        profileNotifier.updateAge(user.birthDate);
+      });
+
+    profileNotifier.updateImage(imageState);
   }
 
   // Método build para construir el widget de la vista.
