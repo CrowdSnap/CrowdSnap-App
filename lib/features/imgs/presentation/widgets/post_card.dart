@@ -74,209 +74,6 @@ class _PostCardState extends ConsumerState<PostCard> {
     }
   }
 
-  void _showLikedUserSheet() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (BuildContext context) {
-        return ClipRRect(
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-          child: DraggableScrollableSheet(
-            initialChildSize: 0.2,
-            maxChildSize: 0.7,
-            minChildSize: 0.15,
-            expand: false,
-            builder: (BuildContext context, ScrollController scrollController) {
-              return Column(
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: FutureBuilder<List<LikeModel>>(
-                        future: ref
-                            .read(likeRepositoryProvider)
-                            .getLikesByPostId(widget.post.mongoId!),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-                          if (snapshot.hasError) {
-                            return Text('Error: ${snapshot.error}');
-                          }
-                          final likes = snapshot.data;
-                          if (likes == null || likes.isEmpty) {
-                            return const Text('No likes found');
-                          }
-                          return ListView.builder(
-                            controller: scrollController,
-                            itemCount: likes.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              final like = likes[index];
-                              return FutureBuilder<UserModel>(
-                                future: ref
-                                    .read(firestoreRepositoryProvider)
-                                    .getUser(like.userId),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return const SizedBox(
-                                      height: 50,
-                                      child: Center(
-                                        child: CircularProgressIndicator(),
-                                      ),
-                                    );
-                                  }
-                                  if (snapshot.hasError) {
-                                    return Text('Error: ${snapshot.error}');
-                                  }
-                                  final user = snapshot.data;
-                                  if (user == null) {
-                                    return const Text('User not found');
-                                  }
-                                  return ListTile(
-                                    leading: CircleAvatar(
-                                      backgroundImage:
-                                          CachedNetworkImageProvider(
-                                              user.avatarUrl!),
-                                    ),
-                                    title: Text(user.name),
-                                    subtitle: Text(user.username),
-                                  );
-                                },
-                              );
-                            },
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-        );
-      },
-    );
-  }
-
-  void _showCommentSheet() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (BuildContext context) {
-        return ClipRRect(
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-          child: DraggableScrollableSheet(
-            initialChildSize: 0.5,
-            maxChildSize: 0.9,
-            minChildSize: 0.4,
-            expand: false,
-            builder: (BuildContext context, ScrollController scrollController) {
-              return Column(
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: FutureBuilder<List<CommentModel>>(
-                        future: ref
-                            .read(commentRepositoryProvider)
-                            .getCommentsByPost(widget.post.mongoId!),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-                          if (snapshot.hasError) {
-                            return Text('Error: ${snapshot.error}');
-                          }
-                          final comments = snapshot.data;
-                          if (comments == null || comments.isEmpty) {
-                            return const Text('No comments found');
-                          }
-                          return ListView.builder(
-                            controller: scrollController,
-                            itemCount: comments.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              final comment = comments[index];
-                              return FutureBuilder<UserModel>(
-                                future: ref
-                                    .read(firestoreRepositoryProvider)
-                                    .getUser(comment.userId),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return const SizedBox(
-                                      height: 50,
-                                      child: Center(
-                                        child: CircularProgressIndicator(),
-                                      ),
-                                    );
-                                  }
-                                  if (snapshot.hasError) {
-                                    return Text('Error: ${snapshot.error}');
-                                  }
-                                  final user = snapshot.data;
-                                  if (user == null) {
-                                    return const Text('User not found');
-                                  }
-                                  return ListTile(
-                                    leading: CircleAvatar(
-                                      backgroundImage:
-                                          CachedNetworkImageProvider(
-                                              user.avatarUrl!),
-                                    ),
-                                    title: Text(user.name),
-                                    subtitle: Text(comment.text),
-                                  );
-                                },
-                              );
-                            },
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: _commentController,
-                            onChanged: (value) {
-                              setState(() {
-                                _commentText = value;
-                              });
-                              print('Comment text: $_commentText');
-                            },
-                            decoration: const InputDecoration(
-                              hintText: 'Add a comment...',
-                            ),
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.send),
-                          onPressed: () {
-                            _addComment(_commentText);
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-        );
-      },
-    );
-  }
-
   void _addComment(String value) {
     final createCommentUseCase = ref.read(createCommentUseCaseProvider);
     createCommentUseCase.execute(value, widget.post.mongoId!);
@@ -284,6 +81,349 @@ class _PostCardState extends ConsumerState<PostCard> {
       setState(() {
         _commentCount++;
       });
+    }
+  }
+
+  String _getElapsedTime(DateTime createdAt) {
+    final now = DateTime.now();
+    final difference = now.difference(createdAt);
+
+    if (difference.inDays > 7) {
+      final weeks = (difference.inDays / 7).floor();
+      return '$weeks semana${weeks > 1 ? 's' : ''}';
+    } else if (difference.inDays >= 1) {
+      return '${difference.inDays} día${difference.inDays > 1 ? 's' : ''}';
+    } else if (difference.inHours >= 1) {
+      return '${difference.inHours} hora${difference.inHours > 1 ? 's' : ''}';
+    } else if (difference.inMinutes >= 1) {
+      return '${difference.inMinutes} minuto${difference.inMinutes > 1 ? 's' : ''}';
+    } else {
+      return '${difference.inSeconds} segundo${difference.inSeconds > 1 ? 's' : ''}';
+    }
+  }
+
+  void _showLikedUserSheet() {
+    if (_likeCount == 0) {
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (BuildContext context) {
+          return ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            child: DraggableScrollableSheet(
+              initialChildSize: 0.15,
+              maxChildSize: 0.15,
+              minChildSize: 0.1,
+              expand: false,
+              builder:
+                  (BuildContext context, ScrollController scrollController) {
+                return const Column(
+                  children: [
+                    Expanded(
+                      child: Center(
+                        child: Text(
+                          'Se el primero en dar like',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          );
+        },
+      );
+    } else {
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (BuildContext context) {
+          return ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            child: DraggableScrollableSheet(
+              initialChildSize: 0.2,
+              maxChildSize: 0.7,
+              minChildSize: 0.15,
+              expand: false,
+              builder:
+                  (BuildContext context, ScrollController scrollController) {
+                return Column(
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: FutureBuilder<List<LikeModel>>(
+                          future: ref
+                              .read(likeRepositoryProvider)
+                              .getLikesByPostId(widget.post.mongoId!),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+                            if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            }
+                            final likes = snapshot.data;
+                            if (likes == null || likes.isEmpty) {
+                              return const Text('No likes found');
+                            }
+                            return ListView.builder(
+                              controller: scrollController,
+                              itemCount: likes.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                final like = likes[index];
+                                return FutureBuilder<UserModel>(
+                                  future: ref
+                                      .read(firestoreRepositoryProvider)
+                                      .getUser(like.userId),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return const SizedBox(
+                                        height: 50,
+                                        child: Center(
+                                          child: CircularProgressIndicator(),
+                                        ),
+                                      );
+                                    }
+                                    if (snapshot.hasError) {
+                                      return Text('Error: ${snapshot.error}');
+                                    }
+                                    final user = snapshot.data;
+                                    if (user == null) {
+                                      return const Text('User not found');
+                                    }
+                                    return ListTile(
+                                      leading: CircleAvatar(
+                                        backgroundImage:
+                                            CachedNetworkImageProvider(
+                                                user.avatarUrl!),
+                                      ),
+                                      title: Row(
+                                        children: [
+                                          Text(user.name),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            _getElapsedTime(like.createdAt),
+                                            style: const TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.grey),
+                                          ),
+                                        ],
+                                      ),
+                                      subtitle: Text(user.username),
+                                    );
+                                  },
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          );
+        },
+      );
+    }
+  }
+
+  void _showCommentSheet() {
+    if (_commentCount == 0) {
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (BuildContext context) {
+          return ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            child: DraggableScrollableSheet(
+              initialChildSize: 0.25,
+              maxChildSize: 0.25,
+              minChildSize: 0.1,
+              expand: false,
+              builder:
+                  (BuildContext context, ScrollController scrollController) {
+                return Column(
+                  children: [
+                    const Expanded(
+                      child: Center(
+                        child: Text(
+                          'Se el primero en comentar',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: _commentController,
+                              onChanged: (value) {
+                                setState(() {
+                                  _commentText = value;
+                                });
+                              },
+                              decoration: const InputDecoration(
+                                hintText: 'Add a comment...',
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.send),
+                            onPressed: () {
+                              _addComment(_commentText);
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          );
+        },
+      );
+    } else {
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (BuildContext context) {
+          return ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            child: DraggableScrollableSheet(
+              initialChildSize: 0.3,
+              maxChildSize: 0.6,
+              minChildSize: 0.2,
+              expand: false,
+              builder:
+                  (BuildContext context, ScrollController scrollController) {
+                return Column(
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: FutureBuilder<List<CommentModel>>(
+                          future: ref
+                              .read(commentRepositoryProvider)
+                              .getCommentsByPost(widget.post.mongoId!),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+                            if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            }
+                            final comments = snapshot.data;
+                            if (comments == null || comments.isEmpty) {
+                              return const Text('No comments found');
+                            }
+                            return ListView.builder(
+                              controller: scrollController,
+                              itemCount: comments.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                final comment = comments[index];
+                                return FutureBuilder<UserModel>(
+                                  future: ref
+                                      .read(firestoreRepositoryProvider)
+                                      .getUser(comment.userId),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return const SizedBox(
+                                        height: 50,
+                                        child: Center(
+                                          child: CircularProgressIndicator(),
+                                        ),
+                                      );
+                                    }
+                                    if (snapshot.hasError) {
+                                      return Text('Error: ${snapshot.error}');
+                                    }
+                                    final user = snapshot.data;
+                                    if (user == null) {
+                                      return const Text('User not found');
+                                    }
+                                    return ListTile(
+                                      leading: CircleAvatar(
+                                        backgroundImage:
+                                            CachedNetworkImageProvider(
+                                                user.avatarUrl!),
+                                      ),
+                                      title: Row(
+                                        children: [
+                                          Text(user.name),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            _getElapsedTime(comment.createdAt),
+                                            style: const TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.grey),
+                                          ),
+                                        ],
+                                      ),
+                                      subtitle: Text(comment.text),
+                                    );
+                                  },
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: _commentController,
+                              onChanged: (value) {
+                                setState(() {
+                                  _commentText = value;
+                                });
+                                print('Comment text: $_commentText');
+                              },
+                              decoration: const InputDecoration(
+                                hintText: 'Add a comment...',
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.send),
+                            onPressed: () {
+                              _addComment(_commentText);
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          );
+        },
+      );
     }
   }
 
@@ -319,6 +459,14 @@ class _PostCardState extends ConsumerState<PostCard> {
                     widget.post.userName,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Spacer(), // Añade un Spacer para empujar la fecha al final
+                  Text(
+                    'Subido hace ${_getElapsedTime(widget.post.createdAt)}', // Muestra hace cuanto se subió
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 12,
                     ),
                   ),
                 ],

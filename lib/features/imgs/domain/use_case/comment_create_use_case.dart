@@ -15,7 +15,7 @@ class CreateCommentUseCase {
 
   CreateCommentUseCase(this._commentRepository, this._getUserUseCase, this._postRepository);
 
-  Future<void> execute(String text, String postId) async {
+  Future<CommentModel> execute(String text, String postId) async {
     final userModel = await _getUserUseCase.execute();
     final userId = userModel.userId;
 
@@ -26,9 +26,9 @@ class CreateCommentUseCase {
       createdAt: DateTime.now(),
       likes: 0,
     );
-    print('Comment created with text: $text');
     _commentRepository.createComment(comment);
     _postRepository.incrementCommentCount(postId);
+    return comment;
   }
 }
 
