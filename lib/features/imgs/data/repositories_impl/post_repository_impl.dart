@@ -41,4 +41,14 @@ class PostRepositoryImpl implements PostRepository {
   Future<List<PostModel>> getPostsByUser(String userId) {
     return _postDataSource.getPostsByUser(userId);
   }
+
+  @override
+  Future<void> incrementCommentCount(String postId) {
+    return _postDataSource.incrementCommentCount(postId);
+  }
+
+  @override
+  Future<void> decrementCommentCount(String postId) {
+    return _postDataSource.decrementCommentCount(postId);
+  }
 }

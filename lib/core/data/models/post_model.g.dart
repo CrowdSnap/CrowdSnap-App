@@ -18,11 +18,12 @@ _$PostModelImpl _$$PostModelImplFromJson(Map<String, dynamic> json) =>
           .toList(),
       location: json['location'] as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
-      likedUserIds: (json['likedUserIds'] as List<dynamic>?)
-          ?.map((e) => e as String)
+      likeCount: (json['likeCount'] as num).toInt(),
+      commentCount: (json['commentCount'] as num).toInt(),
+      likedUserIds: (json['likedUserIds'] as List<dynamic>)
+          .map((e) => e as String)
           .toList(),
       description: json['description'] as String?,
-      commentId: json['commentId'] as String?,
     );
 
 Map<String, dynamic> _$$PostModelImplToJson(_$PostModelImpl instance) =>
@@ -35,7 +36,8 @@ Map<String, dynamic> _$$PostModelImplToJson(_$PostModelImpl instance) =>
       'taggedUserIds': instance.taggedUserIds,
       'location': instance.location,
       'createdAt': instance.createdAt.toIso8601String(),
+      'likeCount': instance.likeCount,
+      'commentCount': instance.commentCount,
       'likedUserIds': instance.likedUserIds,
       'description': instance.description,
-      'commentId': instance.commentId,
     };

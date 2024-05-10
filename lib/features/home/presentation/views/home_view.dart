@@ -66,7 +66,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
               slivers: [
                 SliverAppBar(
                   title: GestureDetector(
-                    onTap: _scrollToTop,
+                    onTap: () => ref.read(postListProvider.notifier).refreshPosts(),
                     child: const Text('Home'),
                   ),
                   pinned: false,

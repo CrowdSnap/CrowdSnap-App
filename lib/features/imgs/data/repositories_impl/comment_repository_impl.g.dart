@@ -1,28 +1,25 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'post_remove_like_use_case.dart';
+part of 'comment_repository_impl.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$postRemoveLikeUseCaseHash() =>
-    r'dfbfe04a766613e4a5389bfd3585e3869c71ba9e';
+String _$commentRepositoryHash() => r'597e7693193cfd52082cad400ce940774f904539';
 
-/// See also [postRemoveLikeUseCase].
-@ProviderFor(postRemoveLikeUseCase)
-final postRemoveLikeUseCaseProvider =
-    AutoDisposeProvider<PostRemoveLikeUseCase>.internal(
-  postRemoveLikeUseCase,
-  name: r'postRemoveLikeUseCaseProvider',
+/// See also [commentRepository].
+@ProviderFor(commentRepository)
+final commentRepositoryProvider = Provider<CommentRepositoryImpl>.internal(
+  commentRepository,
+  name: r'commentRepositoryProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$postRemoveLikeUseCaseHash,
+      : _$commentRepositoryHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef PostRemoveLikeUseCaseRef
-    = AutoDisposeProviderRef<PostRemoveLikeUseCase>;
+typedef CommentRepositoryRef = ProviderRef<CommentRepositoryImpl>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

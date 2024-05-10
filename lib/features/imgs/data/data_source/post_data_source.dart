@@ -11,6 +11,8 @@ abstract class PostDataSource {
   Future<List<PostModel>> getPostsByUser(String userId);
   Future<void> createPost(PostModel post);
   Future<void> loadEnvVariables();
+  Future<void> incrementCommentCount(String postId);
+  Future<void> decrementCommentCount(String postId);
   Future<void> addLikeToPost(String postId, String userId);
   Future<void> removeLikeFromPost(String postId, String userId);
 }
@@ -103,7 +105,7 @@ class PostDataSourceImpl implements PostDataSource {
 
     await postsCollection.updateOne(
       where.eq('_id', ObjectId.fromHexString(postId)),
-      modify.addToSet('likedUserIds', userId),
+      modify.inc('likeCount', 1).push('likedUserIds', userId),
     );
 
     await db.close();
@@ -116,8 +118,36 @@ class PostDataSourceImpl implements PostDataSource {
     final postsCollection = db.collection('posts');
 
     await postsCollection.updateOne(
+        where.eq('_id', ObjectId.fromHexString(postId)),
+        modify.inc('likeCount', -1).pull('likedUserIds', 'userId')
+    );
+
+    await db.close();
+  }
+
+  @override
+  Future<void> incrementCommentCount(String postId) async {
+    final Db db = await Db.create(_mongoUrl!);
+    await db.open();
+    final postsCollection = db.collection('posts');
+
+    await postsCollection.updateOne(
       where.eq('_id', ObjectId.fromHexString(postId)),
-      modify.pull('likedUserIds', userId),
+      modify.inc('commentCount', 1),
+    );
+
+    await db.close();
+  }
+
+  @override
+  Future<void> decrementCommentCount(String postId) async {
+    final Db db = await Db.create(_mongoUrl!);
+    await db.open();
+    final postsCollection = db.collection('posts');
+
+    await postsCollection.updateOne(
+      where.eq('_id', ObjectId.fromHexString(postId)),
+      modify.inc('commentCount', -1),
     );
 
     await db.close();

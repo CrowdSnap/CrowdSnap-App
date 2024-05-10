@@ -1,25 +1,25 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'comments_model.dart';
+part of 'comment_model.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$CommentsModelImpl _$$CommentsModelImplFromJson(Map<String, dynamic> json) =>
-    _$CommentsModelImpl(
-      commentId: json['commentId'] as String,
+_$CommentModelImpl _$$CommentModelImplFromJson(Map<String, dynamic> json) =>
+    _$CommentModelImpl(
+      postId: json['postId'] as String,
       userId: json['userId'] as String,
-      comment: json['comment'] as String,
+      text: json['text'] as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
-      likes: (json['likes'] as num?)?.toInt(),
+      likes: (json['likes'] as num).toInt(),
     );
 
-Map<String, dynamic> _$$CommentsModelImplToJson(_$CommentsModelImpl instance) =>
+Map<String, dynamic> _$$CommentModelImplToJson(_$CommentModelImpl instance) =>
     <String, dynamic>{
-      'commentId': instance.commentId,
+      'postId': instance.postId,
       'userId': instance.userId,
-      'comment': instance.comment,
+      'text': instance.text,
       'createdAt': instance.createdAt.toIso8601String(),
       'likes': instance.likes,
     };

@@ -30,6 +30,9 @@ class CreatePostUseCase {
       taggedUserIds: [],
       imageUrl: imageUrl,
       createdAt: DateTime.now(),
+      likeCount: 0,
+      commentCount: 0,
+      likedUserIds: [],
     );
     print('Post created with image url: $imageUrl');
     _postRepository.createPost(post);
