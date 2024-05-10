@@ -474,7 +474,13 @@ class _PostCardState extends ConsumerState<PostCard> {
             ),
             CachedNetworkImage(
               imageUrl: widget.post.imageUrl,
-              placeholder: (context, url) => const CircularProgressIndicator(),
+              placeholder: (context, url) => const SizedBox(
+                height: 548,
+                width: 600,
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
               errorWidget: (context, url, error) => const Icon(Icons.error),
             ),
             Row(
