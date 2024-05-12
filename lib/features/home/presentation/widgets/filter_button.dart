@@ -17,6 +17,9 @@ class FilterButton extends ConsumerWidget {
               initialDate: DateTime.now(),
               firstDate: DateTime(2024, 05, 05),
               lastDate: DateTime(2100),
+              locale: const Locale('es', 'ES'),
+              initialEntryMode: DatePickerEntryMode.calendar,
+              initialDatePickerMode: DatePickerMode.day,
             );
             if (selectedDate != null) {
               ref.read(startDateProvider.notifier).setStartDate(selectedDate);
@@ -28,6 +31,9 @@ class FilterButton extends ConsumerWidget {
               initialDate: DateTime.now(),
               firstDate: DateTime(2024, 05, 05),
               lastDate: DateTime(2100),
+              locale: const Locale('es', 'ES'),
+              initialEntryMode: DatePickerEntryMode.calendar,
+              initialDatePickerMode: DatePickerMode.day,
             );
             if (selectedDate != null) {
               ref.read(endDateProvider.notifier).setEndDate(selectedDate);

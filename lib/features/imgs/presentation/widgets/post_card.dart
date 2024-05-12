@@ -461,9 +461,9 @@ class _PostCardState extends ConsumerState<PostCard> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const Spacer(), // Añade un Spacer para empujar la fecha al final
+                  const Spacer(),
                   Text(
-                    'Subido hace ${_getElapsedTime(widget.post.createdAt)}', // Muestra hace cuanto se subió
+                    'Subido hace ${_getElapsedTime(widget.post.createdAt)}',
                     style: TextStyle(
                       color: Colors.grey[600],
                       fontSize: 12,

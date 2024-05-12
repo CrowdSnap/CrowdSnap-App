@@ -13,20 +13,36 @@ class PostList extends _$PostList {
   }
 
   Future<List<PostModel>> _fetchPosts() async {
-  final postDataSource = ref.watch(postDataSourceProvider);
-  final startDate = ref.watch(startDateProvider);
-  final endDate = ref.watch(endDateProvider);
-  final city = ref.watch(cityProvider);
-  final numberOfPosts = ref.watch(numberOfPostsProvider);
-  final query = postDataSource.getPostsRandomByDateRange(
-    city ?? 'Madrid',
-    startDate ?? DateTime(2024, 05, 05),
-    endDate ?? DateTime(2024, 05, 11),
-    numberOfPosts,
-  );
-  print('Query: $city, $startDate, $endDate, $numberOfPosts');
-  return query;
-}
+    final postDataSource = ref.watch(postDataSourceProvider);
+    final startDate = ref.watch(startDateProvider);
+    final endDate = ref.watch(endDateProvider);
+    final city = ref.watch(cityProvider);
+    final numberOfPosts = ref.watch(numberOfPostsProvider);
+
+    // Obtener la fecha actual
+    final now = DateTime.now();
+
+    // Calcular el lunes y el domingo de la semana actual
+    final monday = DateTime(now.year, now.month, now.day - (now.weekday - 1));
+    final sunday = DateTime(now.year, now.month, now.day + (8 - now.weekday));
+
+    // Establecer startDate y endDate por defecto si no hay valores seleccionados
+    final defaultStartDate = startDate ?? monday;
+    final defaultEndDate = endDate ?? sunday;
+
+    // Obtener solo la fecha sin la hora
+    final startDateOnly = DateTime(defaultStartDate.year, defaultStartDate.month, defaultStartDate.day);
+    final endDateOnly = DateTime(defaultEndDate.year, defaultEndDate.month, defaultEndDate.day);
+
+    final query = postDataSource.getPostsRandomByDateRange(
+      city ?? 'Madrid',
+      startDateOnly,
+      endDateOnly,
+      numberOfPosts,
+    );
+    print('Query: $city, $startDateOnly, $endDateOnly, $numberOfPosts');
+    return query;
+  }
 
   Future<void> loadMorePosts() async {
     state = await AsyncValue.guard(() async {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:crowd_snap/app/router/app_router.dart';
 import 'package:crowd_snap/app/theme/notifier/theme_notifier.dart';
@@ -13,7 +14,16 @@ class MyApp extends ConsumerWidget {
     final appRouter = ref.read(appRouterProvider);
 
     return MaterialApp.router(
-      title: 'Mi Aplicación',
+      title: 'CrowdSnap',
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en'), // English
+        Locale('es'), // Spanish
+      ],
       theme: AppTheme(isDarkMode: isDarkMode).getTheme(),
       routerConfig: appRouter,
       debugShowCheckedModeBanner: false,

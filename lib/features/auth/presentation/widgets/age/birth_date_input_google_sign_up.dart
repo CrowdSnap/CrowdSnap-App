@@ -58,6 +58,9 @@ class BirthDateInputGoogleSignUp extends ConsumerWidget {
               initialDate: formValues.birthDate ?? DateTime.now(),
               firstDate: DateTime(1900),
               lastDate: DateTime.now(),
+              locale: const Locale('es', 'ES'),
+              initialEntryMode: DatePickerEntryMode.calendar,
+              initialDatePickerMode: DatePickerMode.day,
             );
             // Si se selecciona una fecha, la actualiza en el estado del formulario y valida visualmente.
             if (selectedDate != null) {
