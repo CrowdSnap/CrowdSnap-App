@@ -20,7 +20,7 @@ class ImageCompressUseCase {
     final result = await FlutterImageCompress.compressAndGetFile(
       image.path,
       isAvatar
-          ? '${directory.path}/compressed-avatar-$userName${DateTime.now().millisecondsSinceEpoch}.jpeg'
+          ? '${directory.path}/compressed-avatar-$userName.jpeg'
           : '${directory.path}/compressed-image-$userName.jpeg',
       keepExif: false,
       quality: quality,

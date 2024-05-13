@@ -29,7 +29,7 @@ class AvatarLocalDataSourceImpl implements AvatarLocalDataSource {
       userName = user.username;
     }
     final imageName =
-        'avatar-$userName-${DateTime.now().millisecondsSinceEpoch}.jpeg';
+        'avatar-$userName.jpeg';
 
     final directory = await getApplicationDocumentsDirectory();
     await avatar.copy('${directory.path}/$imageName');

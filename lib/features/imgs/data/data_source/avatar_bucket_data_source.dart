@@ -72,7 +72,7 @@ class AvatarBucketDataSourceImpl implements AvatarBucketDataSource {
     }
 
     // Crea un nombre único para la imagen combinando el nombre de usuario y la fecha y hora actual con la extensión .jpeg.
-    final imageName = '$userName-${DateTime.now()}.jpeg';
+    final imageName = '$userName-avatar.jpeg';
 
     // Obtiene una referencia al almacenamiento de Firebase Storage en la ruta "images/$imageName".
     final ref = _firebaseStorage.ref().child('images/$imageName');

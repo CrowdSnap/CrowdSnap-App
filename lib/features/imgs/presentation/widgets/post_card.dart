@@ -27,6 +27,7 @@ class _PostCardState extends ConsumerState<PostCard> {
   int _likeCount = 0;
   int _commentCount = 0;
   String _commentText = '';
+  bool _isLoading = true;
   final _commentController = TextEditingController();
 
   @override
