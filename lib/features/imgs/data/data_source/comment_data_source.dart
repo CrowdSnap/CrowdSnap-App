@@ -7,11 +7,9 @@ part 'comment_data_source.g.dart';
 
 abstract class CommentDataSource {
   Future<List<CommentModel>> getCommentsByPost(String postId);
-  Future<CommentModel> getCommentById(String commentId);
-  Future<void> createComment(CommentModel comment);
+  Future<CommentModel> getCommentById(String postId, String commentId);
+  Future<void> createComment(String postId, CommentModel comment);
   Future<void> loadEnvVariables();
-  Future<void> addLikeToComment(String commentId, String userId);
-  Future<void> removeLikeFromComment(String commentId, String userId);
 }
 
 @Riverpod(keepAlive: true)
@@ -32,67 +30,37 @@ class CommentDataSourceImpl implements CommentDataSource {
   Future<List<CommentModel>> getCommentsByPost(String postId) async {
     final Db db = await Db.create(_mongoUrl!);
     await db.open();
-    final commentsCollection = db.collection('comments');
+    final postsCollection = db.collection('posts');
 
-    final commentsData =
-        await commentsCollection.find(where.eq('postId', postId)).toList();
+    final post = await postsCollection.findOne(where.eq('_id', ObjectId.fromHexString(postId)));
     await db.close();
 
-    print('commentsData: $commentsData');
-
-    return commentsData.map((json) => CommentModel.fromJson(json)).toList();
+    final commentsData = post?['comments'] ?? [];
+    return commentsData.map<CommentModel>((json) => CommentModel.fromJson(json)).toList();
   }
 
   @override
-  Future<CommentModel> getCommentById(String commentId) async {
+  Future<CommentModel> getCommentById(String postId, String commentId) async {
     final Db db = await Db.create(_mongoUrl!);
     await db.open();
-    final commentsCollection = db.collection('comments');
+    final postsCollection = db.collection('posts');
 
-    final commentData = await commentsCollection.findOne(
-      where.eq('_id', ObjectId.fromHexString(commentId)),
-    );
+    final post = await postsCollection.findOne(where.eq('_id', ObjectId.fromHexString(postId)));
     await db.close();
 
-    return CommentModel.fromJson(commentData!);
+    final commentData = post?['comments']?.firstWhere((comment) => comment['_id'] == ObjectId.fromHexString(commentId));
+    return CommentModel.fromJson(commentData);
   }
 
   @override
-  Future<void> createComment(CommentModel comment) async {
+  Future<void> createComment(String postId, CommentModel comment) async {
     final Db db = await Db.create(_mongoUrl!);
     await db.open();
-    final commentsCollection = db.collection('comments');
+    final postsCollection = db.collection('posts');
 
-    await commentsCollection.insert({
-      ...comment.toJson(),
-    });
-
-    await db.close();
-  }
-
-  @override
-  Future<void> addLikeToComment(String commentId, String userId) async {
-    final Db db = await Db.create(_mongoUrl!);
-    await db.open();
-    final commentsCollection = db.collection('comments');
-
-    await commentsCollection.updateOne(
-      where.eq('_id', ObjectId.fromHexString(commentId)),
-      modify.addToSet('likedUserIds', userId),
-    );
-
-    await db.close();
-  }
-
-  @override
-  Future<void> removeLikeFromComment(String commentId, String userId) async {
-    final Db db = await Db.create(_mongoUrl!);
-    await db.open();
-    final commentsCollection = db.collection('comments');
-
-    await commentsCollection.updateOne(
-      where.eq('_id', ObjectId.fromHexString(commentId)),
-      modify.pull('likedUserIds', userId),
+    await postsCollection.updateOne(
+      where.eq('_id', ObjectId.fromHexString(postId)),
+      modify.inc('commentCount', 1).push('comments', comment.toJson()),
     );
 
     await db.close();

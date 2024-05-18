@@ -20,7 +20,6 @@ LikeModel _$LikeModelFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$LikeModel {
-  String get postId => throw _privateConstructorUsedError;
   String get userId => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
 
@@ -35,7 +34,7 @@ abstract class $LikeModelCopyWith<$Res> {
   factory $LikeModelCopyWith(LikeModel value, $Res Function(LikeModel) then) =
       _$LikeModelCopyWithImpl<$Res, LikeModel>;
   @useResult
-  $Res call({String postId, String userId, DateTime createdAt});
+  $Res call({String userId, DateTime createdAt});
 }
 
 /// @nodoc
@@ -51,15 +50,10 @@ class _$LikeModelCopyWithImpl<$Res, $Val extends LikeModel>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? postId = null,
     Object? userId = null,
     Object? createdAt = null,
   }) {
     return _then(_value.copyWith(
-      postId: null == postId
-          ? _value.postId
-          : postId // ignore: cast_nullable_to_non_nullable
-              as String,
       userId: null == userId
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
@@ -80,7 +74,7 @@ abstract class _$$LikeModelImplCopyWith<$Res>
       __$$LikeModelImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String postId, String userId, DateTime createdAt});
+  $Res call({String userId, DateTime createdAt});
 }
 
 /// @nodoc
@@ -94,15 +88,10 @@ class __$$LikeModelImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? postId = null,
     Object? userId = null,
     Object? createdAt = null,
   }) {
     return _then(_$LikeModelImpl(
-      postId: null == postId
-          ? _value.postId
-          : postId // ignore: cast_nullable_to_non_nullable
-              as String,
       userId: null == userId
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
@@ -118,14 +107,11 @@ class __$$LikeModelImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$LikeModelImpl implements _LikeModel {
-  const _$LikeModelImpl(
-      {required this.postId, required this.userId, required this.createdAt});
+  const _$LikeModelImpl({required this.userId, required this.createdAt});
 
   factory _$LikeModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$LikeModelImplFromJson(json);
 
-  @override
-  final String postId;
   @override
   final String userId;
   @override
@@ -133,7 +119,7 @@ class _$LikeModelImpl implements _LikeModel {
 
   @override
   String toString() {
-    return 'LikeModel(postId: $postId, userId: $userId, createdAt: $createdAt)';
+    return 'LikeModel(userId: $userId, createdAt: $createdAt)';
   }
 
   @override
@@ -141,7 +127,6 @@ class _$LikeModelImpl implements _LikeModel {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$LikeModelImpl &&
-            (identical(other.postId, postId) || other.postId == postId) &&
             (identical(other.userId, userId) || other.userId == userId) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt));
@@ -149,7 +134,7 @@ class _$LikeModelImpl implements _LikeModel {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, postId, userId, createdAt);
+  int get hashCode => Object.hash(runtimeType, userId, createdAt);
 
   @JsonKey(ignore: true)
   @override
@@ -167,15 +152,12 @@ class _$LikeModelImpl implements _LikeModel {
 
 abstract class _LikeModel implements LikeModel {
   const factory _LikeModel(
-      {required final String postId,
-      required final String userId,
+      {required final String userId,
       required final DateTime createdAt}) = _$LikeModelImpl;
 
   factory _LikeModel.fromJson(Map<String, dynamic> json) =
       _$LikeModelImpl.fromJson;
 
-  @override
-  String get postId;
   @override
   String get userId;
   @override

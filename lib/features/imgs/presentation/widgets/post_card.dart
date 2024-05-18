@@ -1,12 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:crowd_snap/core/data/models/comment_model.dart';
-import 'package:crowd_snap/core/data/models/like_model.dart';
 import 'package:crowd_snap/core/data/models/post_model.dart';
 import 'package:crowd_snap/core/data/models/user_model.dart';
 import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_use_case.dart';
 import 'package:crowd_snap/features/auth/data/repositories_impl/firestore_repository_impl.dart';
-import 'package:crowd_snap/features/imgs/data/repositories_impl/comment_repository_impl.dart';
-import 'package:crowd_snap/features/imgs/data/repositories_impl/like_repository_impl.dart';
 import 'package:crowd_snap/features/imgs/domain/use_case/comment_create_use_case.dart';
 import 'package:crowd_snap/features/imgs/domain/use_case/post_add_like_use_case.dart';
 import 'package:crowd_snap/features/imgs/domain/use_case/post_remove_like_use_case.dart';
@@ -27,7 +23,6 @@ class _PostCardState extends ConsumerState<PostCard> {
   int _likeCount = 0;
   int _commentCount = 0;
   String _commentText = '';
-  bool _isLoading = true;
   final _commentController = TextEditingController();
 
   @override
@@ -41,7 +36,7 @@ class _PostCardState extends ConsumerState<PostCard> {
   Future<void> _checkIfUserLikedPost() async {
     final getUserUseCase = await ref.read(getUserUseCaseProvider).execute();
     final userId = getUserUseCase.userId;
-    final isLiked = widget.post.likedUserIds.contains(userId);
+    final isLiked = widget.post.likes.any((like) => like.userId == userId);
     if (mounted) {
       setState(() {
         _isLiked = isLiked;
@@ -157,71 +152,49 @@ class _PostCardState extends ConsumerState<PostCard> {
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: FutureBuilder<List<LikeModel>>(
-                          future: ref
-                              .read(likeRepositoryProvider)
-                              .getLikesByPostId(widget.post.mongoId!),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            }
-                            if (snapshot.hasError) {
-                              return Text('Error: ${snapshot.error}');
-                            }
-                            final likes = snapshot.data;
-                            if (likes == null || likes.isEmpty) {
-                              return const Text('No likes found');
-                            }
-                            return ListView.builder(
-                              controller: scrollController,
-                              itemCount: likes.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                final like = likes[index];
-                                return FutureBuilder<UserModel>(
-                                  future: ref
-                                      .read(firestoreRepositoryProvider)
-                                      .getUser(like.userId),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.connectionState ==
-                                        ConnectionState.waiting) {
-                                      return const SizedBox(
-                                        height: 50,
-                                        child: Center(
-                                          child: CircularProgressIndicator(),
-                                        ),
-                                      );
-                                    }
-                                    if (snapshot.hasError) {
-                                      return Text('Error: ${snapshot.error}');
-                                    }
-                                    final user = snapshot.data;
-                                    if (user == null) {
-                                      return const Text('User not found');
-                                    }
-                                    return ListTile(
-                                      leading: CircleAvatar(
-                                        backgroundImage:
-                                            CachedNetworkImageProvider(
-                                                user.avatarUrl!),
+                        child: ListView.builder(
+                          controller: scrollController,
+                          itemCount: widget.post.likes.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            final like = widget.post.likes[index];
+                            return FutureBuilder<UserModel>(
+                              future: ref
+                                  .read(firestoreRepositoryProvider)
+                                  .getUser(like.userId),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const SizedBox(
+                                    height: 50,
+                                    child: Center(
+                                      child: CircularProgressIndicator(),
+                                    ),
+                                  );
+                                }
+                                if (snapshot.hasError) {
+                                  return Text('Error: ${snapshot.error}');
+                                }
+                                final user = snapshot.data;
+                                if (user == null) {
+                                  return const Text('User not found');
+                                }
+                                return ListTile(
+                                  leading: CircleAvatar(
+                                    backgroundImage: CachedNetworkImageProvider(
+                                        user.avatarUrl!),
+                                  ),
+                                  title: Row(
+                                    children: [
+                                      Text(user.name),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        _getElapsedTime(like.createdAt),
+                                        style: const TextStyle(
+                                            fontSize: 12, color: Colors.grey),
                                       ),
-                                      title: Row(
-                                        children: [
-                                          Text(user.name),
-                                          const SizedBox(width: 8),
-                                          Text(
-                                            _getElapsedTime(like.createdAt),
-                                            style: const TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.grey),
-                                          ),
-                                        ],
-                                      ),
-                                      subtitle: Text(user.username),
-                                    );
-                                  },
+                                    ],
+                                  ),
+                                  subtitle: Text(user.username),
                                 );
                               },
                             );
@@ -319,71 +292,49 @@ class _PostCardState extends ConsumerState<PostCard> {
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: FutureBuilder<List<CommentModel>>(
-                          future: ref
-                              .read(commentRepositoryProvider)
-                              .getCommentsByPost(widget.post.mongoId!),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            }
-                            if (snapshot.hasError) {
-                              return Text('Error: ${snapshot.error}');
-                            }
-                            final comments = snapshot.data;
-                            if (comments == null || comments.isEmpty) {
-                              return const Text('No comments found');
-                            }
-                            return ListView.builder(
-                              controller: scrollController,
-                              itemCount: comments.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                final comment = comments[index];
-                                return FutureBuilder<UserModel>(
-                                  future: ref
-                                      .read(firestoreRepositoryProvider)
-                                      .getUser(comment.userId),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.connectionState ==
-                                        ConnectionState.waiting) {
-                                      return const SizedBox(
-                                        height: 50,
-                                        child: Center(
-                                          child: CircularProgressIndicator(),
-                                        ),
-                                      );
-                                    }
-                                    if (snapshot.hasError) {
-                                      return Text('Error: ${snapshot.error}');
-                                    }
-                                    final user = snapshot.data;
-                                    if (user == null) {
-                                      return const Text('User not found');
-                                    }
-                                    return ListTile(
-                                      leading: CircleAvatar(
-                                        backgroundImage:
-                                            CachedNetworkImageProvider(
-                                                user.avatarUrl!),
+                        child: ListView.builder(
+                          controller: scrollController,
+                          itemCount: widget.post.comments.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            final comment = widget.post.comments[index];
+                            return FutureBuilder<UserModel>(
+                              future: ref
+                                  .read(firestoreRepositoryProvider)
+                                  .getUser(comment.userId),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const SizedBox(
+                                    height: 50,
+                                    child: Center(
+                                      child: CircularProgressIndicator(),
+                                    ),
+                                  );
+                                }
+                                if (snapshot.hasError) {
+                                  return Text('Error: ${snapshot.error}');
+                                }
+                                final user = snapshot.data;
+                                if (user == null) {
+                                  return const Text('User not found');
+                                }
+                                return ListTile(
+                                  leading: CircleAvatar(
+                                    backgroundImage: CachedNetworkImageProvider(
+                                        user.avatarUrl!),
+                                  ),
+                                  title: Row(
+                                    children: [
+                                      Text(user.name),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        _getElapsedTime(comment.createdAt),
+                                        style: const TextStyle(
+                                            fontSize: 12, color: Colors.grey),
                                       ),
-                                      title: Row(
-                                        children: [
-                                          Text(user.name),
-                                          const SizedBox(width: 8),
-                                          Text(
-                                            _getElapsedTime(comment.createdAt),
-                                            style: const TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.grey),
-                                          ),
-                                        ],
-                                      ),
-                                      subtitle: Text(comment.text),
-                                    );
-                                  },
+                                    ],
+                                  ),
+                                  subtitle: Text(comment.text),
                                 );
                               },
                             );
@@ -402,7 +353,6 @@ class _PostCardState extends ConsumerState<PostCard> {
                                 setState(() {
                                   _commentText = value;
                                 });
-                                print('Comment text: $_commentText');
                               },
                               decoration: const InputDecoration(
                                 hintText: 'Add a comment...',
@@ -430,50 +380,47 @@ class _PostCardState extends ConsumerState<PostCard> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onDoubleTap: _toggleLike,
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: 40,
-                    height: 40,
-                    child: CachedNetworkImage(
-                      imageUrl: widget.post.userAvatarUrl,
-                      placeholder: (context, url) =>
-                          const CircularProgressIndicator(),
-                      errorWidget: (context, url, error) =>
-                          const Icon(Icons.person),
-                      imageBuilder: (context, imageProvider) => CircleAvatar(
-                        backgroundImage: imageProvider,
-                      ),
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 40,
+                  height: 40,
+                  child: CachedNetworkImage(
+                    imageUrl: widget.post.userAvatarUrl,
+                    placeholder: (context, url) =>
+                        const CircularProgressIndicator(),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.person),
+                    imageBuilder: (context, imageProvider) => CircleAvatar(
+                      backgroundImage: imageProvider,
                     ),
                   ),
-                  const SizedBox(width: 12.0),
-                  Text(
-                    widget.post.userName,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
+                ),
+                const SizedBox(width: 12.0),
+                Text(
+                  widget.post.userName,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
                   ),
-                  const Spacer(),
-                  Text(
-                    'Subido hace ${_getElapsedTime(widget.post.createdAt)}',
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+                const Spacer(),
+                IconButton(
+                  icon: const Icon(Icons.more_vert),
+                  onPressed: () {},
+                ),
+              ],
             ),
-            CachedNetworkImage(
+          ),
+          GestureDetector(
+            onDoubleTap: _toggleLike,
+            child: CachedNetworkImage(
               imageUrl: widget.post.imageUrl,
               placeholder: (context, url) => const SizedBox(
                 height: 548,
@@ -484,43 +431,54 @@ class _PostCardState extends ConsumerState<PostCard> {
               ),
               errorWidget: (context, url, error) => const Icon(Icons.error),
             ),
-            Row(
-              children: [
-                Row(
-                  children: [
-                    IconButton(
-                      icon: Icon(
-                        _isLiked ? Icons.favorite : Icons.favorite_border,
-                        color: _isLiked ? Colors.red : null,
-                      ),
-                      onPressed: _toggleLike,
+          ),
+          Row(
+            children: [
+              Row(
+                children: [
+                  IconButton(
+                    icon: Icon(
+                      _isLiked ? Icons.favorite : Icons.favorite_border,
+                      color: _isLiked ? Colors.red : null,
                     ),
-                    GestureDetector(
-                      onTap: _showLikedUserSheet,
-                      child: Text(_likeCount == 1
-                          ? '$_likeCount like'
-                          : '$_likeCount likes'),
-                    ),
-                  ],
+                    onPressed: _toggleLike,
+                  ),
+                  GestureDetector(
+                    onTap: _showLikedUserSheet,
+                    child: Text(_likeCount == 1
+                        ? '$_likeCount like'
+                        : '$_likeCount likes'),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.comment),
+                    onPressed: _showCommentSheet,
+                  ),
+                  GestureDetector(
+                    onTap: _showCommentSheet,
+                    child: Text(_commentCount == 1
+                        ? '$_commentCount comment'
+                        : '$_commentCount comments'),
+                  ),
+                ],
+              ),
+              const Spacer(),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Subido hace ${_getElapsedTime(widget.post.createdAt)}',
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: 12,
+                  ),
                 ),
-                Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.comment),
-                      onPressed: _showCommentSheet,
-                    ),
-                    GestureDetector(
-                      onTap: _showCommentSheet,
-                      child: Text(_commentCount == 1
-                          ? '$_commentCount comment'
-                          : '$_commentCount comments'),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

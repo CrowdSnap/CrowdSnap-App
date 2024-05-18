@@ -7,7 +7,7 @@ part of 'comment_create_use_case.dart';
 // **************************************************************************
 
 String _$createCommentUseCaseHash() =>
-    r'b0c0f07a68cd41564308b384af85254ea96618f5';
+    r'94a4d527e5edc9e6b25069b59f6b65761bdeda73';
 
 /// See also [createCommentUseCase].
 @ProviderFor(createCommentUseCase)

@@ -41,8 +41,6 @@ class PostDataSourceImpl implements PostDataSource {
         await postsCollection.find(where.eq('userId', userId)).toList();
     await db.close();
 
-    print('postsData: $postsData');
-
     return postsData.map((json) => PostModel.fromJson(json)).toList();
   }
 
@@ -79,7 +77,6 @@ class PostDataSourceImpl implements PostDataSource {
         ...json,
         'mongoId': id,
       };
-      print('postJson: $postJson');
       return PostModel.fromJson(postJson);
     }).toList();
   }
@@ -105,7 +102,10 @@ class PostDataSourceImpl implements PostDataSource {
 
     await postsCollection.updateOne(
       where.eq('_id', ObjectId.fromHexString(postId)),
-      modify.inc('likeCount', 1).push('likedUserIds', userId),
+      modify.inc('likeCount', 1).push('likes', {
+        'userId': userId,
+        'createdAt': DateTime.now().toIso8601String()
+      }),
     );
 
     await db.close();
@@ -118,8 +118,8 @@ class PostDataSourceImpl implements PostDataSource {
     final postsCollection = db.collection('posts');
 
     await postsCollection.updateOne(
-        where.eq('_id', ObjectId.fromHexString(postId)),
-        modify.inc('likeCount', -1).pull('likedUserIds', 'userId')
+      where.eq('_id', ObjectId.fromHexString(postId)),
+      modify.inc('likeCount', -1).pull('likes', {'userId': userId}),
     );
 
     await db.close();

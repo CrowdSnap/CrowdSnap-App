@@ -7,7 +7,7 @@ part of 'post_add_like_use_case.dart';
 // **************************************************************************
 
 String _$postAddLikeUseCaseHash() =>
-    r'ec4702a2e7f9979ca93b6a3deee8b8fec2970429';
+    r'e4d35820b7b13f484b8d811b3c523330256954aa';
 
 /// See also [postAddLikeUseCase].
 @ProviderFor(postAddLikeUseCase)
