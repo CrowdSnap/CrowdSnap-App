@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:crowd_snap/core/navbar/providers/navbar_provider.dart';
 import 'package:crowd_snap/features/imgs/domain/use_case/post_create_use_case.dart';
 import 'package:crowd_snap/features/imgs/presentation/notifier/image_picker_state.dart';
@@ -7,26 +8,50 @@ import 'package:crowd_snap/features/imgs/presentation/notifier/image_upload_noti
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_editor_plus/image_editor_plus.dart';
+import 'package:image_editor_plus/options.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ImageUploadView extends ConsumerWidget {
   const ImageUploadView({super.key});
 
-  Future<void> _getCamera(WidgetRef ref) async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.camera);
-    if (pickedFile != null) {
+  Future<void> _getCamera(WidgetRef ref, BuildContext context) async {
+  final picker = ImagePicker();
+  final pickedFile = await picker.pickImage(source: ImageSource.camera);
+  if (pickedFile != null) {
+    Uint8List imageData = await pickedFile.readAsBytes();
+    final editedImage = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ImageCropper(
+            image: imageData, // <-- Uint8List of image
+        ),
+      ),
+    );
+    if (editedImage != null) {
       ref.read(imageStateProvider.notifier).setImage(File(pickedFile.path));
     }
   }
+}
 
-  Future<void> _getGallery(WidgetRef ref) async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
+Future<void> _getGallery(WidgetRef ref, BuildContext context) async {
+  final picker = ImagePicker();
+  final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+  if (pickedFile != null) {
+    Uint8List imageData = await pickedFile.readAsBytes();
+    final editedImage = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ImageCropper(
+            image: imageData, // <-- Uint8List of image
+        ),
+      ),
+    );
+    if (editedImage != null) {
       ref.read(imageStateProvider.notifier).setImage(File(pickedFile.path));
     }
   }
+}
 
   Future<void> _saveImage(File? imageState, WidgetRef ref, BuildContext context) async {
     ref.watch(imageUploadNotifierProvider.notifier).updateIsLoading(true);
@@ -80,7 +105,7 @@ class ImageUploadView extends ConsumerWidget {
               onVerticalDragUpdate: (details) async {
                 if (details.primaryDelta! < -5 && !isSelecting) {
                   isSelecting = true;
-                  await _getGallery(ref);
+                  await _getGallery(ref, context);
                   isSelecting = false;
                 }
               },
@@ -147,7 +172,7 @@ class ImageUploadView extends ConsumerWidget {
                     Column(
                       children: [
                         ElevatedButton(
-                          onPressed: () => _getCamera(ref),
+                          onPressed: () => _getCamera(ref, context),
                           style: ElevatedButton.styleFrom(
                             shape: const CircleBorder(),
                             padding: const EdgeInsets.all(
