@@ -20,7 +20,7 @@ CommentModel _$CommentModelFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$CommentModel {
-  String get postId => throw _privateConstructorUsedError;
+  String get commentId => throw _privateConstructorUsedError;
   String get userId => throw _privateConstructorUsedError;
   String get text => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
@@ -39,7 +39,7 @@ abstract class $CommentModelCopyWith<$Res> {
       _$CommentModelCopyWithImpl<$Res, CommentModel>;
   @useResult
   $Res call(
-      {String postId,
+      {String commentId,
       String userId,
       String text,
       DateTime createdAt,
@@ -59,16 +59,16 @@ class _$CommentModelCopyWithImpl<$Res, $Val extends CommentModel>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? postId = null,
+    Object? commentId = null,
     Object? userId = null,
     Object? text = null,
     Object? createdAt = null,
     Object? likes = null,
   }) {
     return _then(_value.copyWith(
-      postId: null == postId
-          ? _value.postId
-          : postId // ignore: cast_nullable_to_non_nullable
+      commentId: null == commentId
+          ? _value.commentId
+          : commentId // ignore: cast_nullable_to_non_nullable
               as String,
       userId: null == userId
           ? _value.userId
@@ -99,7 +99,7 @@ abstract class _$$CommentModelImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String postId,
+      {String commentId,
       String userId,
       String text,
       DateTime createdAt,
@@ -117,16 +117,16 @@ class __$$CommentModelImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? postId = null,
+    Object? commentId = null,
     Object? userId = null,
     Object? text = null,
     Object? createdAt = null,
     Object? likes = null,
   }) {
     return _then(_$CommentModelImpl(
-      postId: null == postId
-          ? _value.postId
-          : postId // ignore: cast_nullable_to_non_nullable
+      commentId: null == commentId
+          ? _value.commentId
+          : commentId // ignore: cast_nullable_to_non_nullable
               as String,
       userId: null == userId
           ? _value.userId
@@ -152,7 +152,7 @@ class __$$CommentModelImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$CommentModelImpl implements _CommentModel {
   const _$CommentModelImpl(
-      {required this.postId,
+      {required this.commentId,
       required this.userId,
       required this.text,
       required this.createdAt,
@@ -162,7 +162,7 @@ class _$CommentModelImpl implements _CommentModel {
       _$$CommentModelImplFromJson(json);
 
   @override
-  final String postId;
+  final String commentId;
   @override
   final String userId;
   @override
@@ -174,7 +174,7 @@ class _$CommentModelImpl implements _CommentModel {
 
   @override
   String toString() {
-    return 'CommentModel(postId: $postId, userId: $userId, text: $text, createdAt: $createdAt, likes: $likes)';
+    return 'CommentModel(commentId: $commentId, userId: $userId, text: $text, createdAt: $createdAt, likes: $likes)';
   }
 
   @override
@@ -182,7 +182,8 @@ class _$CommentModelImpl implements _CommentModel {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$CommentModelImpl &&
-            (identical(other.postId, postId) || other.postId == postId) &&
+            (identical(other.commentId, commentId) ||
+                other.commentId == commentId) &&
             (identical(other.userId, userId) || other.userId == userId) &&
             (identical(other.text, text) || other.text == text) &&
             (identical(other.createdAt, createdAt) ||
@@ -193,7 +194,7 @@ class _$CommentModelImpl implements _CommentModel {
   @JsonKey(ignore: true)
   @override
   int get hashCode =>
-      Object.hash(runtimeType, postId, userId, text, createdAt, likes);
+      Object.hash(runtimeType, commentId, userId, text, createdAt, likes);
 
   @JsonKey(ignore: true)
   @override
@@ -211,7 +212,7 @@ class _$CommentModelImpl implements _CommentModel {
 
 abstract class _CommentModel implements CommentModel {
   const factory _CommentModel(
-      {required final String postId,
+      {required final String commentId,
       required final String userId,
       required final String text,
       required final DateTime createdAt,
@@ -221,7 +222,7 @@ abstract class _CommentModel implements CommentModel {
       _$CommentModelImpl.fromJson;
 
   @override
-  String get postId;
+  String get commentId;
   @override
   String get userId;
   @override

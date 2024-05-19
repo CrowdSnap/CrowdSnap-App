@@ -7,7 +7,7 @@ part 'post_data_source.g.dart';
 
 abstract class PostDataSource {
   Future<List<PostModel>> getPostsRandomByDateRange(
-      String location, DateTime startDate, DateTime endDate, int limit);
+      String location, DateTime startDate, DateTime endDate, int limit, List<String> excludeIds);
   Future<List<PostModel>> getPostsByUser(String userId);
   Future<void> createPost(PostModel post);
   Future<void> loadEnvVariables();
@@ -41,14 +41,12 @@ class PostDataSourceImpl implements PostDataSource {
         await postsCollection.find(where.eq('userId', userId)).toList();
     await db.close();
 
-    print('postsData: $postsData');
-
     return postsData.map((json) => PostModel.fromJson(json)).toList();
   }
 
   @override
   Future<List<PostModel>> getPostsRandomByDateRange(
-      String location, DateTime startDate, DateTime endDate, int limit) async {
+      String location, DateTime startDate, DateTime endDate, int limit, List<String> excludeIds) async {
     final Db db = await Db.create(_mongoUrl!);
     await db.open();
     final postsCollection = db.collection('posts');
@@ -60,7 +58,8 @@ class PostDataSourceImpl implements PostDataSource {
           'createdAt': {
             '\$gte': startDate.toString(),
             '\$lte': endDate.toString()
-          }
+          },
+          '_id': { '\$nin': excludeIds.map((id) => ObjectId.fromHexString(id)).toList() } // Excluir IDs
         }
       },
       {
@@ -79,7 +78,6 @@ class PostDataSourceImpl implements PostDataSource {
         ...json,
         'mongoId': id,
       };
-      print('postJson: $postJson');
       return PostModel.fromJson(postJson);
     }).toList();
   }
@@ -105,7 +103,10 @@ class PostDataSourceImpl implements PostDataSource {
 
     await postsCollection.updateOne(
       where.eq('_id', ObjectId.fromHexString(postId)),
-      modify.inc('likeCount', 1).push('likedUserIds', userId),
+      modify.inc('likeCount', 1).push('likes', {
+        'userId': userId,
+        'createdAt': DateTime.now().toIso8601String()
+      }),
     );
 
     await db.close();
@@ -118,8 +119,8 @@ class PostDataSourceImpl implements PostDataSource {
     final postsCollection = db.collection('posts');
 
     await postsCollection.updateOne(
-        where.eq('_id', ObjectId.fromHexString(postId)),
-        modify.inc('likeCount', -1).pull('likedUserIds', 'userId')
+      where.eq('_id', ObjectId.fromHexString(postId)),
+      modify.inc('likeCount', -1).pull('likes', {'userId': userId}),
     );
 
     await db.close();

@@ -30,7 +30,8 @@ mixin _$PostModel {
   DateTime get createdAt => throw _privateConstructorUsedError;
   int get likeCount => throw _privateConstructorUsedError;
   int get commentCount => throw _privateConstructorUsedError;
-  List<String> get likedUserIds => throw _privateConstructorUsedError;
+  List<LikeModel> get likes => throw _privateConstructorUsedError;
+  List<CommentModel> get comments => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -55,7 +56,8 @@ abstract class $PostModelCopyWith<$Res> {
       DateTime createdAt,
       int likeCount,
       int commentCount,
-      List<String> likedUserIds,
+      List<LikeModel> likes,
+      List<CommentModel> comments,
       String? description});
 }
 
@@ -82,7 +84,8 @@ class _$PostModelCopyWithImpl<$Res, $Val extends PostModel>
     Object? createdAt = null,
     Object? likeCount = null,
     Object? commentCount = null,
-    Object? likedUserIds = null,
+    Object? likes = null,
+    Object? comments = null,
     Object? description = freezed,
   }) {
     return _then(_value.copyWith(
@@ -126,10 +129,14 @@ class _$PostModelCopyWithImpl<$Res, $Val extends PostModel>
           ? _value.commentCount
           : commentCount // ignore: cast_nullable_to_non_nullable
               as int,
-      likedUserIds: null == likedUserIds
-          ? _value.likedUserIds
-          : likedUserIds // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+      likes: null == likes
+          ? _value.likes
+          : likes // ignore: cast_nullable_to_non_nullable
+              as List<LikeModel>,
+      comments: null == comments
+          ? _value.comments
+          : comments // ignore: cast_nullable_to_non_nullable
+              as List<CommentModel>,
       description: freezed == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
@@ -157,7 +164,8 @@ abstract class _$$PostModelImplCopyWith<$Res>
       DateTime createdAt,
       int likeCount,
       int commentCount,
-      List<String> likedUserIds,
+      List<LikeModel> likes,
+      List<CommentModel> comments,
       String? description});
 }
 
@@ -182,7 +190,8 @@ class __$$PostModelImplCopyWithImpl<$Res>
     Object? createdAt = null,
     Object? likeCount = null,
     Object? commentCount = null,
-    Object? likedUserIds = null,
+    Object? likes = null,
+    Object? comments = null,
     Object? description = freezed,
   }) {
     return _then(_$PostModelImpl(
@@ -226,10 +235,14 @@ class __$$PostModelImplCopyWithImpl<$Res>
           ? _value.commentCount
           : commentCount // ignore: cast_nullable_to_non_nullable
               as int,
-      likedUserIds: null == likedUserIds
-          ? _value._likedUserIds
-          : likedUserIds // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+      likes: null == likes
+          ? _value._likes
+          : likes // ignore: cast_nullable_to_non_nullable
+              as List<LikeModel>,
+      comments: null == comments
+          ? _value._comments
+          : comments // ignore: cast_nullable_to_non_nullable
+              as List<CommentModel>,
       description: freezed == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
@@ -252,10 +265,12 @@ class _$PostModelImpl implements _PostModel {
       required this.createdAt,
       required this.likeCount,
       required this.commentCount,
-      required final List<String> likedUserIds,
+      required final List<LikeModel> likes,
+      required final List<CommentModel> comments,
       this.description})
       : _taggedUserIds = taggedUserIds,
-        _likedUserIds = likedUserIds;
+        _likes = likes,
+        _comments = comments;
 
   factory _$PostModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$PostModelImplFromJson(json);
@@ -286,12 +301,20 @@ class _$PostModelImpl implements _PostModel {
   final int likeCount;
   @override
   final int commentCount;
-  final List<String> _likedUserIds;
+  final List<LikeModel> _likes;
   @override
-  List<String> get likedUserIds {
-    if (_likedUserIds is EqualUnmodifiableListView) return _likedUserIds;
+  List<LikeModel> get likes {
+    if (_likes is EqualUnmodifiableListView) return _likes;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_likedUserIds);
+    return EqualUnmodifiableListView(_likes);
+  }
+
+  final List<CommentModel> _comments;
+  @override
+  List<CommentModel> get comments {
+    if (_comments is EqualUnmodifiableListView) return _comments;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_comments);
   }
 
   @override
@@ -299,7 +322,7 @@ class _$PostModelImpl implements _PostModel {
 
   @override
   String toString() {
-    return 'PostModel(mongoId: $mongoId, userId: $userId, userName: $userName, userAvatarUrl: $userAvatarUrl, imageUrl: $imageUrl, taggedUserIds: $taggedUserIds, location: $location, createdAt: $createdAt, likeCount: $likeCount, commentCount: $commentCount, likedUserIds: $likedUserIds, description: $description)';
+    return 'PostModel(mongoId: $mongoId, userId: $userId, userName: $userName, userAvatarUrl: $userAvatarUrl, imageUrl: $imageUrl, taggedUserIds: $taggedUserIds, location: $location, createdAt: $createdAt, likeCount: $likeCount, commentCount: $commentCount, likes: $likes, comments: $comments, description: $description)';
   }
 
   @override
@@ -325,8 +348,8 @@ class _$PostModelImpl implements _PostModel {
                 other.likeCount == likeCount) &&
             (identical(other.commentCount, commentCount) ||
                 other.commentCount == commentCount) &&
-            const DeepCollectionEquality()
-                .equals(other._likedUserIds, _likedUserIds) &&
+            const DeepCollectionEquality().equals(other._likes, _likes) &&
+            const DeepCollectionEquality().equals(other._comments, _comments) &&
             (identical(other.description, description) ||
                 other.description == description));
   }
@@ -345,7 +368,8 @@ class _$PostModelImpl implements _PostModel {
       createdAt,
       likeCount,
       commentCount,
-      const DeepCollectionEquality().hash(_likedUserIds),
+      const DeepCollectionEquality().hash(_likes),
+      const DeepCollectionEquality().hash(_comments),
       description);
 
   @JsonKey(ignore: true)
@@ -374,7 +398,8 @@ abstract class _PostModel implements PostModel {
       required final DateTime createdAt,
       required final int likeCount,
       required final int commentCount,
-      required final List<String> likedUserIds,
+      required final List<LikeModel> likes,
+      required final List<CommentModel> comments,
       final String? description}) = _$PostModelImpl;
 
   factory _PostModel.fromJson(Map<String, dynamic> json) =
@@ -401,7 +426,9 @@ abstract class _PostModel implements PostModel {
   @override
   int get commentCount;
   @override
-  List<String> get likedUserIds;
+  List<LikeModel> get likes;
+  @override
+  List<CommentModel> get comments;
   @override
   String? get description;
   @override

@@ -6,13 +6,12 @@ part 'comment_model.g.dart';
 @freezed
 class CommentModel with _$CommentModel {
   const factory CommentModel({
-    required String postId,
+    required String commentId,
     required String userId,
     required String text,
     required DateTime createdAt,
     required int likes,
   }) = _CommentModel;
 
-  factory CommentModel.fromJson(Map<String, dynamic> json) =>
-      _$CommentModelFromJson(json);
+  factory CommentModel.fromJson(Map<String, dynamic> json) => _$CommentModelFromJson(json);
 }

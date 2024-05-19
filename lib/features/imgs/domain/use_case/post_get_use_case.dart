@@ -11,9 +11,9 @@ class GetPostsRandomByDateRangeUseCase {
   GetPostsRandomByDateRangeUseCase(this._postRepository);
 
   Future<List<PostModel>> execute(
-      String location, DateTime startDate, DateTime endDate, int limit) {
+      String location, DateTime startDate, DateTime endDate, int limit, List<String> excludeIds) {
     return _postRepository.getPostsRandomByDateRange(
-        location, startDate, endDate, limit);
+        location, startDate, endDate, limit, excludeIds);
   }
 }
 

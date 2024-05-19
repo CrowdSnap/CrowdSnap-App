@@ -22,22 +22,12 @@ class CommentRepositoryImpl implements CommentRepository {
   }
 
   @override
-  Future<CommentModel> getCommentById(String commentId) {
-    return _commentDataSource.getCommentById(commentId);
+  Future<CommentModel> getCommentById(String postId, String commentId) {
+    return _commentDataSource.getCommentById(postId, commentId);
   }
 
   @override
-  Future<void> createComment(CommentModel comment) {
-    return _commentDataSource.createComment(comment);
-  }
-
-  @override
-  Future<void> addLikeToComment(String commentId, String userId) {
-    return _commentDataSource.addLikeToComment(commentId, userId);
-  }
-
-  @override
-  Future<void> removeLikeFromComment(String commentId, String userId) {
-    return _commentDataSource.removeLikeFromComment(commentId, userId);
+  Future<void> createComment(String postId, CommentModel comment) {
+    return _commentDataSource.createComment(postId, comment);
   }
 }

@@ -8,7 +8,7 @@ part of 'comment_model.dart';
 
 _$CommentModelImpl _$$CommentModelImplFromJson(Map<String, dynamic> json) =>
     _$CommentModelImpl(
-      postId: json['postId'] as String,
+      commentId: json['commentId'] as String,
       userId: json['userId'] as String,
       text: json['text'] as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
@@ -17,7 +17,7 @@ _$CommentModelImpl _$$CommentModelImplFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$$CommentModelImplToJson(_$CommentModelImpl instance) =>
     <String, dynamic>{
-      'postId': instance.postId,
+      'commentId': instance.commentId,
       'userId': instance.userId,
       'text': instance.text,
       'createdAt': instance.createdAt.toIso8601String(),
