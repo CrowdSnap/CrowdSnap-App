@@ -72,7 +72,7 @@ class _LikesSheetState extends ConsumerState<LikesSheet> {
                             ),
                             title: Row(
                               children: [
-                                Text(user.name),
+                                Text(user.username),
                                 const SizedBox(width: 8),
                                 Text(
                                   _getElapsedTime(like.createdAt),
@@ -81,7 +81,7 @@ class _LikesSheetState extends ConsumerState<LikesSheet> {
                                 ),
                               ],
                             ),
-                            subtitle: Text(user.username),
+                            subtitle: Text(user.name),
                           );
                         },
                       );

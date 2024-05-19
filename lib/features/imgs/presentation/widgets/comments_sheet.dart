@@ -84,7 +84,7 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
                             ),
                             title: Row(
                               children: [
-                                Text(user.name),
+                                Text(user.username),
                                 const SizedBox(width: 8),
                                 Text(
                                   _getElapsedTime(comment.createdAt),

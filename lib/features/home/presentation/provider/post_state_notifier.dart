@@ -1,6 +1,8 @@
 import 'package:crowd_snap/core/data/models/post_model.dart';
 import 'package:crowd_snap/features/home/presentation/provider/filter_providers.dart';
 import 'package:crowd_snap/features/imgs/data/data_source/post_data_source.dart';
+import 'package:crowd_snap/features/imgs/presentation/notifier/comments_provider.dart';
+import 'package:crowd_snap/features/imgs/presentation/notifier/likes_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'post_state_notifier.g.dart';
@@ -31,8 +33,10 @@ class PostList extends _$PostList {
     final defaultEndDate = endDate ?? sunday;
 
     // Obtener solo la fecha sin la hora
-    final startDateOnly = DateTime(defaultStartDate.year, defaultStartDate.month, defaultStartDate.day);
-    final endDateOnly = DateTime(defaultEndDate.year, defaultEndDate.month, defaultEndDate.day);
+    final startDateOnly = DateTime(
+        defaultStartDate.year, defaultStartDate.month, defaultStartDate.day);
+    final endDateOnly =
+        DateTime(defaultEndDate.year, defaultEndDate.month, defaultEndDate.day);
 
     final query = postDataSource.getPostsRandomByDateRange(
       city ?? 'Madrid',
@@ -53,6 +57,8 @@ class PostList extends _$PostList {
   }
 
   Future<void> refreshPosts() async {
+    ref.invalidate(likesNotifierProvider);
+    ref.invalidate(commentsNotifierProvider);
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(_fetchPosts);
   }
