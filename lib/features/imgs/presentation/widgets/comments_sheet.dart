@@ -36,7 +36,7 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final comments = ref.watch(commentsNotifierProvider);
+    final comments = ref.watch(commentsNotifierProvider(widget.post.mongoId!));
 
     return Column(
       children: [

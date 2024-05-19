@@ -35,10 +35,10 @@ class CreateCommentUseCase {
 }
 
 @riverpod
-CreateCommentUseCase createCommentUseCase(CreateCommentUseCaseRef ref) {
+CreateCommentUseCase createCommentUseCase(CreateCommentUseCaseRef ref, String postId) {
   final getUserUseCase = ref.watch(getUserUseCaseProvider);
   final commentRepository = ref.watch(commentRepositoryProvider);
   const uuid = Uuid();
-  final commentsNotifier = ref.watch(commentsNotifierProvider.notifier);
+  final commentsNotifier = ref.watch(commentsNotifierProvider(postId).notifier);
   return CreateCommentUseCase(getUserUseCase, commentRepository, uuid, commentsNotifier);
 }

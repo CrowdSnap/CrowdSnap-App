@@ -24,8 +24,7 @@ class _LikesSheetState extends ConsumerState<LikesSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final likes = ref.watch(likesNotifierProvider);
-    print('Likes: $likes');
+    final likes = ref.watch(likesNotifierProvider(widget.post.mongoId!));
 
     return Column(
       children: [

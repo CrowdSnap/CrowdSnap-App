@@ -1,14 +1,10 @@
 import 'package:crowd_snap/core/data/models/like_model.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-part 'likes_provider.g.dart';
+class LikesNotifier extends StateNotifier<List<LikeModel>> {
+  bool _isFirstLoad = true;
 
-@Riverpod(keepAlive: true)
-class LikesNotifier extends _$LikesNotifier {
-  @override
-  List<LikeModel> build() {
-    return [];
-  }
+  LikesNotifier() : super([]);
 
   void addLike(LikeModel like) {
     state = [...state, like];
@@ -21,4 +17,16 @@ class LikesNotifier extends _$LikesNotifier {
   void setLikes(List<LikeModel> likes) {
     state = likes;
   }
+
+  bool get isFirstLoad => _isFirstLoad;
+
+  void markAsLoaded() {
+    _isFirstLoad = false;
+  }
 }
+
+final likesNotifierProvider =
+    StateNotifierProvider.family<LikesNotifier, List<LikeModel>, String>(
+        (ref, postId) {
+  return LikesNotifier();
+});

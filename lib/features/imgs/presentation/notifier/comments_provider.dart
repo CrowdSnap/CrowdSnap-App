@@ -1,14 +1,10 @@
 import 'package:crowd_snap/core/data/models/comment_model.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-part 'comments_provider.g.dart';
+class CommentsNotifier extends StateNotifier<List<CommentModel>> {
+  bool _isFirstLoad = true;
 
-@Riverpod(keepAlive: true)
-class CommentsNotifier extends _$CommentsNotifier {
-  @override
-  List<CommentModel> build() {
-    return [];
-  }
+  CommentsNotifier() : super([]);
 
   void addComment(CommentModel comment) {
     state = [...state, comment];
@@ -21,4 +17,16 @@ class CommentsNotifier extends _$CommentsNotifier {
   void setComments(List<CommentModel> comments) {
     state = comments;
   }
+
+  bool get isFirstLoad => _isFirstLoad;
+
+  void markAsLoaded() {
+    _isFirstLoad = false;
+  }
 }
+
+final commentsNotifierProvider =
+    StateNotifierProvider.family<CommentsNotifier, List<CommentModel>, String>(
+        (ref, postId) {
+  return CommentsNotifier();
+});
