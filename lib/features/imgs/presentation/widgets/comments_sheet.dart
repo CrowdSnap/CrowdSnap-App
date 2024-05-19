@@ -43,53 +43,62 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
         Expanded(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: ListView.builder(
-              controller: widget.scrollController,
-              itemCount: comments.length,
-              itemBuilder: (BuildContext context, int index) {
-                final comment = comments[index];
-                return FutureBuilder<UserModel>(
-                  future: ref
-                      .read(firestoreRepositoryProvider)
-                      .getUser(comment.userId),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const SizedBox(
-                        height: 50,
-                        child: Center(
-                          child: CircularProgressIndicator(),
-                        ),
+            child: comments.isEmpty
+                ? const Center(
+                    child: Text(
+                      'No hay comentarios',
+                      style:
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                  )
+                : ListView.builder(
+                    controller: widget.scrollController,
+                    itemCount: comments.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final comment = comments[index];
+                      return FutureBuilder<UserModel>(
+                        future: ref
+                            .read(firestoreRepositoryProvider)
+                            .getUser(comment.userId),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const SizedBox(
+                              height: 50,
+                              child: Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            );
+                          }
+                          if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
+                          }
+                          final user = snapshot.data;
+                          if (user == null) {
+                            return const Text('User not found');
+                          }
+                          return ListTile(
+                            leading: CircleAvatar(
+                              backgroundImage:
+                                  CachedNetworkImageProvider(user.avatarUrl!),
+                            ),
+                            title: Row(
+                              children: [
+                                Text(user.name),
+                                const SizedBox(width: 8),
+                                Text(
+                                  _getElapsedTime(comment.createdAt),
+                                  style: const TextStyle(
+                                      fontSize: 12, color: Colors.grey),
+                                ),
+                              ],
+                            ),
+                            subtitle: Text(comment.text),
+                          );
+                        },
                       );
-                    }
-                    if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    }
-                    final user = snapshot.data;
-                    if (user == null) {
-                      return const Text('User not found');
-                    }
-                    return ListTile(
-                      leading: CircleAvatar(
-                        backgroundImage:
-                            CachedNetworkImageProvider(user.avatarUrl!),
-                      ),
-                      title: Row(
-                        children: [
-                          Text(user.name),
-                          const SizedBox(width: 8),
-                          Text(
-                            _getElapsedTime(comment.createdAt),
-                            style: const TextStyle(
-                                fontSize: 12, color: Colors.grey),
-                          ),
-                        ],
-                      ),
-                      subtitle: Text(comment.text),
-                    );
-                  },
-                );
-              },
-            ),
+                    },
+                  ),
           ),
         ),
         Padding(

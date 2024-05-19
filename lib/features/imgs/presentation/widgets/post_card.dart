@@ -1,16 +1,16 @@
-import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_use_case.dart';
-import 'package:crowd_snap/features/imgs/presentation/notifier/comments_provider.dart';
-import 'package:crowd_snap/features/imgs/presentation/notifier/likes_provider.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:crowd_snap/core/data/models/like_model.dart';
 import 'package:crowd_snap/core/data/models/post_model.dart';
-import 'package:crowd_snap/features/imgs/presentation/widgets/post_widget.dart';
-import 'package:crowd_snap/features/imgs/presentation/widgets/likes_sheet.dart';
-import 'package:crowd_snap/features/imgs/presentation/widgets/comments_sheet.dart';
+import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_use_case.dart';
 import 'package:crowd_snap/features/imgs/domain/use_case/comment_create_use_case.dart';
 import 'package:crowd_snap/features/imgs/domain/use_case/post_add_like_use_case.dart';
 import 'package:crowd_snap/features/imgs/domain/use_case/post_remove_like_use_case.dart';
-import 'package:crowd_snap/core/data/models/like_model.dart';
+import 'package:crowd_snap/features/imgs/presentation/notifier/comments_provider.dart';
+import 'package:crowd_snap/features/imgs/presentation/notifier/likes_provider.dart';
+import 'package:crowd_snap/features/imgs/presentation/widgets/comments_sheet.dart';
+import 'package:crowd_snap/features/imgs/presentation/widgets/likes_sheet.dart';
+import 'package:crowd_snap/features/imgs/presentation/widgets/post_widget.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class PostCard extends ConsumerStatefulWidget {
   final PostModel post;
@@ -31,14 +31,18 @@ class _PostCardState extends ConsumerState<PostCard> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _checkIfUserLikedPost();
-      ref.read(likesNotifierProvider.notifier).setLikes(widget.post.likes);
-      ref
-          .read(commentsNotifierProvider.notifier)
-          .setComments(widget.post.comments);
+      if (mounted) {
+        _checkIfUserLikedPost();
+      }
     });
     _likeCount = widget.post.likeCount;
     _commentCount = widget.post.commentCount;
+  }
+
+  @override
+  void dispose() {
+    _commentController.dispose();
+    super.dispose();
   }
 
   Future<void> _checkIfUserLikedPost() async {
@@ -55,7 +59,6 @@ class _PostCardState extends ConsumerState<PostCard> {
   void _toggleLike() async {
     final getUserUseCase = await ref.read(getUserUseCaseProvider).execute();
     final userId = getUserUseCase.userId;
-
     if (mounted) {
       setState(() {
         _isLiked = !_isLiked;
@@ -63,15 +66,11 @@ class _PostCardState extends ConsumerState<PostCard> {
           _likeCount++;
           final newLike = LikeModel(userId: userId, createdAt: DateTime.now());
           ref.read(likesNotifierProvider.notifier).addLike(newLike);
-          ref
-              .read(postAddLikeUseCaseProvider)
-              .execute(widget.post.mongoId!, userId);
+          ref.read(postAddLikeUseCaseProvider).execute(widget.post.mongoId!, userId);
         } else {
           _likeCount--;
           ref.read(likesNotifierProvider.notifier).removeLike(userId);
-          ref
-              .read(postRemoveLikeUseCaseProvider)
-              .execute(widget.post.mongoId!, userId);
+          ref.read(postRemoveLikeUseCaseProvider).execute(widget.post.mongoId!, userId);
         }
       });
     }
@@ -88,6 +87,7 @@ class _PostCardState extends ConsumerState<PostCard> {
   }
 
   void _showLikedUserSheet() {
+    ref.read(likesNotifierProvider.notifier).setLikes(widget.post.likes);
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -95,16 +95,17 @@ class _PostCardState extends ConsumerState<PostCard> {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setModalState) {
             return ClipRRect(
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(20)),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
               child: DraggableScrollableSheet(
                 initialChildSize: 0.2,
                 maxChildSize: 0.7,
                 minChildSize: 0.15,
                 expand: false,
-                builder:
-                    (BuildContext context, ScrollController scrollController) {
-                  return LikesSheet(post: widget.post, scrollController: scrollController);
+                builder: (BuildContext context, ScrollController scrollController) {
+                  return LikesSheet(
+                    post: widget.post,
+                    scrollController: scrollController,
+                  );
                 },
               ),
             );
@@ -115,6 +116,7 @@ class _PostCardState extends ConsumerState<PostCard> {
   }
 
   void _showCommentSheet() {
+    ref.read(commentsNotifierProvider.notifier).setComments(widget.post.comments);
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
