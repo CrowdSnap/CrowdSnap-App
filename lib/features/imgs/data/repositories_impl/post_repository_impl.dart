@@ -18,8 +18,8 @@ class PostRepositoryImpl implements PostRepository {
 
   @override
   Future<List<PostModel>> getPostsRandomByDateRange(
-      String location, DateTime startDate, DateTime endDate, int limit) {
-    return _postDataSource.getPostsRandomByDateRange(location, startDate, endDate, limit);
+      String location, DateTime startDate, DateTime endDate, int limit, List<String> excludeIds) {
+    return _postDataSource.getPostsRandomByDateRange(location, startDate, endDate, limit, excludeIds);
   }
 
   @override

@@ -7,7 +7,7 @@ part 'post_data_source.g.dart';
 
 abstract class PostDataSource {
   Future<List<PostModel>> getPostsRandomByDateRange(
-      String location, DateTime startDate, DateTime endDate, int limit);
+      String location, DateTime startDate, DateTime endDate, int limit, List<String> excludeIds);
   Future<List<PostModel>> getPostsByUser(String userId);
   Future<void> createPost(PostModel post);
   Future<void> loadEnvVariables();
@@ -46,7 +46,7 @@ class PostDataSourceImpl implements PostDataSource {
 
   @override
   Future<List<PostModel>> getPostsRandomByDateRange(
-      String location, DateTime startDate, DateTime endDate, int limit) async {
+      String location, DateTime startDate, DateTime endDate, int limit, List<String> excludeIds) async {
     final Db db = await Db.create(_mongoUrl!);
     await db.open();
     final postsCollection = db.collection('posts');
@@ -58,7 +58,8 @@ class PostDataSourceImpl implements PostDataSource {
           'createdAt': {
             '\$gte': startDate.toString(),
             '\$lte': endDate.toString()
-          }
+          },
+          '_id': { '\$nin': excludeIds.map((id) => ObjectId.fromHexString(id)).toList() } // Excluir IDs
         }
       },
       {

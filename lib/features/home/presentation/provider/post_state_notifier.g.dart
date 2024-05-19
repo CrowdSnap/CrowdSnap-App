@@ -6,7 +6,7 @@ part of 'post_state_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$postListHash() => r'c56bc4eb5c4277c0d3de9ef17cc26435b01b4152';
+String _$postListHash() => r'c66742120d45014e4dcd05fa38e3a4def4ea098a';
 
 /// See also [PostList].
 @ProviderFor(PostList)
