@@ -6,6 +6,7 @@ part 'comment_model.g.dart';
 @freezed
 class CommentModel with _$CommentModel {
   const factory CommentModel({
+    required String commentId,
     required String userId,
     required String text,
     required DateTime createdAt,

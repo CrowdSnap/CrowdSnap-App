@@ -20,6 +20,7 @@ CommentModel _$CommentModelFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$CommentModel {
+  String get commentId => throw _privateConstructorUsedError;
   String get userId => throw _privateConstructorUsedError;
   String get text => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
@@ -37,7 +38,12 @@ abstract class $CommentModelCopyWith<$Res> {
           CommentModel value, $Res Function(CommentModel) then) =
       _$CommentModelCopyWithImpl<$Res, CommentModel>;
   @useResult
-  $Res call({String userId, String text, DateTime createdAt, int likes});
+  $Res call(
+      {String commentId,
+      String userId,
+      String text,
+      DateTime createdAt,
+      int likes});
 }
 
 /// @nodoc
@@ -53,12 +59,17 @@ class _$CommentModelCopyWithImpl<$Res, $Val extends CommentModel>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? commentId = null,
     Object? userId = null,
     Object? text = null,
     Object? createdAt = null,
     Object? likes = null,
   }) {
     return _then(_value.copyWith(
+      commentId: null == commentId
+          ? _value.commentId
+          : commentId // ignore: cast_nullable_to_non_nullable
+              as String,
       userId: null == userId
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
@@ -87,7 +98,12 @@ abstract class _$$CommentModelImplCopyWith<$Res>
       __$$CommentModelImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String userId, String text, DateTime createdAt, int likes});
+  $Res call(
+      {String commentId,
+      String userId,
+      String text,
+      DateTime createdAt,
+      int likes});
 }
 
 /// @nodoc
@@ -101,12 +117,17 @@ class __$$CommentModelImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? commentId = null,
     Object? userId = null,
     Object? text = null,
     Object? createdAt = null,
     Object? likes = null,
   }) {
     return _then(_$CommentModelImpl(
+      commentId: null == commentId
+          ? _value.commentId
+          : commentId // ignore: cast_nullable_to_non_nullable
+              as String,
       userId: null == userId
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
@@ -131,7 +152,8 @@ class __$$CommentModelImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$CommentModelImpl implements _CommentModel {
   const _$CommentModelImpl(
-      {required this.userId,
+      {required this.commentId,
+      required this.userId,
       required this.text,
       required this.createdAt,
       required this.likes});
@@ -139,6 +161,8 @@ class _$CommentModelImpl implements _CommentModel {
   factory _$CommentModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$CommentModelImplFromJson(json);
 
+  @override
+  final String commentId;
   @override
   final String userId;
   @override
@@ -150,7 +174,7 @@ class _$CommentModelImpl implements _CommentModel {
 
   @override
   String toString() {
-    return 'CommentModel(userId: $userId, text: $text, createdAt: $createdAt, likes: $likes)';
+    return 'CommentModel(commentId: $commentId, userId: $userId, text: $text, createdAt: $createdAt, likes: $likes)';
   }
 
   @override
@@ -158,6 +182,8 @@ class _$CommentModelImpl implements _CommentModel {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$CommentModelImpl &&
+            (identical(other.commentId, commentId) ||
+                other.commentId == commentId) &&
             (identical(other.userId, userId) || other.userId == userId) &&
             (identical(other.text, text) || other.text == text) &&
             (identical(other.createdAt, createdAt) ||
@@ -167,7 +193,8 @@ class _$CommentModelImpl implements _CommentModel {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, userId, text, createdAt, likes);
+  int get hashCode =>
+      Object.hash(runtimeType, commentId, userId, text, createdAt, likes);
 
   @JsonKey(ignore: true)
   @override
@@ -185,7 +212,8 @@ class _$CommentModelImpl implements _CommentModel {
 
 abstract class _CommentModel implements CommentModel {
   const factory _CommentModel(
-      {required final String userId,
+      {required final String commentId,
+      required final String userId,
       required final String text,
       required final DateTime createdAt,
       required final int likes}) = _$CommentModelImpl;
@@ -193,6 +221,8 @@ abstract class _CommentModel implements CommentModel {
   factory _CommentModel.fromJson(Map<String, dynamic> json) =
       _$CommentModelImpl.fromJson;
 
+  @override
+  String get commentId;
   @override
   String get userId;
   @override
