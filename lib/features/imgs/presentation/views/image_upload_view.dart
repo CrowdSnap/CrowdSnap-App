@@ -9,51 +9,60 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_editor_plus/image_editor_plus.dart';
-import 'package:image_editor_plus/options.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 
 class ImageUploadView extends ConsumerWidget {
   const ImageUploadView({super.key});
 
   Future<void> _getCamera(WidgetRef ref, BuildContext context) async {
-  final picker = ImagePicker();
-  final pickedFile = await picker.pickImage(source: ImageSource.camera);
-  if (pickedFile != null) {
-    Uint8List imageData = await pickedFile.readAsBytes();
-    final editedImage = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ImageCropper(
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.camera);
+    if (pickedFile != null) {
+      Uint8List imageData = await pickedFile.readAsBytes();
+      final editedImage = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ImageCropper(
             image: imageData, // <-- Uint8List of image
+          ),
         ),
-      ),
-    );
-    if (editedImage != null) {
-      ref.read(imageStateProvider.notifier).setImage(File(pickedFile.path));
+      );
+      if (editedImage != null) {
+        Directory tempDir = await getTemporaryDirectory();
+        String tempPath = tempDir.path;
+        File file = File('$tempPath/cropped.jpeg');
+        final croppedImage = await file.writeAsBytes(editedImage);
+        ref.read(imageStateProvider.notifier).setImage(croppedImage);
+      }
     }
   }
-}
 
-Future<void> _getGallery(WidgetRef ref, BuildContext context) async {
-  final picker = ImagePicker();
-  final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-  if (pickedFile != null) {
-    Uint8List imageData = await pickedFile.readAsBytes();
-    final editedImage = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ImageCropper(
+  Future<void> _getGallery(WidgetRef ref, BuildContext context) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      Uint8List imageData = await pickedFile.readAsBytes();
+      final editedImage = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ImageCropper(
             image: imageData, // <-- Uint8List of image
+          ),
         ),
-      ),
-    );
-    if (editedImage != null) {
-      ref.read(imageStateProvider.notifier).setImage(File(pickedFile.path));
+      );
+      if (editedImage != null) {
+        Directory tempDir = await getTemporaryDirectory();
+        String tempPath = tempDir.path;
+        File file = File('$tempPath/cropped.jpeg');
+        final croppedImage = await file.writeAsBytes(editedImage);
+        ref.read(imageStateProvider.notifier).setImage(croppedImage);
+      }
     }
   }
-}
 
-  Future<void> _saveImage(File? imageState, WidgetRef ref, BuildContext context) async {
+  Future<void> _saveImage(
+      File? imageState, WidgetRef ref, BuildContext context) async {
     ref.watch(imageUploadNotifierProvider.notifier).updateIsLoading(true);
     try {
       await ref.read(createPostUseCaseProvider).execute(imageState!);
@@ -120,11 +129,11 @@ Future<void> _getGallery(WidgetRef ref, BuildContext context) async {
                         children: <Widget>[
                           imageState != null
                               ? Image.file(
-                                  imageState,
-                                  width: 800,
-                                  height: 600,
-                                  fit: BoxFit.cover,
-                                )
+                                imageState,
+                                width: double.infinity,
+                                height: 600,
+                                fit: BoxFit.contain,
+                              )
                               : const Icon(
                                   Icons.people_alt_sharp,
                                   size: 200,
@@ -175,8 +184,8 @@ Future<void> _getGallery(WidgetRef ref, BuildContext context) async {
                           onPressed: () => _getCamera(ref, context),
                           style: ElevatedButton.styleFrom(
                             shape: const CircleBorder(),
-                            padding: const EdgeInsets.all(
-                                10), // Text and icon color
+                            padding:
+                                const EdgeInsets.all(10), // Text and icon color
                           ),
                           child: const Icon(Icons.camera_outlined,
                               color: Colors.red, size: 50),
