@@ -1,3 +1,5 @@
+import 'package:crowd_snap/core/data/models/comment_model.dart';
+import 'package:crowd_snap/features/imgs/domain/use_case/comment_delete_use_case.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -10,14 +12,18 @@ class CommentsSheet extends ConsumerStatefulWidget {
   final PostModel post;
   final TextEditingController commentController;
   final Function(String) addComment;
+  final Function(String) deleteComment;
   final ScrollController scrollController;
+  final String currentUsername;
 
   const CommentsSheet({
     super.key,
     required this.post,
     required this.commentController,
     required this.addComment,
+    required this.deleteComment,
     required this.scrollController,
+    required this.currentUsername,
   });
 
   @override
@@ -77,23 +83,28 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
                           if (user == null) {
                             return const Text('User not found');
                           }
-                          return ListTile(
-                            leading: CircleAvatar(
-                              backgroundImage:
-                                  CachedNetworkImageProvider(user.avatarUrl!),
+                          return GestureDetector(
+                            onLongPress: () {
+                              _showPopupMenu(context, comment, user.username);
+                            },
+                            child: ListTile(
+                              leading: CircleAvatar(
+                                backgroundImage:
+                                    CachedNetworkImageProvider(user.avatarUrl!),
+                              ),
+                              title: Row(
+                                children: [
+                                  Text(user.username),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    _getElapsedTime(comment.createdAt),
+                                    style: const TextStyle(
+                                        fontSize: 12, color: Colors.grey),
+                                  ),
+                                ],
+                              ),
+                              subtitle: Text(comment.text),
                             ),
-                            title: Row(
-                              children: [
-                                Text(user.username),
-                                const SizedBox(width: 8),
-                                Text(
-                                  _getElapsedTime(comment.createdAt),
-                                  style: const TextStyle(
-                                      fontSize: 12, color: Colors.grey),
-                                ),
-                              ],
-                            ),
-                            subtitle: Text(comment.text),
                           );
                         },
                       );
@@ -113,7 +124,7 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
                     _isButtonEnabled.value = _commentText.isNotEmpty;
                   },
                   decoration: const InputDecoration(
-                    hintText: 'Add a comment...',
+                    hintText: 'Añade un comentario...',
                   ),
                 ),
               ),
@@ -169,5 +180,48 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
     } else {
       return '${difference.inSeconds} segundo${difference.inSeconds > 1 ? 's' : ''}';
     }
+  }
+
+  void _showPopupMenu(
+      BuildContext context, CommentModel comment, String commentUsername) {
+    final isOwner = widget.currentUsername == commentUsername ||
+        widget.currentUsername == widget.post.userName;
+
+    // Obtener el RenderBox del contexto actual
+    final RenderBox overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox;
+    final RenderBox button = context.findRenderObject() as RenderBox;
+    final Offset offset = button.localToGlobal(Offset.zero, ancestor: overlay);
+
+    showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(
+        offset.dx + button.size.width, // Posición a la derecha del comentario
+        offset.dy,
+        overlay.size.width - (offset.dx + button.size.width),
+        overlay.size.height - offset.dy,
+      ),
+      color: Theme.of(context).colorScheme.surfaceBright,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(30),
+      ),
+      items: [
+        if (isOwner)
+          const PopupMenuItem(
+            value: 'delete',
+            child: Center(child: Text('Eliminar', textAlign: TextAlign.center)),
+          ),
+        const PopupMenuItem(
+          value: 'report',
+          child: Center(child: Text('Reportar', textAlign: TextAlign.center)),
+        ),
+      ],
+    ).then((value) {
+      if (value == 'delete') {
+        widget.deleteComment(comment.commentId);
+      } else if (value == 'report') {
+        // Lógica para reportar el comentario
+      }
+    });
   }
 }

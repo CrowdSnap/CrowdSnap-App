@@ -54,6 +54,7 @@ class PostList extends _$PostList {
     // Actualizar la lista de IDs cargados
     _loadedPostIds.addAll(newPosts.map((post) => post.mongoId!));
     print('Query: $city, $startDateOnly, $endDateOnly, $numberOfPosts');
+    print('Postslist: $_loadedPostIds');
     return query;
   }
 
@@ -68,6 +69,7 @@ class PostList extends _$PostList {
   Future<void> refreshPosts() async {
     ref.invalidate(likesNotifierProvider);
     ref.invalidate(commentsNotifierProvider);
+    _loadedPostIds.clear();
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(_fetchPosts);
   }

@@ -2,6 +2,7 @@ import 'package:crowd_snap/core/data/models/like_model.dart';
 import 'package:crowd_snap/core/data/models/post_model.dart';
 import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_use_case.dart';
 import 'package:crowd_snap/features/imgs/domain/use_case/comment_create_use_case.dart';
+import 'package:crowd_snap/features/imgs/domain/use_case/comment_delete_use_case.dart';
 import 'package:crowd_snap/features/imgs/domain/use_case/post_add_like_use_case.dart';
 import 'package:crowd_snap/features/imgs/domain/use_case/post_remove_like_use_case.dart';
 import 'package:crowd_snap/features/imgs/presentation/notifier/comments_provider.dart';
@@ -26,6 +27,7 @@ class _PostCardState extends ConsumerState<PostCard> {
   int _likeCount = 0;
   int _commentCount = 0;
   final _commentController = TextEditingController();
+  String _currentUsername = '';
 
   @override
   void initState() {
@@ -33,6 +35,13 @@ class _PostCardState extends ConsumerState<PostCard> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _checkIfUserLikedPost();
+        _getUserName().then((value) {
+          if (mounted) {
+            setState(() {
+              _currentUsername = value;
+            });
+          }
+        });
       }
     });
     _likeCount = widget.post.likeCount;
@@ -43,6 +52,11 @@ class _PostCardState extends ConsumerState<PostCard> {
   void dispose() {
     _commentController.dispose();
     super.dispose();
+  }
+
+  Future<String> _getUserName() async {
+    final getUserUseCase = await ref.read(getUserUseCaseProvider).execute();
+    return getUserUseCase.username;
   }
 
   Future<void> _checkIfUserLikedPost() async {
@@ -81,11 +95,13 @@ class _PostCardState extends ConsumerState<PostCard> {
   void _addComment(String value) {
     final createCommentUseCase = ref.read(createCommentUseCaseProvider(widget.post.mongoId!));
     createCommentUseCase.execute(value, widget.post.mongoId!);
-    if (mounted) {
-      setState(() {
-        _commentCount++;
-      });
-    }
+    _commentCount++;
+  }
+
+  void deleteComment(String commentId) {
+    final deleteCommentUseCase = ref.read(deleteCommentUseCaseProvider(widget.post.mongoId!));
+    deleteCommentUseCase.execute(commentId, widget.post.mongoId!);
+    _commentCount--;
   }
 
   void _showLikedUserSheet() {
@@ -155,7 +171,9 @@ class _PostCardState extends ConsumerState<PostCard> {
                     post: widget.post,
                     commentController: _commentController,
                     addComment: _addComment,
+                    deleteComment: deleteComment,
                     scrollController: scrollController,
+                    currentUsername: _currentUsername,
                   );
                 },
               ),

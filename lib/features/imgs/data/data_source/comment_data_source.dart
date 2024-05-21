@@ -9,6 +9,7 @@ abstract class CommentDataSource {
   Future<List<CommentModel>> getCommentsByPost(String postId);
   Future<CommentModel> getCommentById(String postId, String commentId);
   Future<void> createComment(String postId, CommentModel comment);
+  Future<void> deleteComment(String postId, String commentId);
   Future<void> loadEnvVariables();
 }
 
@@ -32,11 +33,14 @@ class CommentDataSourceImpl implements CommentDataSource {
     await db.open();
     final postsCollection = db.collection('posts');
 
-    final post = await postsCollection.findOne(where.eq('_id', ObjectId.fromHexString(postId)));
+    final post = await postsCollection
+        .findOne(where.eq('_id', ObjectId.fromHexString(postId)));
     await db.close();
 
     final commentsData = post?['comments'] ?? [];
-    return commentsData.map<CommentModel>((json) => CommentModel.fromJson(json)).toList();
+    return commentsData
+        .map<CommentModel>((json) => CommentModel.fromJson(json))
+        .toList();
   }
 
   @override
@@ -45,10 +49,12 @@ class CommentDataSourceImpl implements CommentDataSource {
     await db.open();
     final postsCollection = db.collection('posts');
 
-    final post = await postsCollection.findOne(where.eq('_id', ObjectId.fromHexString(postId)));
+    final post = await postsCollection
+        .findOne(where.eq('_id', ObjectId.fromHexString(postId)));
     await db.close();
 
-    final commentData = post?['comments']?.firstWhere((comment) => comment['_id'] == ObjectId.fromHexString(commentId));
+    final commentData = post?['comments']?.firstWhere(
+        (comment) => comment['_id'] == ObjectId.fromHexString(commentId));
     return CommentModel.fromJson(commentData);
   }
 
@@ -61,6 +67,20 @@ class CommentDataSourceImpl implements CommentDataSource {
     await postsCollection.updateOne(
       where.eq('_id', ObjectId.fromHexString(postId)),
       modify.inc('commentCount', 1).push('comments', comment.toJson()),
+    );
+
+    await db.close();
+  }
+
+  @override
+  Future<void> deleteComment(String postId, String commentId) async {
+    final Db db = await Db.create(_mongoUrl!);
+    await db.open();
+    final postsCollection = db.collection('posts');
+
+    await postsCollection.updateOne(
+      where.eq('_id', ObjectId.fromHexString(postId)),
+      modify.inc('commentCount', -1).pull('comments', {'commentId': commentId}),
     );
 
     await db.close();

@@ -30,4 +30,9 @@ class CommentRepositoryImpl implements CommentRepository {
   Future<void> createComment(String postId, CommentModel comment) {
     return _commentDataSource.createComment(postId, comment);
   }
+
+  @override
+  Future<void> deleteComment(String postId, String commentId) {
+    return _commentDataSource.deleteComment(postId, commentId);
+  }
 }
