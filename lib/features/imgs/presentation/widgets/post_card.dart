@@ -93,15 +93,25 @@ class _PostCardState extends ConsumerState<PostCard> {
   }
 
   void _addComment(String value) {
-    final createCommentUseCase = ref.read(createCommentUseCaseProvider(widget.post.mongoId!));
+    final createCommentUseCase =
+        ref.read(createCommentUseCaseProvider(widget.post.mongoId!));
     createCommentUseCase.execute(value, widget.post.mongoId!);
-    _commentCount++;
+    if (mounted) {
+      setState(() {
+        _commentCount++;
+      });
+    }
   }
 
   void deleteComment(String commentId) {
-    final deleteCommentUseCase = ref.read(deleteCommentUseCaseProvider(widget.post.mongoId!));
+    final deleteCommentUseCase =
+        ref.read(deleteCommentUseCaseProvider(widget.post.mongoId!));
     deleteCommentUseCase.execute(commentId, widget.post.mongoId!);
-    _commentCount--;
+    if (mounted) {
+      setState(() {
+        _commentCount--;
+      });
+    }
   }
 
   void _showLikedUserSheet() {
@@ -144,12 +154,12 @@ class _PostCardState extends ConsumerState<PostCard> {
 
   void _showCommentSheet() {
     final postId = widget.post.mongoId!;
-    final commentsNotifier = ref.read(commentsNotifierProvider(postId).notifier);
+    final commentsNotifier =
+        ref.read(commentsNotifierProvider(postId).notifier);
 
     if (commentsNotifier.isFirstLoad) {
       commentsNotifier.setComments(widget.post.comments);
       commentsNotifier.markAsLoaded();
-      
     }
     showModalBottomSheet(
       context: context,
