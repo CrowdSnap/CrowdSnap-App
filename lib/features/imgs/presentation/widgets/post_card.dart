@@ -1,9 +1,11 @@
+import 'package:crowd_snap/core/data/models/comment_model.dart';
 import 'package:crowd_snap/core/data/models/like_model.dart';
 import 'package:crowd_snap/core/data/models/post_model.dart';
 import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_use_case.dart';
 import 'package:crowd_snap/features/imgs/domain/use_case/comment_create_use_case.dart';
 import 'package:crowd_snap/features/imgs/domain/use_case/comment_delete_use_case.dart';
 import 'package:crowd_snap/features/imgs/domain/use_case/post_add_like_use_case.dart';
+import 'package:crowd_snap/features/imgs/domain/use_case/post_delete_use_case.dart';
 import 'package:crowd_snap/features/imgs/domain/use_case/post_remove_like_use_case.dart';
 import 'package:crowd_snap/features/imgs/presentation/notifier/comments_provider.dart';
 import 'package:crowd_snap/features/imgs/presentation/notifier/likes_provider.dart';
@@ -194,6 +196,47 @@ class _PostCardState extends ConsumerState<PostCard> {
     );
   }
 
+  void _showPopupMenu(BuildContext context) {
+    final isOwner = _currentUsername == widget.post.userName;
+
+    // Obtener el RenderBox del contexto actual
+    final RenderBox overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox;
+    final RenderBox button = context.findRenderObject() as RenderBox;
+    final Offset offset = button.localToGlobal(Offset.zero, ancestor: overlay);
+
+    showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(
+        offset.dx + button.size.width, // Posición a la derecha del comentario
+        offset.dy,
+        overlay.size.width - (offset.dx + button.size.width),
+        overlay.size.height - offset.dy,
+      ),
+      color: Theme.of(context).colorScheme.surfaceBright,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(30),
+      ),
+      items: [
+        if (isOwner)
+          const PopupMenuItem(
+            value: 'delete',
+            child: Center(child: Text('Eliminar', textAlign: TextAlign.center)),
+          ),
+        const PopupMenuItem(
+          value: 'report',
+          child: Center(child: Text('Reportar', textAlign: TextAlign.center)),
+        ),
+      ],
+    ).then((value) {
+      if (value == 'delete') {
+        ref.read(deletePostUseCaseProvider).execute(widget.post.mongoId!);
+      } else if (value == 'report') {
+        // Lógica para reportar el post
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return PostWidget(
@@ -201,6 +244,7 @@ class _PostCardState extends ConsumerState<PostCard> {
       showLikedUserSheet: _showLikedUserSheet,
       showCommentSheet: _showCommentSheet,
       toggleLike: _toggleLike,
+      showPopupMenu: _showPopupMenu,
       isLiked: _isLiked,
       likeCount: _likeCount,
       commentCount: _commentCount,

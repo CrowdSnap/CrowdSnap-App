@@ -15,6 +15,7 @@ abstract class PostDataSource {
   Future<void> decrementCommentCount(String postId);
   Future<void> addLikeToPost(String postId, String userId);
   Future<void> removeLikeFromPost(String postId, String userId);
+  Future<void> deletePost(String postId);
 }
 
 @Riverpod(keepAlive: true)
@@ -150,6 +151,17 @@ class PostDataSourceImpl implements PostDataSource {
       where.eq('_id', ObjectId.fromHexString(postId)),
       modify.inc('commentCount', -1),
     );
+
+    await db.close();
+  }
+
+  @override
+  Future<void> deletePost(String postId) async {
+    final Db db = await Db.create(_mongoUrl!);
+    await db.open();
+    final postsCollection = db.collection('posts');
+
+    await postsCollection.remove(where.eq('_id', ObjectId.fromHexString(postId)));
 
     await db.close();
   }

@@ -8,6 +8,7 @@ class PostWidget extends ConsumerStatefulWidget {
   final Function() showLikedUserSheet;
   final Function() showCommentSheet;
   final Function() toggleLike;
+  final Function(BuildContext context) showPopupMenu;
   final bool isLiked;
   final int likeCount;
   final int commentCount;
@@ -18,6 +19,7 @@ class PostWidget extends ConsumerStatefulWidget {
     required this.showLikedUserSheet,
     required this.showCommentSheet,
     required this.toggleLike,
+    required this.showPopupMenu,
     required this.isLiked,
     required this.likeCount,
     required this.commentCount,
@@ -44,8 +46,10 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
                   height: 40,
                   child: CachedNetworkImage(
                     imageUrl: widget.post.userAvatarUrl,
-                    placeholder: (context, url) => const CircularProgressIndicator(),
-                    errorWidget: (context, url, error) => const Icon(Icons.person),
+                    placeholder: (context, url) =>
+                        const CircularProgressIndicator(),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.person),
                     imageBuilder: (context, imageProvider) => CircleAvatar(
                       backgroundImage: imageProvider,
                     ),
@@ -61,7 +65,9 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
                 const Spacer(),
                 IconButton(
                   icon: const Icon(Icons.more_vert),
-                  onPressed: () {},
+                  onPressed: () {
+                    widget.showPopupMenu(context);
+                  },
                 ),
               ],
             ),

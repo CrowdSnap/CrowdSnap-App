@@ -51,4 +51,9 @@ class PostRepositoryImpl implements PostRepository {
   Future<void> decrementCommentCount(String postId) {
     return _postDataSource.decrementCommentCount(postId);
   }
+
+  @override
+  Future<void> deletePost(String postId) {
+    return _postDataSource.deletePost(postId);
+  }
 }

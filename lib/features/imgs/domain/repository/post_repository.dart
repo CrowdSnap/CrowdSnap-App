@@ -9,4 +9,5 @@ abstract class PostRepository {
   Future<List<PostModel>> getPostsByUser(String userId);
   Future<void> incrementCommentCount(String postId);
   Future<void> decrementCommentCount(String postId);
+  Future<void> deletePost(String postId);
 }
