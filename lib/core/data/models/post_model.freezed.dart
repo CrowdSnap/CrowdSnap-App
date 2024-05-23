@@ -32,6 +32,7 @@ mixin _$PostModel {
   int get commentCount => throw _privateConstructorUsedError;
   List<LikeModel> get likes => throw _privateConstructorUsedError;
   List<CommentModel> get comments => throw _privateConstructorUsedError;
+  String get blurHashImage => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -58,6 +59,7 @@ abstract class $PostModelCopyWith<$Res> {
       int commentCount,
       List<LikeModel> likes,
       List<CommentModel> comments,
+      String blurHashImage,
       String? description});
 }
 
@@ -86,6 +88,7 @@ class _$PostModelCopyWithImpl<$Res, $Val extends PostModel>
     Object? commentCount = null,
     Object? likes = null,
     Object? comments = null,
+    Object? blurHashImage = null,
     Object? description = freezed,
   }) {
     return _then(_value.copyWith(
@@ -137,6 +140,10 @@ class _$PostModelCopyWithImpl<$Res, $Val extends PostModel>
           ? _value.comments
           : comments // ignore: cast_nullable_to_non_nullable
               as List<CommentModel>,
+      blurHashImage: null == blurHashImage
+          ? _value.blurHashImage
+          : blurHashImage // ignore: cast_nullable_to_non_nullable
+              as String,
       description: freezed == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
@@ -166,6 +173,7 @@ abstract class _$$PostModelImplCopyWith<$Res>
       int commentCount,
       List<LikeModel> likes,
       List<CommentModel> comments,
+      String blurHashImage,
       String? description});
 }
 
@@ -192,6 +200,7 @@ class __$$PostModelImplCopyWithImpl<$Res>
     Object? commentCount = null,
     Object? likes = null,
     Object? comments = null,
+    Object? blurHashImage = null,
     Object? description = freezed,
   }) {
     return _then(_$PostModelImpl(
@@ -243,6 +252,10 @@ class __$$PostModelImplCopyWithImpl<$Res>
           ? _value._comments
           : comments // ignore: cast_nullable_to_non_nullable
               as List<CommentModel>,
+      blurHashImage: null == blurHashImage
+          ? _value.blurHashImage
+          : blurHashImage // ignore: cast_nullable_to_non_nullable
+              as String,
       description: freezed == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
@@ -267,6 +280,7 @@ class _$PostModelImpl implements _PostModel {
       required this.commentCount,
       required final List<LikeModel> likes,
       required final List<CommentModel> comments,
+      required this.blurHashImage,
       this.description})
       : _taggedUserIds = taggedUserIds,
         _likes = likes,
@@ -318,11 +332,13 @@ class _$PostModelImpl implements _PostModel {
   }
 
   @override
+  final String blurHashImage;
+  @override
   final String? description;
 
   @override
   String toString() {
-    return 'PostModel(mongoId: $mongoId, userId: $userId, userName: $userName, userAvatarUrl: $userAvatarUrl, imageUrl: $imageUrl, taggedUserIds: $taggedUserIds, location: $location, createdAt: $createdAt, likeCount: $likeCount, commentCount: $commentCount, likes: $likes, comments: $comments, description: $description)';
+    return 'PostModel(mongoId: $mongoId, userId: $userId, userName: $userName, userAvatarUrl: $userAvatarUrl, imageUrl: $imageUrl, taggedUserIds: $taggedUserIds, location: $location, createdAt: $createdAt, likeCount: $likeCount, commentCount: $commentCount, likes: $likes, comments: $comments, blurHashImage: $blurHashImage, description: $description)';
   }
 
   @override
@@ -350,6 +366,8 @@ class _$PostModelImpl implements _PostModel {
                 other.commentCount == commentCount) &&
             const DeepCollectionEquality().equals(other._likes, _likes) &&
             const DeepCollectionEquality().equals(other._comments, _comments) &&
+            (identical(other.blurHashImage, blurHashImage) ||
+                other.blurHashImage == blurHashImage) &&
             (identical(other.description, description) ||
                 other.description == description));
   }
@@ -370,6 +388,7 @@ class _$PostModelImpl implements _PostModel {
       commentCount,
       const DeepCollectionEquality().hash(_likes),
       const DeepCollectionEquality().hash(_comments),
+      blurHashImage,
       description);
 
   @JsonKey(ignore: true)
@@ -400,6 +419,7 @@ abstract class _PostModel implements PostModel {
       required final int commentCount,
       required final List<LikeModel> likes,
       required final List<CommentModel> comments,
+      required final String blurHashImage,
       final String? description}) = _$PostModelImpl;
 
   factory _PostModel.fromJson(Map<String, dynamic> json) =
@@ -429,6 +449,8 @@ abstract class _PostModel implements PostModel {
   List<LikeModel> get likes;
   @override
   List<CommentModel> get comments;
+  @override
+  String get blurHashImage;
   @override
   String? get description;
   @override

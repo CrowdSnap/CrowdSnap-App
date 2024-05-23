@@ -26,6 +26,7 @@ _$PostModelImpl _$$PostModelImplFromJson(Map<String, dynamic> json) =>
       comments: (json['comments'] as List<dynamic>)
           .map((e) => CommentModel.fromJson(e as Map<String, dynamic>))
           .toList(),
+      blurHashImage: json['blurHashImage'] as String,
       description: json['description'] as String?,
     );
 
@@ -43,5 +44,6 @@ Map<String, dynamic> _$$PostModelImplToJson(_$PostModelImpl instance) =>
       'commentCount': instance.commentCount,
       'likes': instance.likes,
       'comments': instance.comments,
+      'blurHashImage': instance.blurHashImage,
       'description': instance.description,
     };

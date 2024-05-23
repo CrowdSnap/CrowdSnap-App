@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_blurhash/flutter_blurhash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crowd_snap/core/data/models/post_model.dart';
@@ -76,12 +77,11 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
             onDoubleTap: widget.toggleLike,
             child: CachedNetworkImage(
               imageUrl: widget.post.imageUrl,
-              placeholder: (context, url) => const SizedBox(
+              placeholder: (context, url) => SizedBox(
                 height: 548,
                 width: 600,
-                child: Center(
-                  child: CircularProgressIndicator(),
-                ),
+                child: 
+                  BlurHash(hash: widget.post.blurHashImage),
               ),
               errorWidget: (context, url, error) => const Icon(Icons.error),
             ),
