@@ -1,4 +1,3 @@
-import 'package:crowd_snap/core/data/models/comment_model.dart';
 import 'package:crowd_snap/core/data/models/like_model.dart';
 import 'package:crowd_snap/core/data/models/post_model.dart';
 import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_use_case.dart';
@@ -119,10 +118,18 @@ class _PostCardState extends ConsumerState<PostCard> {
   void _showLikedUserSheet() {
     final postId = widget.post.mongoId!;
     final likesNotifier = ref.read(likesNotifierProvider(postId).notifier);
+    final likesValue = ref.watch(likesNotifierProvider(postId));
+    print('First load: ${likesNotifier.isFirstLoad}');
 
     // Solo actualizar el estado si es la primera vez que se carga
     if (likesNotifier.isFirstLoad) {
-      likesNotifier.setLikes(widget.post.likes);
+      if (likesValue.isNotEmpty) {
+        List<LikeModel> likes = likesValue;
+        likes.addAll(widget.post.likes);
+        likesNotifier.setLikes(likes);
+      } else {
+        likesNotifier.setLikes(widget.post.likes);
+      }
       likesNotifier.markAsLoaded();
     }
     showModalBottomSheet(
