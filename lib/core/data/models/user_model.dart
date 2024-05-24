@@ -15,6 +15,7 @@ class UserModel with _$UserModel {
     required bool firstTime,
     String? statusString,
     String? avatarUrl,
+    String? blurHashImage,
   }) = _UserModel;
 
   factory UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);

@@ -17,6 +17,7 @@ _$UserModelImpl _$$UserModelImplFromJson(Map<String, dynamic> json) =>
       firstTime: json['firstTime'] as bool,
       statusString: json['statusString'] as String?,
       avatarUrl: json['avatarUrl'] as String?,
+      blurHashImage: json['blurHashImage'] as String?,
     );
 
 Map<String, dynamic> _$$UserModelImplToJson(_$UserModelImpl instance) =>
@@ -30,4 +31,5 @@ Map<String, dynamic> _$$UserModelImplToJson(_$UserModelImpl instance) =>
       'firstTime': instance.firstTime,
       'statusString': instance.statusString,
       'avatarUrl': instance.avatarUrl,
+      'blurHashImage': instance.blurHashImage,
     };

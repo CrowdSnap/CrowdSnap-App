@@ -61,10 +61,10 @@ class FirestoreRepositoryImpl implements FirestoreRepository {
 
   // Actualiza la URL del avatar del usuario en Firestore utilizando `firestoreDataSource`.
   @override
-  Future<void> updateUserAvatar(String avatarUrl) async {
+  Future<void> updateUserAvatar(String avatarUrl, String blurHash) async {
     try {
       print('Avatar URL: $avatarUrl');
-      await _firestoreDataSource.updateUserAvatar(avatarUrl);
+      await _firestoreDataSource.updateUserAvatar(avatarUrl, blurHash);
       _logger.info('User avatar updated in Firestore');
     } catch (e) {
       _logger.severe('Error updating user avatar in Firestore: $e');

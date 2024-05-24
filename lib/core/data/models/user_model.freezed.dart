@@ -29,6 +29,7 @@ mixin _$UserModel {
   bool get firstTime => throw _privateConstructorUsedError;
   String? get statusString => throw _privateConstructorUsedError;
   String? get avatarUrl => throw _privateConstructorUsedError;
+  String? get blurHashImage => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -50,7 +51,8 @@ abstract class $UserModelCopyWith<$Res> {
       DateTime birthDate,
       bool firstTime,
       String? statusString,
-      String? avatarUrl});
+      String? avatarUrl,
+      String? blurHashImage});
 }
 
 /// @nodoc
@@ -75,6 +77,7 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
     Object? firstTime = null,
     Object? statusString = freezed,
     Object? avatarUrl = freezed,
+    Object? blurHashImage = freezed,
   }) {
     return _then(_value.copyWith(
       userId: null == userId
@@ -113,6 +116,10 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
           ? _value.avatarUrl
           : avatarUrl // ignore: cast_nullable_to_non_nullable
               as String?,
+      blurHashImage: freezed == blurHashImage
+          ? _value.blurHashImage
+          : blurHashImage // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -134,7 +141,8 @@ abstract class _$$UserModelImplCopyWith<$Res>
       DateTime birthDate,
       bool firstTime,
       String? statusString,
-      String? avatarUrl});
+      String? avatarUrl,
+      String? blurHashImage});
 }
 
 /// @nodoc
@@ -157,6 +165,7 @@ class __$$UserModelImplCopyWithImpl<$Res>
     Object? firstTime = null,
     Object? statusString = freezed,
     Object? avatarUrl = freezed,
+    Object? blurHashImage = freezed,
   }) {
     return _then(_$UserModelImpl(
       userId: null == userId
@@ -195,6 +204,10 @@ class __$$UserModelImplCopyWithImpl<$Res>
           ? _value.avatarUrl
           : avatarUrl // ignore: cast_nullable_to_non_nullable
               as String?,
+      blurHashImage: freezed == blurHashImage
+          ? _value.blurHashImage
+          : blurHashImage // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -211,7 +224,8 @@ class _$UserModelImpl implements _UserModel {
       required this.birthDate,
       required this.firstTime,
       this.statusString,
-      this.avatarUrl});
+      this.avatarUrl,
+      this.blurHashImage});
 
   factory _$UserModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserModelImplFromJson(json);
@@ -234,10 +248,12 @@ class _$UserModelImpl implements _UserModel {
   final String? statusString;
   @override
   final String? avatarUrl;
+  @override
+  final String? blurHashImage;
 
   @override
   String toString() {
-    return 'UserModel(userId: $userId, username: $username, name: $name, email: $email, joinedAt: $joinedAt, birthDate: $birthDate, firstTime: $firstTime, statusString: $statusString, avatarUrl: $avatarUrl)';
+    return 'UserModel(userId: $userId, username: $username, name: $name, email: $email, joinedAt: $joinedAt, birthDate: $birthDate, firstTime: $firstTime, statusString: $statusString, avatarUrl: $avatarUrl, blurHashImage: $blurHashImage)';
   }
 
   @override
@@ -259,13 +275,15 @@ class _$UserModelImpl implements _UserModel {
             (identical(other.statusString, statusString) ||
                 other.statusString == statusString) &&
             (identical(other.avatarUrl, avatarUrl) ||
-                other.avatarUrl == avatarUrl));
+                other.avatarUrl == avatarUrl) &&
+            (identical(other.blurHashImage, blurHashImage) ||
+                other.blurHashImage == blurHashImage));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, userId, username, name, email,
-      joinedAt, birthDate, firstTime, statusString, avatarUrl);
+      joinedAt, birthDate, firstTime, statusString, avatarUrl, blurHashImage);
 
   @JsonKey(ignore: true)
   @override
@@ -291,7 +309,8 @@ abstract class _UserModel implements UserModel {
       required final DateTime birthDate,
       required final bool firstTime,
       final String? statusString,
-      final String? avatarUrl}) = _$UserModelImpl;
+      final String? avatarUrl,
+      final String? blurHashImage}) = _$UserModelImpl;
 
   factory _UserModel.fromJson(Map<String, dynamic> json) =
       _$UserModelImpl.fromJson;
@@ -314,6 +333,8 @@ abstract class _UserModel implements UserModel {
   String? get statusString;
   @override
   String? get avatarUrl;
+  @override
+  String? get blurHashImage;
   @override
   @JsonKey(ignore: true)
   _$$UserModelImplCopyWith<_$UserModelImpl> get copyWith =>

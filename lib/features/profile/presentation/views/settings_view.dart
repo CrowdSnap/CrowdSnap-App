@@ -25,15 +25,16 @@ class SettingsView extends ConsumerWidget {
         'Deleting user: $userModel'); // Imprime información del usuario a eliminar (opcional para debug).
     try {
       // Elimina el usuario de Firebase Auth y Firestore.
-      await FirebaseAuth.instance.currentUser?.delete();
-      await ref.read(firestoreRepositoryProvider).deleteUser(userId);
-      ref
-          .read(signOutUseCaseProvider)
-          .execute(); // Cierra la sesión del usuario.
-      // Elimina el avatar del usuario del bucket de almacenamiento (opcional, dependiendo de la implementación).
       await ref
           .read(avatarBucketRepositoryProvider)
           .deleteUserAvatar(userModel.avatarUrl!);
+      await ref.read(firestoreRepositoryProvider).deleteUser(userId);
+      // Cierra la sesión del usuario.
+      // Elimina el avatar del usuario del bucket de almacenamiento (opcional, dependiendo de la implementación).
+      await FirebaseAuth.instance.currentUser?.delete();
+      ref
+          .read(signOutUseCaseProvider)
+          .execute(); 
     } catch (e) {
       print(
           'Error deleting user: $e'); // Imprime el error al eliminar el usuario (opcional para debug).

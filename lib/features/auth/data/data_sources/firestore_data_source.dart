@@ -11,7 +11,7 @@ abstract class FirestoreDataSource {
   Future<void> saveUser(UserModel user);
   Future<UserModel> getUser(String userId);
   Future<void> updateUser(UserModel user);
-  Future<void> updateUserAvatar(String avatarUrl);
+  Future<void> updateUserAvatar(String avatarUrl, String blurHash);
   Future<void> deleteUser(String userId);
 }
 
@@ -84,7 +84,7 @@ class FirestoreDataSourceImpl implements FirestoreDataSource {
   // Actualiza solo la URL del avatar del usuario actual en Firestore.
   // Devuelve un `Future<void>` que indica la finalización asincrónica.
   @override
-  Future<void> updateUserAvatar(String avatarUrl) async {
+  Future<void> updateUserAvatar(String avatarUrl, String blurHash) async {
     final userModel = await _getUserUseCase.execute();
     final userId = userModel.userId;
     try {
@@ -92,7 +92,7 @@ class FirestoreDataSourceImpl implements FirestoreDataSource {
       print('User ID: $userId');
       print('Avatar URL: $avatarUrl');
       print('User Doc: $userDoc');
-      await userDoc.update({'avatarUrl': avatarUrl});
+      await userDoc.update({'avatarUrl': avatarUrl, 'blurHashImage': blurHash});
       _logger.info('User avatar updated in Firestore: $avatarUrl');
     } catch (e) {
       _logger.severe('Error updating user avatar in Firestore: $e');

@@ -6,7 +6,7 @@ part of 'post_delete_use_case.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$deletePostUseCaseHash() => r'bc855bb75cd2065f95950d72a281298a72003d09';
+String _$deletePostUseCaseHash() => r'21e010759c04ea0034d841ae6bbb2056bac25e0b';
 
 /// See also [deletePostUseCase].
 @ProviderFor(deletePostUseCase)

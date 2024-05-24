@@ -24,7 +24,7 @@ abstract class FirestoreRepository {
   ///
   /// Devuelve un `Future<void>` que se completa cuando la URL del avatar se actualiza correctamente.
   /// Lanza una excepción si ocurre algún error durante la actualización del avatar.
-  Future<void> updateUserAvatar(String avatarUrl);
+  Future<void> updateUserAvatar(String avatarUrl, String blurHash);
 
   /// Elimina un usuario de la base de datos Firestore.
   ///

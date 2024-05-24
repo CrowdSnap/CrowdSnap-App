@@ -21,6 +21,8 @@ class PostModel with _$PostModel {
     required List<LikeModel> likes,
     required List<CommentModel> comments,
     required String blurHashImage,
+    required String blurHashAvatar,
+    required double aspectRatio,
     String? description,
   }) = _PostModel;
 

@@ -237,7 +237,7 @@ class _PostCardState extends ConsumerState<PostCard> {
       ],
     ).then((value) {
       if (value == 'delete') {
-        ref.read(deletePostUseCaseProvider).execute(widget.post.mongoId!);
+        ref.read(deletePostUseCaseProvider).execute(widget.post.mongoId!, widget.post.imageUrl);
       } else if (value == 'report') {
         // Lógica para reportar el post
       }

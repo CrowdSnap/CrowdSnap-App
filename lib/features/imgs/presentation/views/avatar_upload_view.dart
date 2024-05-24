@@ -63,10 +63,10 @@ class AvatarUploadView extends ConsumerWidget {
         await avatarUpload.execute(imageState!, userName: userModel.username);
 
     // Actualiza el avatar del usuario en Firestore.
-    firestoreRepository.updateUserAvatar(imageUrl);
+    firestoreRepository.updateUserAvatar(imageUrl , blurHash);
 
     // Actualiza el avatar del usuario en el modelo de usuario local.
-    userRepository.updateUserAvatar(imageUrl);
+    userRepository.updateUserAvatar(imageUrl, blurHash);
 
     getUserUseCase.execute().then((user) {
         profileNotifier.updateUserId(user.userId);

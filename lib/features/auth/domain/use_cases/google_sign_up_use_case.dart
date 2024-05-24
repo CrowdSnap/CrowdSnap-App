@@ -40,6 +40,7 @@ class GoogleSignUpUseCase {
     try {
       final googleUser = await _googleUserRepository.getGoogleUser();
       final String userAvatar;
+      final String blurHash;
       if (userImage.isEmpty) {
         print('Downloading google avatar ${googleUser.avatarUrl}');
         final avatar = googleUser.avatarUrl;
@@ -47,11 +48,11 @@ class GoogleSignUpUseCase {
         final directory = await getApplicationDocumentsDirectory();
         final avatarFile = File('${directory.path}/$avatar');
         await dio.download(avatar!, avatarFile.path);
-        userAvatar = await _avatarUploadUseCase.execute(avatarFile,
+        (userAvatar, blurHash) = await _avatarUploadUseCase.execute(avatarFile,
             userName: userName, googleAvatar: true);
       } else {
         print('Uploading user selected avatar $userImage');
-        userAvatar = await _avatarUploadUseCase.execute(File(userImage),
+        (userAvatar, blurHash) = await _avatarUploadUseCase.execute(File(userImage),
             userName: userName);
       }
       print('UserImage: $userAvatar');
@@ -64,6 +65,7 @@ class GoogleSignUpUseCase {
         joinedAt: DateTime.now(),
         firstTime: true,
         avatarUrl: userAvatar,
+        blurHashImage: blurHash,
       );
       print('User Avatar: ${user.avatarUrl}');
       print('Uploaded user selected avatar ${user.avatarUrl}');

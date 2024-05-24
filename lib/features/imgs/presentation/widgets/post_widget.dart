@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blurhash/flutter_blurhash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:octo_image/octo_image.dart';
 import 'package:crowd_snap/core/data/models/post_model.dart';
 
 class PostWidget extends ConsumerStatefulWidget {
@@ -47,13 +48,23 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
                   height: 40,
                   child: CachedNetworkImage(
                     imageUrl: widget.post.userAvatarUrl,
-                    placeholder: (context, url) =>
-                        const CircularProgressIndicator(),
+                    placeholder: (context, url) => ClipOval(
+                      child: SizedBox(
+                        width: 40,
+                        height: 40,
+                        child: BlurHash(
+                          hash: widget.post.blurHashAvatar,
+                          imageFit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
                     errorWidget: (context, url, error) =>
                         const Icon(Icons.person),
                     imageBuilder: (context, imageProvider) => CircleAvatar(
                       backgroundImage: imageProvider,
                     ),
+                    fadeInDuration: const Duration(milliseconds: 400),
+                    fadeOutDuration: const Duration(milliseconds: 400),
                   ),
                 ),
                 const SizedBox(width: 12.0),
@@ -73,18 +84,34 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
               ],
             ),
           ),
-          GestureDetector(
-            onDoubleTap: widget.toggleLike,
-            child: CachedNetworkImage(
-              imageUrl: widget.post.imageUrl,
-              placeholder: (context, url) => SizedBox(
-                height: 548,
-                width: 600,
-                child: 
-                  BlurHash(hash: widget.post.blurHashImage),
-              ),
-              errorWidget: (context, url, error) => const Icon(Icons.error),
-            ),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final maxWidth = constraints.maxWidth;
+              const maxHeight = 700.0;
+              final height = (maxWidth / widget.post.aspectRatio).clamp(0.0, maxHeight);
+
+              return GestureDetector(
+                onDoubleTap: widget.toggleLike,
+                child: SizedBox(
+                  height: height,
+                  width: maxWidth,
+                  child: OctoImage(
+                    image: CachedNetworkImageProvider(widget.post.imageUrl),
+                    placeholderBuilder: (context) => SizedBox.expand(
+                      child: Image(
+                        image: BlurHashImage(widget.post.blurHashImage),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    errorBuilder: (context, error, stackTrace) =>
+                        const Icon(Icons.error),
+                    fit: BoxFit.cover,
+                    fadeInDuration: const Duration(milliseconds: 400),
+                    fadeOutDuration: const Duration(milliseconds: 400),
+                  ),
+                ),
+              );
+            },
           ),
           Row(
             children: [

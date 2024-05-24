@@ -23,10 +23,16 @@ class CreatePostUseCase {
   Future<void> execute(File image) async {
     final userModel = await _getUserUseCase.execute();
     final userName = userModel.username;
+    final avatarBlurHash = userModel.blurHashImage;
     final data = image.readAsBytesSync();
 
     // Usar compute para ejecutar la tarea en un hilo separado
     final blurHash = await compute(_encodeBlurHash, data);
+
+    // Decodificar la imagen para obtener sus dimensiones
+    final decodedImage = img.decodeImage(data);
+    final width = decodedImage!.width;
+    final height = decodedImage.height;
 
     final imageUrl =
         await _imageUploadUseCase.execute(image, userName: userName);
@@ -43,6 +49,8 @@ class CreatePostUseCase {
       likes: [],
       comments: [],
       blurHashImage: blurHash,
+      blurHashAvatar: avatarBlurHash!,
+      aspectRatio: width / height,
     );
     print('Post created with image url: $imageUrl');
     _postRepository.createPost(post);
