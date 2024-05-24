@@ -1,9 +1,11 @@
+import 'package:crowd_snap/features/home/presentation/provider/block_scroll.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blurhash/flutter_blurhash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:octo_image/octo_image.dart';
 import 'package:crowd_snap/core/data/models/post_model.dart';
+import 'package:pinch_zoom_release_unzoom/pinch_zoom_release_unzoom.dart';
 
 class PostWidget extends ConsumerStatefulWidget {
   final PostModel post;
@@ -34,6 +36,7 @@ class PostWidget extends ConsumerStatefulWidget {
 class _PostWidgetState extends ConsumerState<PostWidget> {
   @override
   Widget build(BuildContext context) {
+    final blockScroll = ref.watch(blockScrollProvider.notifier);
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       child: Column(
@@ -89,15 +92,19 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
               final maxWidth = constraints.maxWidth;
               const maxHeight = 650.0;
               const minHeight = 200.0;
-              final height =
-                  (maxWidth / widget.post.aspectRatio).clamp(minHeight, maxHeight);
+              final height = (maxWidth / widget.post.aspectRatio)
+                  .clamp(minHeight, maxHeight);
 
               final likesAndComments = Center(
                 child: IntrinsicWidth(
                   child: Container(
-                     decoration: BoxDecoration(
-                      color: height < 300 ? Colors.transparent : Colors.grey[800]?.withOpacity(0.85), // Fondo semitransparente o transparente
-                      borderRadius: BorderRadius.circular(15.0), // Borde redondeado
+                    decoration: BoxDecoration(
+                      color: height < 300
+                          ? Colors.transparent
+                          : Colors.grey[800]?.withOpacity(
+                              0.85), // Fondo semitransparente o transparente
+                      borderRadius:
+                          BorderRadius.circular(15.0), // Borde redondeado
                       boxShadow: height >= 300
                           ? [
                               BoxShadow(
@@ -166,19 +173,30 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
                             SizedBox(
                               height: height,
                               width: maxWidth,
-                              child: OctoImage(
-                                image: CachedNetworkImageProvider(widget.post.imageUrl),
-                                placeholderBuilder: (context) => SizedBox.expand(
-                                  child: Image(
-                                    image: BlurHashImage(widget.post.blurHashImage),
-                                    fit: BoxFit.cover,
+                              child: PinchZoomReleaseUnzoomWidget(
+                                twoFingersOn: () => setState(
+                                    () => blockScroll.setBlockScroll(true)),
+                                twoFingersOff: () => setState(
+                                    () => blockScroll.setBlockScroll(false)),
+                                child: OctoImage(
+                                  image: CachedNetworkImageProvider(
+                                      widget.post.imageUrl),
+                                  placeholderBuilder: (context) =>
+                                      SizedBox.expand(
+                                    child: Image(
+                                      image: BlurHashImage(
+                                          widget.post.blurHashImage),
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      const Icon(Icons.error),
+                                  fit: BoxFit.cover,
+                                  fadeInDuration:
+                                      const Duration(milliseconds: 400),
+                                  fadeOutDuration:
+                                      const Duration(milliseconds: 400),
                                 ),
-                                errorBuilder: (context, error, stackTrace) =>
-                                    const Icon(Icons.error),
-                                fit: BoxFit.cover,
-                                fadeInDuration: const Duration(milliseconds: 400),
-                                fadeOutDuration: const Duration(milliseconds: 400),
                               ),
                             ),
                             if (height >= 300)

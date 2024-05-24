@@ -1,3 +1,4 @@
+import 'package:crowd_snap/features/home/presentation/provider/block_scroll.dart';
 import 'package:crowd_snap/features/home/presentation/provider/post_state_notifier.dart';
 import 'package:crowd_snap/features/home/presentation/widgets/filter_button.dart';
 import 'package:crowd_snap/features/imgs/presentation/widgets/post_card.dart';
@@ -56,6 +57,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
   @override
   Widget build(BuildContext context) {
     final postListAsyncValue = ref.watch(postListProvider);
+    final blockScroll = ref.watch(blockScrollProvider);
 
     return Scaffold(
       body: RefreshIndicator(
@@ -63,6 +65,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
         child: postListAsyncValue.when(
           data: (postList) {
             return CustomScrollView(
+              physics: blockScroll ? const NeverScrollableScrollPhysics() : const ClampingScrollPhysics(),
               controller: _scrollController,
               slivers: [
                 SliverAppBar(
