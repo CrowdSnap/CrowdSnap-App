@@ -46,6 +46,7 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
+                const SizedBox(width: 4.0),
                 SizedBox(
                   width: 40,
                   height: 40,
@@ -78,12 +79,11 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
                   ),
                 ),
                 const Spacer(),
-                IconButton(
-                  icon: const Icon(Icons.more_vert),
-                  onPressed: () {
-                    widget.showPopupMenu(context);
-                  },
+                Text(
+                  'Subido hace ${_getElapsedTime(widget.post.createdAt)}',
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
+                const SizedBox(width: 4.0),
               ],
             ),
           ),
@@ -163,6 +163,7 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
               return Column(
                 children: [
                   GestureDetector(
+                    onLongPress: () => widget.showPopupMenu(context),
                     onDoubleTap: widget.toggleLike,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10.0),
@@ -211,7 +212,10 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
                       ),
                     ),
                   ),
-                  if (height < 300) likesAndComments,
+                  if (height < 300) Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: likesAndComments,
+                  ),
                 ],
               );
             },
