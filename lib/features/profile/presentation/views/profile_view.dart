@@ -71,12 +71,12 @@ class ProfileView extends ConsumerWidget {
               children: [
                 IconButton(
                   icon: const Icon(Icons.grid_on),
-                  color: profileValues.index == 0 ? Colors.blue : Colors.grey,
+                  color: profileValues.index == 0 ? Theme.of(context).colorScheme.primary : Colors.grey,
                   onPressed: () => _onGridSelected(0),
                 ),
                 IconButton(
                   icon: const Icon(Icons.person),
-                  color: profileValues.index == 1 ? Colors.blue : Colors.grey,
+                  color: profileValues.index == 1 ? Theme.of(context).colorScheme.primary : Colors.grey,
                   onPressed: () => _onGridSelected(1),
                 ),
               ],

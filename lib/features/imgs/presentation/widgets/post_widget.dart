@@ -87,77 +87,116 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
           LayoutBuilder(
             builder: (context, constraints) {
               final maxWidth = constraints.maxWidth;
-              const maxHeight = 700.0;
-              final height = (maxWidth / widget.post.aspectRatio).clamp(0.0, maxHeight);
+              const maxHeight = 650.0;
+              const minHeight = 200.0;
+              final height =
+                  (maxWidth / widget.post.aspectRatio).clamp(minHeight, maxHeight);
 
-              return GestureDetector(
-                onDoubleTap: widget.toggleLike,
-                child: SizedBox(
-                  height: height,
-                  width: maxWidth,
-                  child: OctoImage(
-                    image: CachedNetworkImageProvider(widget.post.imageUrl),
-                    placeholderBuilder: (context) => SizedBox.expand(
-                      child: Image(
-                        image: BlurHashImage(widget.post.blurHashImage),
-                        fit: BoxFit.cover,
-                      ),
+              final likesAndComments = Center(
+                child: IntrinsicWidth(
+                  child: Container(
+                     decoration: BoxDecoration(
+                      color: height < 300 ? Colors.transparent : Colors.grey[800]?.withOpacity(0.85), // Fondo semitransparente o transparente
+                      borderRadius: BorderRadius.circular(15.0), // Borde redondeado
+                      boxShadow: height >= 300
+                          ? [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.5),
+                                spreadRadius: 1,
+                                blurRadius: 10,
+                                offset: const Offset(0, 3), // Sombra
+                              ),
+                            ]
+                          : null,
                     ),
-                    errorBuilder: (context, error, stackTrace) =>
-                        const Icon(Icons.error),
-                    fit: BoxFit.cover,
-                    fadeInDuration: const Duration(milliseconds: 400),
-                    fadeOutDuration: const Duration(milliseconds: 400),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Row(
+                          children: [
+                            IconButton(
+                              icon: Icon(
+                                widget.isLiked
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
+                                color: widget.isLiked ? Colors.red : null,
+                              ),
+                              onPressed: widget.toggleLike,
+                            ),
+                            GestureDetector(
+                              onTap: widget.showLikedUserSheet,
+                              child: Text(widget.likeCount == 1
+                                  ? '${widget.likeCount} Like'
+                                  : '${widget.likeCount} Likes'),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(width: 16.0),
+                        GestureDetector(
+                          onTap: widget.showCommentSheet,
+                          child: Row(
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.comment),
+                                onPressed: widget.showCommentSheet,
+                              ),
+                              Text(widget.commentCount == 1
+                                  ? '${widget.commentCount} Comentario  '
+                                  : '${widget.commentCount} Comentarios  '),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );
-            },
-          ),
-          Row(
-            children: [
-              Row(
+
+              return Column(
                 children: [
-                  IconButton(
-                    icon: Icon(
-                      widget.isLiked ? Icons.favorite : Icons.favorite_border,
-                      color: widget.isLiked ? Colors.red : null,
+                  GestureDetector(
+                    onDoubleTap: widget.toggleLike,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10.0),
+                        child: Stack(
+                          children: [
+                            SizedBox(
+                              height: height,
+                              width: maxWidth,
+                              child: OctoImage(
+                                image: CachedNetworkImageProvider(widget.post.imageUrl),
+                                placeholderBuilder: (context) => SizedBox.expand(
+                                  child: Image(
+                                    image: BlurHashImage(widget.post.blurHashImage),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                errorBuilder: (context, error, stackTrace) =>
+                                    const Icon(Icons.error),
+                                fit: BoxFit.cover,
+                                fadeInDuration: const Duration(milliseconds: 400),
+                                fadeOutDuration: const Duration(milliseconds: 400),
+                              ),
+                            ),
+                            if (height >= 300)
+                              Positioned(
+                                bottom: 8.0,
+                                left: 0.0,
+                                right: 0.0,
+                                child: likesAndComments,
+                              ),
+                          ],
+                        ),
+                      ),
                     ),
-                    onPressed: widget.toggleLike,
                   ),
-                  GestureDetector(
-                    onTap: widget.showLikedUserSheet,
-                    child: Text(widget.likeCount == 1
-                        ? '${widget.likeCount} like'
-                        : '${widget.likeCount} likes'),
-                  ),
+                  if (height < 300) likesAndComments,
                 ],
-              ),
-              Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.comment),
-                    onPressed: widget.showCommentSheet,
-                  ),
-                  GestureDetector(
-                    onTap: widget.showCommentSheet,
-                    child: Text(widget.commentCount == 1
-                        ? '${widget.commentCount} comment'
-                        : '${widget.commentCount} comments'),
-                  ),
-                ],
-              ),
-              const Spacer(),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'Subido hace ${_getElapsedTime(widget.post.createdAt)}',
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-            ],
+              );
+            },
           ),
         ],
       ),

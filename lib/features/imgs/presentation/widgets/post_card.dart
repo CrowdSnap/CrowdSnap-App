@@ -135,25 +135,24 @@ class _PostCardState extends ConsumerState<PostCard> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(40.0)),
+      ),
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setModalState) {
-            return ClipRRect(
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(20)),
-              child: DraggableScrollableSheet(
-                initialChildSize: 0.2,
-                maxChildSize: 0.7,
-                minChildSize: 0.15,
-                expand: false,
-                builder:
-                    (BuildContext context, ScrollController scrollController) {
-                  return LikesSheet(
-                    post: widget.post,
-                    scrollController: scrollController,
-                  );
-                },
-              ),
+            return DraggableScrollableSheet(
+              initialChildSize: 0.2,
+              maxChildSize: 0.7,
+              minChildSize: 0.15,
+              expand: false,
+              builder:
+                  (BuildContext context, ScrollController scrollController) {
+                return LikesSheet(
+                  post: widget.post,
+                  scrollController: scrollController,
+                );
+              },
             );
           },
         );
@@ -173,29 +172,28 @@ class _PostCardState extends ConsumerState<PostCard> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(40.0)),
+      ),
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setModalState) {
-            return ClipRRect(
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(20)),
-              child: DraggableScrollableSheet(
-                initialChildSize: 0.4,
-                maxChildSize: 0.7,
-                minChildSize: 0.25,
-                expand: false,
-                builder:
-                    (BuildContext context, ScrollController scrollController) {
-                  return CommentsSheet(
-                    post: widget.post,
-                    commentController: _commentController,
-                    addComment: _addComment,
-                    deleteComment: deleteComment,
-                    scrollController: scrollController,
-                    currentUsername: _currentUsername,
-                  );
-                },
-              ),
+            return DraggableScrollableSheet(
+              initialChildSize: 0.4,
+              maxChildSize: 0.7,
+              minChildSize: 0.25,
+              expand: false,
+              builder:
+                  (BuildContext context, ScrollController scrollController) {
+                return CommentsSheet(
+                  post: widget.post,
+                  commentController: _commentController,
+                  addComment: _addComment,
+                  deleteComment: deleteComment,
+                  scrollController: scrollController,
+                  currentUsername: _currentUsername,
+                );
+              },
             );
           },
         );
