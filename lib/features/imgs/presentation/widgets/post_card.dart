@@ -5,11 +5,9 @@ import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_use
 import 'package:crowd_snap/features/imgs/domain/use_case/comment_create_use_case.dart';
 import 'package:crowd_snap/features/imgs/domain/use_case/comment_delete_use_case.dart';
 import 'package:crowd_snap/features/imgs/domain/use_case/post_add_like_use_case.dart';
-import 'package:crowd_snap/features/imgs/domain/use_case/post_delete_use_case.dart';
 import 'package:crowd_snap/features/imgs/domain/use_case/post_remove_like_use_case.dart';
 import 'package:crowd_snap/features/imgs/presentation/notifier/comments_provider.dart';
 import 'package:crowd_snap/features/imgs/presentation/notifier/likes_provider.dart';
-import 'package:crowd_snap/features/imgs/presentation/notifier/post_povider.dart';
 import 'package:crowd_snap/features/imgs/presentation/widgets/comments_sheet.dart';
 import 'package:crowd_snap/features/imgs/presentation/widgets/likes_sheet.dart';
 import 'package:crowd_snap/features/imgs/presentation/widgets/post_widget.dart';
@@ -30,7 +28,8 @@ class _PostCardState extends ConsumerState<PostCard> {
   int _likeCount = 0;
   int _commentCount = 0;
   final _commentController = TextEditingController();
-  String _currentUsername = '';
+  String _currentUserId = '';
+  bool _isOwner = false;
 
   @override
   void initState() {
@@ -38,10 +37,11 @@ class _PostCardState extends ConsumerState<PostCard> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _checkIfUserLikedPost();
-        _getUserName().then((value) {
+        _getUserId().then((value) {
           if (mounted) {
             setState(() {
-              _currentUsername = value;
+              _currentUserId = value;
+              _isOwner = _currentUserId == widget.post.userId;
             });
           }
         });
@@ -57,9 +57,9 @@ class _PostCardState extends ConsumerState<PostCard> {
     super.dispose();
   }
 
-  Future<String> _getUserName() async {
+  Future<String> _getUserId() async {
     final getUserUseCase = await ref.read(getUserUseCaseProvider).execute();
-    return getUserUseCase.username;
+    return getUserUseCase.userId;
   }
 
   Future<void> _checkIfUserLikedPost() async {
@@ -119,8 +119,8 @@ class _PostCardState extends ConsumerState<PostCard> {
 
   void _showPopupMenuComment(
       BuildContext context, CommentModel comment, String commentUsername) {
-    final isOwner = _currentUsername == commentUsername ||
-        _currentUsername == widget.post.userName;
+    final isOwner = _currentUserId == commentUsername ||
+        _currentUserId == widget.post.userName;
 
     final RenderBox overlay =
         Overlay.of(context).context.findRenderObject() as RenderBox;
@@ -246,48 +246,6 @@ class _PostCardState extends ConsumerState<PostCard> {
     );
   }
 
-  void _showPopupMenu(BuildContext context) {
-    final isOwner = _currentUsername == widget.post.userName;
-
-    // Obtener el RenderBox del contexto actual
-    final RenderBox overlay =
-        Overlay.of(context).context.findRenderObject() as RenderBox;
-    final RenderBox button = context.findRenderObject() as RenderBox;
-    final Offset offset = button.localToGlobal(Offset.zero, ancestor: overlay);
-
-    showMenu(
-      context: context,
-      position: RelativeRect.fromLTRB(
-        offset.dx + button.size.width, // Posición a la derecha del comentario
-        offset.dy,
-        overlay.size.width - (offset.dx + button.size.width),
-        overlay.size.height - offset.dy,
-      ),
-      color: Theme.of(context).colorScheme.surfaceBright,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(30),
-      ),
-      items: [
-        if (isOwner)
-          const PopupMenuItem(
-            value: 'delete',
-            child: Center(child: Text('Eliminar', textAlign: TextAlign.center)),
-          ),
-        const PopupMenuItem(
-          value: 'report',
-          child: Center(child: Text('Reportar', textAlign: TextAlign.center)),
-        ),
-      ],
-    ).then((value) {
-      if (value == 'delete') {
-        ref.read(deletePostUseCaseProvider).execute(widget.post.mongoId!, widget.post.imageUrl);
-        ref.read(postNotifierProvider(widget.post.mongoId!).notifier).markAsDeleted();
-      } else if (value == 'report') {
-        // Lógica para reportar el post
-      }
-    });
-  }
-
   String _getElapsedTime(DateTime createdAt) {
     final now = DateTime.now();
     final difference = now.difference(createdAt);
@@ -316,7 +274,7 @@ class _PostCardState extends ConsumerState<PostCard> {
       isLiked: _isLiked,
       likeCount: _likeCount,
       commentCount: _commentCount,
-      currentUsername: _currentUsername,
+      isOwner: _isOwner,
       getElapsedTime: _getElapsedTime,
     );
   }

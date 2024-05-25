@@ -35,8 +35,10 @@ class UserModelDataSourceImpl implements UserModelDataSource {
     final userModelJson = prefs.getString('userModel');
     if (userModelJson != null) {
       Map<String, dynamic> userModelMap = jsonDecode(userModelJson);
+      print('UserModel found in SharedPreferences: $userModelMap');
       return UserModel.fromJson(userModelMap);
     } else {
+      print('UserModel not found in SharedPreferences');
       throw Exception('UserModel not found in SharedPreferences');
     }
   }

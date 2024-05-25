@@ -18,7 +18,7 @@ class PostWidget extends ConsumerStatefulWidget {
   final bool isLiked;
   final int likeCount;
   final int commentCount;
-  final String currentUsername;
+  final bool isOwner;
   final Function(DateTime) getElapsedTime;
 
   const PostWidget({
@@ -30,7 +30,7 @@ class PostWidget extends ConsumerStatefulWidget {
     required this.isLiked,
     required this.likeCount,
     required this.commentCount,
-    required this.currentUsername,
+    required this.isOwner,
     required this.getElapsedTime,
   });
 
@@ -137,8 +137,7 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
                                   onTapOutside: (event) {
                                     if (isLongPressed) {
                                       postNotifier.resetLongPress();
-                                      HapticFeedback
-                                          .lightImpact();
+                                      HapticFeedback.lightImpact();
                                       setState(() {
                                         _isLongPressed = false;
                                       });
@@ -146,35 +145,71 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
                                   },
                                   child: Row(
                                     children: [
-                                      GestureDetector(
-                                        onTap: () {
-                                          ref
-                                              .read(deletePostUseCaseProvider)
-                                              .execute(widget.post.mongoId!,
-                                                  widget.post.imageUrl);
-                                          ref
-                                              .read(postNotifierProvider(
-                                                      widget.post.mongoId!)
-                                                  .notifier)
-                                              .markAsDeleted();
-                                        },
-                                        child: const Row(
-                                          children: [
-                                            Icon(
-                                              Icons.delete,
-                                              color: Colors.red,
-                                            ),
-                                            SizedBox(width: 8.0),
-                                            Text(
-                                              'Eliminar',
-                                              style: TextStyle(
+                                      if (widget
+                                          .isOwner) // Verifica si el usuario es el propietario
+                                        GestureDetector(
+                                          onTap: () {
+                                            showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                  title: const Text(
+                                                      'Eliminar Publicación'),
+                                                  content: const Text(
+                                                      '¿Estás seguro de que quieres eliminar esta publicación?'),
+                                                  actions: [
+                                                    TextButton(
+                                                      child: const Text(
+                                                          'Cancelar'),
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                    ),
+                                                    TextButton(
+                                                      child: const Text(
+                                                          'Eliminar'),
+                                                      onPressed: () {
+                                                        ref
+                                                            .read(
+                                                                deletePostUseCaseProvider)
+                                                            .execute(
+                                                                widget.post
+                                                                    .mongoId!,
+                                                                widget.post
+                                                                    .imageUrl);
+                                                        ref
+                                                            .read(postNotifierProvider(
+                                                                    widget.post
+                                                                        .mongoId!)
+                                                                .notifier)
+                                                            .markAsDeleted();
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          },
+                                          child: const Row(
+                                            children: [
+                                              Icon(
+                                                Icons.delete,
                                                 color: Colors.red,
-                                                fontWeight: FontWeight.bold,
                                               ),
-                                            )
-                                          ],
+                                              SizedBox(width: 8.0),
+                                              Text(
+                                                'Eliminar',
+                                                style: TextStyle(
+                                                  color: Colors.red,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              )
+                                            ],
+                                          ),
                                         ),
-                                      ),
                                       const SizedBox(width: 16.0),
                                       GestureDetector(
                                         onTap: () {
@@ -223,9 +258,10 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
                                         const SizedBox(width: 8.0),
                                         GestureDetector(
                                           onTap: widget.showLikedUserSheet,
-                                          child: Text(widget.likeCount == 1
-                                            ? '${widget.likeCount} Like'
-                                            : '${widget.likeCount} Likes',
+                                          child: Text(
+                                            widget.likeCount == 1
+                                                ? '${widget.likeCount} Like'
+                                                : '${widget.likeCount} Likes',
                                           ),
                                         ),
                                       ],

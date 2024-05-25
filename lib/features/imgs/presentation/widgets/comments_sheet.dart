@@ -116,7 +116,7 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
                           }
                           return GestureDetector(
                             onLongPress: () {
-                              widget.showPopupMenu(context, comment, user.username);
+                              widget.showPopupMenu(context, comment, user.userId);
                             },
                             child: Card(
                               shape: RoundedRectangleBorder(
