@@ -8,6 +8,7 @@ import 'package:crowd_snap/features/imgs/domain/use_case/post_delete_use_case.da
 import 'package:crowd_snap/features/imgs/domain/use_case/post_remove_like_use_case.dart';
 import 'package:crowd_snap/features/imgs/presentation/notifier/comments_provider.dart';
 import 'package:crowd_snap/features/imgs/presentation/notifier/likes_provider.dart';
+import 'package:crowd_snap/features/imgs/presentation/notifier/post_povider.dart';
 import 'package:crowd_snap/features/imgs/presentation/widgets/comments_sheet.dart';
 import 'package:crowd_snap/features/imgs/presentation/widgets/likes_sheet.dart';
 import 'package:crowd_snap/features/imgs/presentation/widgets/post_widget.dart';
@@ -236,6 +237,7 @@ class _PostCardState extends ConsumerState<PostCard> {
     ).then((value) {
       if (value == 'delete') {
         ref.read(deletePostUseCaseProvider).execute(widget.post.mongoId!, widget.post.imageUrl);
+        ref.read(postNotifierProvider(widget.post.mongoId!).notifier).markAsDeleted();
       } else if (value == 'report') {
         // Lógica para reportar el post
       }
