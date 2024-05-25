@@ -11,11 +11,13 @@ import 'package:skeletonizer/skeletonizer.dart';
 class LikesSheet extends ConsumerStatefulWidget {
   final PostModel post;
   final ScrollController scrollController;
+  final Function(DateTime) getElapsedTime;
 
   const LikesSheet({
     super.key,
     required this.post,
     required this.scrollController,
+    required this.getElapsedTime,
   });
 
   @override
@@ -135,7 +137,7 @@ class _LikesSheetState extends ConsumerState<LikesSheet> {
                                   Text(user.username),
                                   const SizedBox(width: 8),
                                   Text(
-                                    _getElapsedTime(like.createdAt),
+                                    widget.getElapsedTime(like.createdAt),
                                     style: const TextStyle(
                                         fontSize: 12, color: Colors.grey),
                                   ),
@@ -152,23 +154,5 @@ class _LikesSheetState extends ConsumerState<LikesSheet> {
         ),
       ],
     );
-  }
-
-  String _getElapsedTime(DateTime createdAt) {
-    final now = DateTime.now();
-    final difference = now.difference(createdAt);
-
-    if (difference.inDays > 7) {
-      final weeks = (difference.inDays / 7).floor();
-      return '$weeks semana${weeks > 1 ? 's' : ''}';
-    } else if (difference.inDays >= 1) {
-      return '${difference.inDays} día${difference.inDays > 1 ? 's' : ''}';
-    } else if (difference.inHours >= 1) {
-      return '${difference.inHours} hora${difference.inHours > 1 ? 's' : ''}';
-    } else if (difference.inMinutes >= 1) {
-      return '${difference.inMinutes} minuto${difference.inMinutes > 1 ? 's' : ''}';
-    } else {
-      return '${difference.inSeconds} segundo${difference.inSeconds > 1 ? 's' : ''}';
-    }
   }
 }

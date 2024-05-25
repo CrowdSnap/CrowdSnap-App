@@ -1,3 +1,4 @@
+import 'package:crowd_snap/core/data/models/comment_model.dart';
 import 'package:crowd_snap/core/data/models/like_model.dart';
 import 'package:crowd_snap/core/data/models/post_model.dart';
 import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_use_case.dart';
@@ -105,7 +106,7 @@ class _PostCardState extends ConsumerState<PostCard> {
     }
   }
 
-  void deleteComment(String commentId) {
+  void _deleteComment(String commentId) {
     final deleteCommentUseCase =
         ref.read(deleteCommentUseCaseProvider(widget.post.mongoId!));
     deleteCommentUseCase.execute(commentId, widget.post.mongoId!);
@@ -114,6 +115,48 @@ class _PostCardState extends ConsumerState<PostCard> {
         _commentCount--;
       });
     }
+  }
+
+  void _showPopupMenuComment(
+      BuildContext context, CommentModel comment, String commentUsername) {
+    final isOwner = _currentUsername == commentUsername ||
+        _currentUsername == widget.post.userName;
+
+    final RenderBox overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox;
+    final RenderBox button = context.findRenderObject() as RenderBox;
+    final Offset offset = button.localToGlobal(Offset.zero, ancestor: overlay);
+
+    showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(
+        offset.dx + button.size.width,
+        offset.dy,
+        overlay.size.width - (offset.dx + button.size.width),
+        overlay.size.height - offset.dy,
+      ),
+      color: Theme.of(context).colorScheme.surfaceBright,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(30),
+      ),
+      items: [
+        if (isOwner)
+          const PopupMenuItem(
+            value: 'delete',
+            child: Center(child: Text('Eliminar', textAlign: TextAlign.center)),
+          ),
+        const PopupMenuItem(
+          value: 'report',
+          child: Center(child: Text('Reportar', textAlign: TextAlign.center)),
+        ),
+      ],
+    ).then((value) {
+      if (value == 'delete') {
+        _deleteComment(comment.commentId);
+      } else if (value == 'report') {
+        // Lógica para reportar el comentario
+      }
+    });
   }
 
   void _showLikedUserSheet() {
@@ -152,6 +195,7 @@ class _PostCardState extends ConsumerState<PostCard> {
                 return LikesSheet(
                   post: widget.post,
                   scrollController: scrollController,
+                  getElapsedTime: _getElapsedTime,
                 );
               },
             );
@@ -190,9 +234,9 @@ class _PostCardState extends ConsumerState<PostCard> {
                   post: widget.post,
                   commentController: _commentController,
                   addComment: _addComment,
-                  deleteComment: deleteComment,
+                  showPopupMenu: _showPopupMenuComment,
+                  getElapsedTime: _getElapsedTime,
                   scrollController: scrollController,
-                  currentUsername: _currentUsername,
                 );
               },
             );
@@ -244,6 +288,24 @@ class _PostCardState extends ConsumerState<PostCard> {
     });
   }
 
+  String _getElapsedTime(DateTime createdAt) {
+    final now = DateTime.now();
+    final difference = now.difference(createdAt);
+
+    if (difference.inDays > 7) {
+      final weeks = (difference.inDays / 7).floor();
+      return '$weeks semana${weeks > 1 ? 's' : ''}';
+    } else if (difference.inDays >= 1) {
+      return '${difference.inDays} día${difference.inDays > 1 ? 's' : ''}';
+    } else if (difference.inHours >= 1) {
+      return '${difference.inHours} hora${difference.inHours > 1 ? 's' : ''}';
+    } else if (difference.inMinutes >= 1) {
+      return '${difference.inMinutes} minuto${difference.inMinutes > 1 ? 's' : ''}';
+    } else {
+      return '${difference.inSeconds} segundo${difference.inSeconds > 1 ? 's' : ''}';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return PostWidget(
@@ -251,10 +313,11 @@ class _PostCardState extends ConsumerState<PostCard> {
       showLikedUserSheet: _showLikedUserSheet,
       showCommentSheet: _showCommentSheet,
       toggleLike: _toggleLike,
-      showPopupMenu: _showPopupMenu,
       isLiked: _isLiked,
       likeCount: _likeCount,
       commentCount: _commentCount,
+      currentUsername: _currentUsername,
+      getElapsedTime: _getElapsedTime,
     );
   }
 }

@@ -13,18 +13,18 @@ class CommentsSheet extends ConsumerStatefulWidget {
   final PostModel post;
   final TextEditingController commentController;
   final Function(String) addComment;
-  final Function(String) deleteComment;
+  final Function(DateTime) getElapsedTime;
+  final Function(BuildContext, CommentModel, String) showPopupMenu;
   final ScrollController scrollController;
-  final String currentUsername;
 
   const CommentsSheet({
     super.key,
     required this.post,
     required this.commentController,
     required this.addComment,
-    required this.deleteComment,
+    required this.showPopupMenu,
+    required this.getElapsedTime,
     required this.scrollController,
-    required this.currentUsername,
   });
 
   @override
@@ -116,7 +116,7 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
                           }
                           return GestureDetector(
                             onLongPress: () {
-                              _showPopupMenu(context, comment, user.username);
+                              widget.showPopupMenu(context, comment, user.username);
                             },
                             child: Card(
                               shape: RoundedRectangleBorder(
@@ -157,7 +157,7 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
                                     Text(user.username),
                                     const SizedBox(width: 8),
                                     Text(
-                                      _getElapsedTime(comment.createdAt),
+                                      widget.getElapsedTime(comment.createdAt),
                                       style: const TextStyle(
                                           fontSize: 12, color: Colors.grey),
                                     ),
@@ -222,66 +222,6 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
           curve: Curves.easeOut,
         );
       });
-    });
-  }
-
-  String _getElapsedTime(DateTime createdAt) {
-    final now = DateTime.now();
-    final difference = now.difference(createdAt);
-
-    if (difference.inDays > 7) {
-      final weeks = (difference.inDays / 7).floor();
-      return '$weeks semana${weeks > 1 ? 's' : ''}';
-    } else if (difference.inDays >= 1) {
-      return '${difference.inDays} día${difference.inDays > 1 ? 's' : ''}';
-    } else if (difference.inHours >= 1) {
-      return '${difference.inHours} hora${difference.inHours > 1 ? 's' : ''}';
-    } else if (difference.inMinutes >= 1) {
-      return '${difference.inMinutes} minuto${difference.inMinutes > 1 ? 's' : ''}';
-    } else {
-      return '${difference.inSeconds} segundo${difference.inSeconds > 1 ? 's' : ''}';
-    }
-  }
-
-  void _showPopupMenu(
-      BuildContext context, CommentModel comment, String commentUsername) {
-    final isOwner = widget.currentUsername == commentUsername ||
-        widget.currentUsername == widget.post.userName;
-
-    final RenderBox overlay =
-        Overlay.of(context).context.findRenderObject() as RenderBox;
-    final RenderBox button = context.findRenderObject() as RenderBox;
-    final Offset offset = button.localToGlobal(Offset.zero, ancestor: overlay);
-
-    showMenu(
-      context: context,
-      position: RelativeRect.fromLTRB(
-        offset.dx + button.size.width,
-        offset.dy,
-        overlay.size.width - (offset.dx + button.size.width),
-        overlay.size.height - offset.dy,
-      ),
-      color: Theme.of(context).colorScheme.surfaceBright,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(30),
-      ),
-      items: [
-        if (isOwner)
-          const PopupMenuItem(
-            value: 'delete',
-            child: Center(child: Text('Eliminar', textAlign: TextAlign.center)),
-          ),
-        const PopupMenuItem(
-          value: 'report',
-          child: Center(child: Text('Reportar', textAlign: TextAlign.center)),
-        ),
-      ],
-    ).then((value) {
-      if (value == 'delete') {
-        widget.deleteComment(comment.commentId);
-      } else if (value == 'report') {
-        // Lógica para reportar el comentario
-      }
     });
   }
 }

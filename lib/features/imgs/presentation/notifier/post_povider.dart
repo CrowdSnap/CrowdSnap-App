@@ -21,6 +21,12 @@ class PostNotifier extends StateNotifier<List<CommentModel>> {
     state = [...state]; // Notificar a los oyentes sobre el cambio
     print('Long pressed');
   }
+
+  void resetLongPress() {
+    _isLongPressed = false;
+    state = [...state]; // Notificar a los oyentes sobre el cambio
+    print('Long press reset');
+  }
 }
 
 final postNotifierProvider =

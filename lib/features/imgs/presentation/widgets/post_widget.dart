@@ -1,22 +1,25 @@
-import 'package:crowd_snap/features/home/presentation/provider/block_scroll.dart';
-import 'package:crowd_snap/features/imgs/presentation/notifier/post_povider.dart';
+import 'package:crowd_snap/features/imgs/domain/use_case/post_delete_use_case.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:crowd_snap/core/data/models/post_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_blurhash/flutter_blurhash.dart';
 import 'package:octo_image/octo_image.dart';
 import 'package:pinch_zoom_release_unzoom/pinch_zoom_release_unzoom.dart';
+import 'package:crowd_snap/core/data/models/post_model.dart';
+import 'package:crowd_snap/features/home/presentation/provider/block_scroll.dart';
+import 'package:crowd_snap/features/imgs/presentation/notifier/post_povider.dart';
+import 'package:flutter/services.dart';
 
 class PostWidget extends ConsumerStatefulWidget {
   final PostModel post;
   final Function() showLikedUserSheet;
   final Function() showCommentSheet;
   final Function() toggleLike;
-  final Function(BuildContext context) showPopupMenu;
   final bool isLiked;
   final int likeCount;
   final int commentCount;
+  final String currentUsername;
+  final Function(DateTime) getElapsedTime;
 
   const PostWidget({
     super.key,
@@ -24,10 +27,11 @@ class PostWidget extends ConsumerStatefulWidget {
     required this.showLikedUserSheet,
     required this.showCommentSheet,
     required this.toggleLike,
-    required this.showPopupMenu,
     required this.isLiked,
     required this.likeCount,
     required this.commentCount,
+    required this.currentUsername,
+    required this.getElapsedTime,
   });
 
   @override
@@ -35,10 +39,15 @@ class PostWidget extends ConsumerStatefulWidget {
 }
 
 class _PostWidgetState extends ConsumerState<PostWidget> {
+  bool _isLongPressed = false;
+
   @override
   Widget build(BuildContext context) {
     final blockScroll = ref.watch(blockScrollProvider.notifier);
-    final isDeleted = ref.watch(postNotifierProvider(widget.post.mongoId!).notifier).isDeleted;
+    final postNotifier =
+        ref.watch(postNotifierProvider(widget.post.mongoId!).notifier);
+    final isDeleted = postNotifier.isDeleted;
+    final isLongPressed = postNotifier.isLongPressed;
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
@@ -65,7 +74,8 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
                         ),
                       ),
                     ),
-                    errorWidget: (context, url, error) => const Icon(Icons.person),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.person),
                     imageBuilder: (context, imageProvider) => CircleAvatar(
                       backgroundImage: imageProvider,
                     ),
@@ -82,7 +92,7 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
                 ),
                 const Spacer(),
                 Text(
-                  'Subido hace ${_getElapsedTime(widget.post.createdAt)}',
+                  'Subido hace ${widget.getElapsedTime(widget.post.createdAt)}',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
                 const SizedBox(width: 4.0),
@@ -94,7 +104,8 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
               final maxWidth = constraints.maxWidth;
               const maxHeight = 650.0;
               const minHeight = 200.0;
-              final height = (maxWidth / widget.post.aspectRatio).clamp(minHeight, maxHeight);
+              final height = (maxWidth / widget.post.aspectRatio)
+                  .clamp(minHeight, maxHeight);
 
               final likesAndComments = Center(
                 child: IntrinsicWidth(
@@ -118,40 +129,124 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Row(
-                          children: [
-                            IconButton(
-                              icon: Icon(
-                                widget.isLiked ? Icons.favorite : Icons.favorite_border,
-                                color: widget.isLiked ? Colors.red : null,
+                      children: _isLongPressed
+                          ? [
+                              Padding(
+                                padding: const EdgeInsets.all(12.0),
+                                child: TapRegion(
+                                  onTapOutside: (event) {
+                                    if (isLongPressed) {
+                                      postNotifier.resetLongPress();
+                                      HapticFeedback
+                                          .lightImpact();
+                                      setState(() {
+                                        _isLongPressed = false;
+                                      });
+                                    }
+                                  },
+                                  child: Row(
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () {
+                                          ref
+                                              .read(deletePostUseCaseProvider)
+                                              .execute(widget.post.mongoId!,
+                                                  widget.post.imageUrl);
+                                          ref
+                                              .read(postNotifierProvider(
+                                                      widget.post.mongoId!)
+                                                  .notifier)
+                                              .markAsDeleted();
+                                        },
+                                        child: const Row(
+                                          children: [
+                                            Icon(
+                                              Icons.delete,
+                                              color: Colors.red,
+                                            ),
+                                            SizedBox(width: 8.0),
+                                            Text(
+                                              'Eliminar',
+                                              style: TextStyle(
+                                                color: Colors.red,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(width: 16.0),
+                                      GestureDetector(
+                                        onTap: () {
+                                          // Lógica para reportar el post
+                                        },
+                                        child: const Row(
+                                          children: [
+                                            Icon(
+                                              Icons.report,
+                                              color: Colors.red,
+                                            ),
+                                            SizedBox(width: 8.0),
+                                            Text(
+                                              'Reportar',
+                                              style: TextStyle(
+                                                color: Colors.red,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
-                              onPressed: widget.toggleLike,
-                            ),
-                            GestureDetector(
-                              onTap: widget.showLikedUserSheet,
-                              child: Text(widget.likeCount == 1
-                                  ? '${widget.likeCount} Like'
-                                  : '${widget.likeCount} Likes'),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(width: 16.0),
-                        GestureDetector(
-                          onTap: widget.showCommentSheet,
-                          child: Row(
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.comment),
-                                onPressed: widget.showCommentSheet,
+                            ]
+                          : [
+                              Padding(
+                                padding: const EdgeInsets.all(12.0),
+                                child: Row(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        GestureDetector(
+                                          onTap: widget.toggleLike,
+                                          child: Icon(
+                                            widget.isLiked
+                                                ? Icons.favorite
+                                                : Icons.favorite_border,
+                                            color: widget.isLiked
+                                                ? Colors.red
+                                                : null,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8.0),
+                                        GestureDetector(
+                                          onTap: widget.showLikedUserSheet,
+                                          child: Text(widget.likeCount == 1
+                                            ? '${widget.likeCount} Like'
+                                            : '${widget.likeCount} Likes',
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(width: 16.0),
+                                    GestureDetector(
+                                      onTap: widget.showCommentSheet,
+                                      child: Row(
+                                        children: [
+                                          const Icon(Icons.comment),
+                                          const SizedBox(width: 8.0),
+                                          Text(widget.commentCount == 1
+                                              ? '${widget.commentCount} Comentario'
+                                              : '${widget.commentCount} Comentarios'),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                              Text(widget.commentCount == 1
-                                  ? '${widget.commentCount} Comentario  '
-                                  : '${widget.commentCount} Comentarios  '),
                             ],
-                          ),
-                        ),
-                      ],
                     ),
                   ),
                 ),
@@ -160,63 +255,94 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
               return Column(
                 children: [
                   GestureDetector(
-                    onLongPress: () => widget.showPopupMenu(context),
+                    onLongPress: () {
+                      postNotifier.markAsLongPressed();
+                      HapticFeedback.lightImpact();
+                      setState(() {
+                        _isLongPressed = true;
+                      });
+                    },
                     onDoubleTap: widget.toggleLike,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: AnimatedPadding(
+                      duration: const Duration(milliseconds: 300),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: _isLongPressed ? 0 : 10.0),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10.0),
-                        child: Stack(
-                          children: [
-                            SizedBox(
-                              height: height,
-                              width: maxWidth,
-                              child: isDeleted
-                                  ? const Center(
-                                      child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Icon(
-                                            Icons.delete,
-                                            size: 50,
-                                            color: Colors.red,
-                                          ),
-                                          Text(
-                                            'Imagen eliminada',
-                                            style: TextStyle(
-                                              fontSize: 18,
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                          height: _isLongPressed ? height * 1.15 : height,
+                          width: _isLongPressed ? maxWidth * 1.2 : maxWidth,
+                          child: Stack(
+                            children: [
+                              SizedBox(
+                                height: height,
+                                width: maxWidth,
+                                child: isDeleted
+                                    ? const Center(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              Icons.delete,
+                                              size: 50,
                                               color: Colors.red,
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                                  : PinchZoomReleaseUnzoomWidget(
-                                      twoFingersOn: () => setState(() => blockScroll.setBlockScroll(true)),
-                                      twoFingersOff: () => setState(() => blockScroll.setBlockScroll(false)),
-                                      child: OctoImage(
-                                        image: CachedNetworkImageProvider(widget.post.imageUrl),
-                                        placeholderBuilder: (context) => SizedBox.expand(
-                                          child: Image(
-                                            image: BlurHashImage(widget.post.blurHashImage),
+                                            Text(
+                                              'Imagen eliminada',
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                color: Colors.red,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    : AnimatedScale(
+                                        duration:
+                                            const Duration(milliseconds: 300),
+                                        curve: Curves.easeInOut,
+                                        scale: _isLongPressed ? 1.3 : 1.0,
+                                        child: PinchZoomReleaseUnzoomWidget(
+                                          twoFingersOn: () => setState(() =>
+                                              blockScroll.setBlockScroll(true)),
+                                          twoFingersOff: () => setState(() =>
+                                              blockScroll
+                                                  .setBlockScroll(false)),
+                                          child: OctoImage(
+                                            image: CachedNetworkImageProvider(
+                                                widget.post.imageUrl),
+                                            placeholderBuilder: (context) =>
+                                                SizedBox.expand(
+                                              child: Image(
+                                                image: BlurHashImage(
+                                                    widget.post.blurHashImage),
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                            errorBuilder:
+                                                (context, error, stackTrace) =>
+                                                    const Icon(Icons.error),
                                             fit: BoxFit.cover,
+                                            fadeInDuration: const Duration(
+                                                milliseconds: 400),
+                                            fadeOutDuration: const Duration(
+                                                milliseconds: 400),
                                           ),
                                         ),
-                                        errorBuilder: (context, error, stackTrace) => const Icon(Icons.error),
-                                        fit: BoxFit.cover,
-                                        fadeInDuration: const Duration(milliseconds: 400),
-                                        fadeOutDuration: const Duration(milliseconds: 400),
                                       ),
-                                    ),
-                            ),
-                            if (height >= 300 && !isDeleted)
-                              Positioned(
-                                bottom: 8.0,
-                                left: 0.0,
-                                right: 0.0,
-                                child: likesAndComments,
                               ),
-                          ],
+                              if (height >= 300 && !isDeleted)
+                                Positioned(
+                                  bottom: 8.0,
+                                  left: 0.0,
+                                  right: 0.0,
+                                  child: likesAndComments,
+                                ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -233,23 +359,5 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
         ],
       ),
     );
-  }
-
-  String _getElapsedTime(DateTime createdAt) {
-    final now = DateTime.now();
-    final difference = now.difference(createdAt);
-
-    if (difference.inDays > 7) {
-      final weeks = (difference.inDays / 7).floor();
-      return '$weeks semana${weeks > 1 ? 's' : ''}';
-    } else if (difference.inDays >= 1) {
-      return '${difference.inDays} día${difference.inDays > 1 ? 's' : ''}';
-    } else if (difference.inHours >= 1) {
-      return '${difference.inHours} hora${difference.inHours > 1 ? 's' : ''}';
-    } else if (difference.inMinutes >= 1) {
-      return '${difference.inMinutes} minuto${difference.inMinutes > 1 ? 's' : ''}';
-    } else {
-      return '${difference.inSeconds} segundo${difference.inSeconds > 1 ? 's' : ''}';
-    }
   }
 }
