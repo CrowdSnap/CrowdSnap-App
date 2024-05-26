@@ -1,10 +1,14 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:crowd_snap/features/auth/presentation/notifier/google_sign_up_notifier.dart';
 import 'package:crowd_snap/features/auth/presentation/widgets/age/birth_date_input_google_sign_up.dart';
 import 'package:crowd_snap/features/auth/presentation/widgets/google_register_button_submit.dart';
+import 'package:crowd_snap/features/imgs/presentation/notifier/image_picker_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_editor_plus/image_editor_plus.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 
 // Widget con estado que representa la vista para el registro con Google.
 class GoogleSignUpView extends ConsumerStatefulWidget {
@@ -78,10 +82,26 @@ class _GoogleSignUpScreenState extends ConsumerState<GoogleSignUpView>
     final picker = ImagePicker(); // Crea un picker de imágenes
     final pickedFile = await picker.pickImage(source: ImageSource.camera);
     if (pickedFile != null) {
-      // Actualiza la imagen de perfil del usuario utilizando el provider `googleSignUpNotifierProvider.notifier`.
-      ref
-          .read(googleSignUpNotifierProvider.notifier)
-          .updateUserImage(pickedFile.path);
+      Uint8List imageData = await pickedFile.readAsBytes();
+      final editedImage = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ImageCropper(
+            image: imageData, // <-- Uint8List of image
+          ),
+        ),
+      );
+      if (editedImage != null) {
+        Directory tempDir = await getTemporaryDirectory();
+        String tempPath = tempDir.path;
+        ref.read(imageStateProvider.notifier).incrementCounter();
+        final counter = ref.read(imageStateProvider.notifier).counter;
+        File file = File('$tempPath/$counter-avatar.jpeg');
+        final croppedImage = await file.writeAsBytes(editedImage);
+        ref
+            .read(googleSignUpNotifierProvider.notifier)
+            .updateUserImage(croppedImage.path);
+      }
     }
   }
 
@@ -90,10 +110,26 @@ class _GoogleSignUpScreenState extends ConsumerState<GoogleSignUpView>
     final picker = ImagePicker(); // Crea un picker de imágenes
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
-      // Actualiza la imagen de perfil del usuario utilizando el provider `googleSignUpNotifierProvider.notifier`.
-      ref
-          .read(googleSignUpNotifierProvider.notifier)
-          .updateUserImage(pickedFile.path);
+      Uint8List imageData = await pickedFile.readAsBytes();
+      final editedImage = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ImageCropper(
+            image: imageData, // <-- Uint8List of image
+          ),
+        ),
+      );
+      if (editedImage != null) {
+        Directory tempDir = await getTemporaryDirectory();
+        String tempPath = tempDir.path;
+        ref.read(imageStateProvider.notifier).incrementCounter();
+        final counter = ref.read(imageStateProvider.notifier).counter;
+        File file = File('$tempPath/$counter-avatar.jpeg');
+        final croppedImage = await file.writeAsBytes(editedImage);
+        ref
+            .read(googleSignUpNotifierProvider.notifier)
+            .updateUserImage(croppedImage.path);
+      }
     }
   }
 
@@ -125,6 +161,7 @@ class _GoogleSignUpScreenState extends ConsumerState<GoogleSignUpView>
         // Título del AppBar que saluda al usuario por su nombre.
         title: Text('Hola ${formState.name.split(' ')[0]}'),
       ),
+      resizeToAvoidBottomInset: false, // Evita que el contenido se redimensione
       body: FutureBuilder(
         future: _initializeUserFuture,
         builder: (context, snapshot) {
@@ -134,102 +171,107 @@ class _GoogleSignUpScreenState extends ConsumerState<GoogleSignUpView>
           }
           return Consumer(
             builder: (context, ref, _) {
-              return Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Form(
-                  child: Column(
-                    children: [
-                      // Texto que indica al usuario que complete su perfil.
-                      const Text(
-                          'Para continuar, por favor completa tu perfil'),
-                      const SizedBox(height: 20),
-
-                      // Imagen de perfil con funcionalidad para expandir y cambiar la imagen
-                      GestureDetector(
-                        onTap: _toggleImageExpansion,
-                        child: AnimatedBuilder(
-                          animation: _animationController,
-                          builder: (context, child) {
-                            // Animación de escala para la imagen de perfil.
-                            return Transform.scale(
-                              scale: _isImageExpanded
-                                  ? 1.0
-                                  : _scaleAnimation.value,
-                              child: Transform.translate(
-                                offset: _isImageExpanded
-                                    ? Offset.zero
-                                    : _offsetAnimation.value,
-                                child: CircleAvatar(
-                                  radius: _isImageExpanded ? 100 : 50,
-                                  backgroundImage: formState
-                                          .userImage.isNotEmpty
-                                      ? FileImage(File(formState.userImage))
-                                          as ImageProvider<Object>?
-                                      : formState.googleImage.isNotEmpty
-                                          ? NetworkImage(formState.googleImage)
-                                              as ImageProvider<Object>?
-                                          : null,
-                                  child: formState.userImage.isEmpty &&
-                                          formState.googleImage.isEmpty
-                                      ? const Icon(Icons.person, size: 50)
-                                      : null,
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-
-                      // Botones para seleccionar una imagen de la cámara o galería (solo visibles cuando la imagen está expandida).
-                      if (_isImageExpanded) const SizedBox(height: 20),
-
-                      // Texto que indica como cambiar la imagen (solo visible cuando la imagen no está expandida).
-                      if (_isImageExpanded)
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ElevatedButton.icon(
-                              onPressed: () {
-                                _getCamera(ref);
-                              },
-                              icon: const Icon(Icons.camera_alt),
-                              label: const Text('Camera'),
-                            ),
-                            const SizedBox(width: 20),
-                            ElevatedButton.icon(
-                              onPressed: () {
-                                _getGallery(ref);
-                              },
-                              icon: const Icon(Icons.photo_library),
-                              label: const Text('Gallery'),
-                            ),
-                          ],
-                        ),
-
-                      // Texto que indica como cambiar la imagen (solo visible cuando la imagen no está expandida).
-                      if (!_isImageExpanded) const SizedBox(height: 20),
-                      if (!_isImageExpanded)
+              return SingleChildScrollView(
+                physics: const ClampingScrollPhysics(),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Form(
+                    child: Column(
+                      children: [
+                        // Texto que indica al usuario que complete su perfil.
                         const Text(
-                            'Pulsando encima de la imagen puedes cambiarla'),
-                      const SizedBox(height: 16),
-                      // Campos de texto para nombre y usuario.
-                      TextFormField(
-                        initialValue: formState.name,
-                        decoration: const InputDecoration(labelText: 'Name'),
-                        onChanged: (value) => formValues.updateNombre(value),
-                      ),
-                      TextFormField(
-                        initialValue: formState.userName,
-                        decoration:
-                            const InputDecoration(labelText: 'Username'),
-                        onChanged: (value) => formValues.updateUserName(value),
-                      ),
-                      // Widget personalizado para la entrada de fecha de nacimiento (se asume que existe un widget `BirthDateInputGoogleSignUp`).
-                      const BirthDateInputGoogleSignUp(),
-                      const SizedBox(height: 16),
-                      // Widget personalizado para el botón de registro
-                      const GoogleRegisterButtonSubmit(),
-                    ],
+                            'Para continuar, por favor completa tu perfil'),
+                        const SizedBox(height: 20),
+
+                        // Imagen de perfil con funcionalidad para expandir y cambiar la imagen
+                        GestureDetector(
+                          onTap: _toggleImageExpansion,
+                          child: AnimatedBuilder(
+                            animation: _animationController,
+                            builder: (context, child) {
+                              // Animación de escala para la imagen de perfil.
+                              return Transform.scale(
+                                scale: _isImageExpanded
+                                    ? 1.0
+                                    : _scaleAnimation.value,
+                                child: Transform.translate(
+                                  offset: _isImageExpanded
+                                      ? Offset.zero
+                                      : _offsetAnimation.value,
+                                  child: CircleAvatar(
+                                    radius: _isImageExpanded ? 100 : 50,
+                                    backgroundImage: formState
+                                            .userImage.isNotEmpty
+                                        ? FileImage(File(formState.userImage))
+                                            as ImageProvider<Object>?
+                                        : formState.googleImage.isNotEmpty
+                                            ? NetworkImage(
+                                                    formState.googleImage)
+                                                as ImageProvider<Object>?
+                                            : null,
+                                    child: formState.userImage.isEmpty &&
+                                            formState.googleImage.isEmpty
+                                        ? const Icon(Icons.person, size: 50)
+                                        : null,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+
+                        // Botones para seleccionar una imagen de la cámara o galería (solo visibles cuando la imagen está expandida).
+                        if (_isImageExpanded) const SizedBox(height: 20),
+
+                        // Texto que indica como cambiar la imagen (solo visible cuando la imagen no está expandida).
+                        if (_isImageExpanded)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ElevatedButton.icon(
+                                onPressed: () {
+                                  _getCamera(ref);
+                                },
+                                icon: const Icon(Icons.camera_alt),
+                                label: const Text('Camera'),
+                              ),
+                              const SizedBox(width: 20),
+                              ElevatedButton.icon(
+                                onPressed: () {
+                                  _getGallery(ref);
+                                },
+                                icon: const Icon(Icons.photo_library),
+                                label: const Text('Gallery'),
+                              ),
+                            ],
+                          ),
+
+                        // Texto que indica como cambiar la imagen (solo visible cuando la imagen no está expandida).
+                        if (!_isImageExpanded) const SizedBox(height: 20),
+                        if (!_isImageExpanded)
+                          const Text(
+                              'Pulsando encima de la imagen puedes cambiarla'),
+                        const SizedBox(height: 16),
+                        // Campos de texto para nombre y usuario.
+                        TextFormField(
+                          initialValue: formState.name,
+                          decoration: const InputDecoration(labelText: 'Name'),
+                          onChanged: (value) => formValues.updateNombre(value),
+                        ),
+                        TextFormField(
+                          initialValue: formState.userName,
+                          decoration:
+                              const InputDecoration(labelText: 'Username'),
+                          onChanged: (value) =>
+                              formValues.updateUserName(value),
+                        ),
+                        // Widget personalizado para la entrada de fecha de nacimiento (se asume que existe un widget `BirthDateInputGoogleSignUp`).
+                        const BirthDateInputGoogleSignUp(),
+                        const SizedBox(height: 16),
+                        // Widget personalizado para el botón de registro
+                        const GoogleRegisterButtonSubmit(),
+                      ],
+                    ),
                   ),
                 ),
               );

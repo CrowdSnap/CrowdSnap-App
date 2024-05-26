@@ -8,12 +8,12 @@ import 'package:crowd_snap/features/profile/presentation/notifier/profile_notifi
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class SettingsView extends ConsumerWidget {
   // Constructor para la vista de búsqueda.
   const SettingsView({super.key});
 
-  // Elimina el usuario actual.
   void _deleteUser(BuildContext context, WidgetRef ref) async {
     final userId = ref
         .read(profileNotifierProvider)
@@ -40,71 +40,117 @@ class SettingsView extends ConsumerWidget {
           'Error deleting user: $e'); // Imprime el error al eliminar el usuario (opcional para debug).
 
       if (e is FirebaseAuthException && e.code == 'requires-recent-login') {
-        // Muestra un diálogo para que el usuario ingrese su contraseña.
-        String? password;
-        await showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Reautenticación requerida'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text('Por favor, ingrese su contraseña para continuar.'),
-                TextField(
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Contraseña',
-                  ),
-                  onChanged: (value) {
-                    password = value;
-                  },
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Cancelar'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context, password),
-                child: const Text('Aceptar'),
-              ),
-            ],
-          ),
-        );
-
-        if (password != null) {
-          try {
-            // Reautenticar al usuario
-            User? user = FirebaseAuth.instance.currentUser;
-            if (user != null) {
-              AuthCredential credential = EmailAuthProvider.credential(
-                email: user.email!,
-                password: password!,
-              );
-
-              await user.reauthenticateWithCredential(credential);
-
-              // Intentar eliminar al usuario nuevamente
-              await FirebaseAuth.instance.currentUser?.delete();
-              ref.read(signOutUseCaseProvider).execute();
+        User? user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          bool isPasswordProvider = false;
+          for (var info in user.providerData) {
+            if (info.providerId == 'password') {
+              isPasswordProvider = true;
+              break;
             }
-          } catch (reauthError) {
-            print('Error reautenticando usuario: $reauthError');
-            showDialog(
+          }
+
+          if (isPasswordProvider) {
+            // Muestra un diálogo para que el usuario ingrese su contraseña.
+            String? password;
+            await showDialog(
               context: context,
               builder: (context) => AlertDialog(
-                title: const Text('Error'),
-                content: Text('Failed to reauthenticate user. $reauthError'),
+                title: const Text('Reautenticación requerida'),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                        'Por favor, ingrese su contraseña para continuar.'),
+                    TextField(
+                      obscureText: true,
+                      decoration: const InputDecoration(
+                        labelText: 'Contraseña',
+                      ),
+                      onChanged: (value) {
+                        password = value;
+                      },
+                    ),
+                  ],
+                ),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('OK'),
+                    child: const Text('Cancelar'),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, password),
+                    child: const Text('Aceptar'),
                   ),
                 ],
               ),
             );
+
+            if (password != null) {
+              try {
+                // Reautenticar al usuario
+                AuthCredential credential = EmailAuthProvider.credential(
+                  email: user.email!,
+                  password: password!,
+                );
+
+                await user.reauthenticateWithCredential(credential);
+
+                // Intentar eliminar al usuario nuevamente
+                await FirebaseAuth.instance.currentUser?.delete();
+                ref.read(signOutUseCaseProvider).execute();
+              } catch (reauthError) {
+                print('Error reautenticando usuario: $reauthError');
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('Error'),
+                    content:
+                        Text('Failed to reauthenticate user. $reauthError'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('OK'),
+                      ),
+                    ],
+                  ),
+                );
+              }
+            }
+          } else {
+            // Reautenticar al usuario con Google
+            try {
+              GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+              if (googleUser != null) {
+                GoogleSignInAuthentication googleAuth =
+                    await googleUser.authentication;
+                AuthCredential credential = GoogleAuthProvider.credential(
+                  accessToken: googleAuth.accessToken,
+                  idToken: googleAuth.idToken,
+                );
+
+                await user.reauthenticateWithCredential(credential);
+
+                // Intentar eliminar al usuario nuevamente
+                await FirebaseAuth.instance.currentUser?.delete();
+                ref.read(signOutUseCaseProvider).execute();
+              }
+            } catch (reauthError) {
+              print('Error reautenticando usuario: $reauthError');
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Error'),
+                  content: Text('Failed to reauthenticate user. $reauthError'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('OK'),
+                    ),
+                  ],
+                ),
+              );
+            }
           }
         }
       } else {
