@@ -23,35 +23,106 @@ class SettingsView extends ConsumerWidget {
         .execute(); // Obtiene la información del usuario actual.
     print(
         'Deleting user: $userModel'); // Imprime información del usuario a eliminar (opcional para debug).
+
     try {
-      // Elimina el usuario de Firebase Auth y Firestore.
+      // Elimina el avatar del usuario del bucket de almacenamiento (opcional, dependiendo de la implementación).
       await ref
           .read(avatarBucketRepositoryProvider)
           .deleteUserAvatar(userModel.avatarUrl!);
+      // Elimina el usuario de Firestore.
       await ref.read(firestoreRepositoryProvider).deleteUser(userId);
-      // Cierra la sesión del usuario.
-      // Elimina el avatar del usuario del bucket de almacenamiento (opcional, dependiendo de la implementación).
+      // Elimina el usuario de Firebase Auth.
       await FirebaseAuth.instance.currentUser?.delete();
-      ref
-          .read(signOutUseCaseProvider)
-          .execute(); 
+      // Cierra la sesión del usuario.
+      ref.read(signOutUseCaseProvider).execute();
     } catch (e) {
       print(
           'Error deleting user: $e'); // Imprime el error al eliminar el usuario (opcional para debug).
-      // Muestra un diálogo de error si la vista aún está activa.
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Error'),
-          content: Text('Failed to delete user. $e'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('OK'),
+
+      if (e is FirebaseAuthException && e.code == 'requires-recent-login') {
+        // Muestra un diálogo para que el usuario ingrese su contraseña.
+        String? password;
+        await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Reautenticación requerida'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('Por favor, ingrese su contraseña para continuar.'),
+                TextField(
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Contraseña',
+                  ),
+                  onChanged: (value) {
+                    password = value;
+                  },
+                ),
+              ],
             ),
-          ],
-        ),
-      );
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancelar'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, password),
+                child: const Text('Aceptar'),
+              ),
+            ],
+          ),
+        );
+
+        if (password != null) {
+          try {
+            // Reautenticar al usuario
+            User? user = FirebaseAuth.instance.currentUser;
+            if (user != null) {
+              AuthCredential credential = EmailAuthProvider.credential(
+                email: user.email!,
+                password: password!,
+              );
+
+              await user.reauthenticateWithCredential(credential);
+
+              // Intentar eliminar al usuario nuevamente
+              await FirebaseAuth.instance.currentUser?.delete();
+              ref.read(signOutUseCaseProvider).execute();
+            }
+          } catch (reauthError) {
+            print('Error reautenticando usuario: $reauthError');
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text('Error'),
+                content: Text('Failed to reauthenticate user. $reauthError'),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('OK'),
+                  ),
+                ],
+              ),
+            );
+          }
+        }
+      } else {
+        // Muestra un diálogo de error si la vista aún está activa.
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Error'),
+            content: Text('Failed to delete user. $e'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
     }
   }
 

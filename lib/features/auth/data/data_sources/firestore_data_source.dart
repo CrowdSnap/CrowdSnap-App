@@ -89,9 +89,6 @@ class FirestoreDataSourceImpl implements FirestoreDataSource {
     final userId = userModel.userId;
     try {
       final userDoc = _firestore.collection('users').doc(userId);
-      print('User ID: $userId');
-      print('Avatar URL: $avatarUrl');
-      print('User Doc: $userDoc');
       await userDoc.update({'avatarUrl': avatarUrl, 'blurHashImage': blurHash});
       _logger.info('User avatar updated in Firestore: $avatarUrl');
     } catch (e) {

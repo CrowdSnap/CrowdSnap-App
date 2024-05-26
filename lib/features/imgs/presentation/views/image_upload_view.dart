@@ -31,7 +31,9 @@ class ImageUploadView extends ConsumerWidget {
       if (editedImage != null) {
         Directory tempDir = await getTemporaryDirectory();
         String tempPath = tempDir.path;
-        File file = File('$tempPath/cropped.jpeg');
+        ref.read(imageStateProvider.notifier).incrementCounter();
+        final counter = ref.read(imageStateProvider.notifier).counter;
+        File file = File('$tempPath/$counter-cropped.jpeg');
         final croppedImage = await file.writeAsBytes(editedImage);
         ref.read(imageStateProvider.notifier).setImage(croppedImage);
       }
@@ -54,7 +56,9 @@ class ImageUploadView extends ConsumerWidget {
       if (editedImage != null) {
         Directory tempDir = await getTemporaryDirectory();
         String tempPath = tempDir.path;
-        File file = File('$tempPath/cropped.jpeg');
+        ref.read(imageStateProvider.notifier).incrementCounter();
+        final counter = ref.read(imageStateProvider.notifier).counter;
+        File file = File('$tempPath/$counter-cropped.jpeg');
         final croppedImage = await file.writeAsBytes(editedImage);
         ref.read(imageStateProvider.notifier).setImage(croppedImage);
       }
@@ -66,6 +70,7 @@ class ImageUploadView extends ConsumerWidget {
     ref.watch(imageUploadNotifierProvider.notifier).updateIsLoading(true);
     try {
       await ref.read(createPostUseCaseProvider).execute(imageState!);
+      ref.watch(imageStateProvider.notifier).clearImage();
       ref.watch(imageUploadNotifierProvider.notifier).updateIsLoading(false);
       // ignore: use_build_context_synchronously
       _goHome(context, ref);
@@ -99,121 +104,124 @@ class ImageUploadView extends ConsumerWidget {
     );
 
     return PopScope(
-        canPop: false,
-        onPopInvoked: (didPop) async {
-          if (didPop) {
-            return;
-          }
-          _goHome(context, ref);
-        },
-        child: Scaffold(
-            appBar: AppBar(
-              title: const Text('Picture Upload'),
-            ),
-            body: GestureDetector(
-              onVerticalDragUpdate: (details) async {
-                if (details.primaryDelta! < -5 && !isSelecting) {
-                  isSelecting = true;
-                  await _getGallery(ref, context);
-                  isSelecting = false;
-                }
-              },
-              behavior: HitTestBehavior.translucent,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          imageState != null
-                              ? Image.file(
-                                imageState,
-                                width: double.infinity,
-                                height: 600,
-                                fit: BoxFit.contain,
-                              )
-                              : const Icon(
-                                  Icons.people_alt_sharp,
-                                  size: 200,
-                                ),
-                          const SizedBox(height: 20),
-                          if (imageState != null)
-                            ElevatedButton(
-                                onPressed: () {
-                                  try {
-                                    _saveImage(imageState, ref, context);
-                                  } on Exception catch (e) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content:
-                                            Text('Error uploading image: $e'),
-                                        duration: const Duration(seconds: 2),
-                                        behavior: SnackBarBehavior.floating,
-                                      ),
-                                    );
-                                  }
-                                },
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    if (isLoading)
-                                      const Padding(
-                                        padding: EdgeInsets.only(right: 8.0),
-                                        child: SizedBox(
-                                          width: 12,
-                                          height: 12,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                          ),
-                                        ),
-                                      ),
-                                    const Icon(Icons.upload),
-                                    const Text('Upload Image'),
-                                  ],
-                                )),
-                        ],
-                      ),
-                    ),
-                  ),
-                  if (imageState == null)
-                    Column(
-                      children: [
-                        ElevatedButton(
-                          onPressed: () => _getCamera(ref, context),
-                          style: ElevatedButton.styleFrom(
-                            shape: const CircleBorder(),
-                            padding:
-                                const EdgeInsets.all(10), // Text and icon color
+      canPop: false,
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
+        _goHome(context, ref);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Picture Upload'),
+        ),
+        body: GestureDetector(
+          onVerticalDragUpdate: (details) async {
+            if (details.primaryDelta! < -5 && !isSelecting) {
+              isSelecting = true;
+              await _getGallery(ref, context);
+              isSelecting = false;
+            }
+          },
+          behavior: HitTestBehavior.translucent,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      if (imageState != null)
+                        Expanded(
+                          child: Image.file(
+                            imageState,
+                            width: double.infinity,
+                            fit: BoxFit.contain,
                           ),
-                          child: const Icon(Icons.camera_outlined,
-                              color: Colors.red, size: 50),
+                        )
+                      else
+                        const Icon(
+                          Icons.people_alt_sharp,
+                          size: 200,
                         ),
-                        const SizedBox(height: 50),
-                        AnimatedBuilder(
-                          animation: animation,
-                          builder: (context, child) {
-                            return Transform.translate(
-                              offset: Offset(0, animation.value),
-                              child: Transform.rotate(
-                                angle: 1.5708,
-                                child: const Icon(
-                                  Icons.arrow_back_ios_new,
-                                  size: 40,
+                      const SizedBox(height: 20),
+                      if (imageState != null)
+                        ElevatedButton(
+                          onPressed: () {
+                            try {
+                              _saveImage(imageState, ref, context);
+                            } on Exception catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Error uploading image: $e'),
+                                  duration: const Duration(seconds: 2),
+                                  behavior: SnackBarBehavior.floating,
                                 ),
-                              ),
-                            );
+                              );
+                            }
                           },
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (isLoading)
+                                const Padding(
+                                  padding: EdgeInsets.only(right: 8.0),
+                                  child: SizedBox(
+                                    width: 12,
+                                    height: 12,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  ),
+                                ),
+                              const Icon(Icons.upload),
+                              const Text('Upload Image'),
+                            ],
+                          ),
                         ),
-                        const SizedBox(height: 10),
-                        const Text(
-                            'Desliza hacia arriba para abrir la galería'),
-                        const SizedBox(height: 20),
-                      ],
-                    ),
-                ],
+                    ],
+                  ),
+                ),
               ),
-            )));
+              if (imageState == null)
+                Column(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () => _getCamera(ref, context),
+                      style: ElevatedButton.styleFrom(
+                        shape: const CircleBorder(),
+                        padding:
+                            const EdgeInsets.all(10), // Text and icon color
+                      ),
+                      child: const Icon(Icons.camera_outlined,
+                          color: Colors.red, size: 50),
+                    ),
+                    const SizedBox(height: 50),
+                    AnimatedBuilder(
+                      animation: animation,
+                      builder: (context, child) {
+                        return Transform.translate(
+                          offset: Offset(0, animation.value),
+                          child: Transform.rotate(
+                            angle: 1.5708,
+                            child: const Icon(
+                              Icons.arrow_back_ios_new,
+                              size: 40,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    const Text('Desliza hacia arriba para abrir la galería'),
+                    const SizedBox(height: 20),
+                  ],
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

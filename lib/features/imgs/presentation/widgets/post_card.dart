@@ -163,7 +163,6 @@ class _PostCardState extends ConsumerState<PostCard> {
     final postId = widget.post.mongoId!;
     final likesNotifier = ref.read(likesNotifierProvider(postId).notifier);
     final likesValue = ref.watch(likesNotifierProvider(postId));
-    print('First load: ${likesNotifier.isFirstLoad}');
 
     // Solo actualizar el estado si es la primera vez que se carga
     if (likesNotifier.isFirstLoad) {
