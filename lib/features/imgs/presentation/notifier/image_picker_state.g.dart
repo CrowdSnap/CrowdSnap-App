@@ -6,7 +6,7 @@ part of 'image_picker_state.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$imageStateHash() => r'654cb6242098d74445a5f555a8f92a9ec0d8071d';
+String _$imageStateHash() => r'51f6fd955c5d8c79897ce54f2e21dda812a26c4f';
 
 /// See also [ImageState].
 @ProviderFor(ImageState)

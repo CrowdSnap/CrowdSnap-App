@@ -9,7 +9,6 @@ import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:image/image.dart' as img;
 
-
 part 'avatar_upload_use_case.g.dart';
 
 // Clase `AvatarUploadUseCase` que gestiona la subida de imágenes de avatar del usuario.
@@ -34,12 +33,6 @@ class AvatarUploadUseCase {
   //   - `googleAvatar` (opcional): Booleano que indica si la imagen proviene de Google (ya comprimida).
   Future<(String, String)> execute(File image,
       {String? userName, bool? googleAvatar}) async {
-
-    final data = image.readAsBytesSync();
-
-    // Usar compute para ejecutar la tarea en un hilo separado
-    final blurHash = await compute(_encodeBlurHash, data); 
-
     // Guarda la imagen original en el almacenamiento local.
     await _localRepository.saveAvatar(image, userName: userName);
 
@@ -54,9 +47,20 @@ class AvatarUploadUseCase {
           await _imageCompressUseCase.execute(image, userName!, 30, true);
     }
     print('Avatar compressed');
+
+    final data = imageCompressed.readAsBytesSync();
+
+    // Usar compute para ejecutar la tarea en un hilo separado
+    final blurHash = await compute(_encodeBlurHash, data).timeout(
+        const Duration(seconds: 10),
+        onTimeout: () => 'L6H#2{R*0J%2t7j[NGRj0Kt7j[NG');
+
     // Sube la imagen comprimida (o la original si proviene de Google) al almacenamiento en la nube.
-    return (await _bucketRepository.uploadUserAvatar(imageCompressed,
-        userName: userName), blurHash);
+    return (
+      await _bucketRepository.uploadUserAvatar(imageCompressed,
+          userName: userName),
+      blurHash
+    );
   }
 
   String _encodeBlurHash(Uint8List data) {
