@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_use_case.dart';
+import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_local_use_case.dart';
 import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -29,8 +29,8 @@ AvatarBucketDataSource avatarBucketDataSource(AvatarBucketDataSourceRef ref) {
   // Obtiene una instancia de Firebase Storage.
   final firebaseStorage = FirebaseStorage.instance;
 
-  // Obtiene una referencia al proveedor `getUserUseCaseProvider` para leer información del usuario.
-  final getUserUseCase = ref.read(getUserUseCaseProvider);
+  // Obtiene una referencia al proveedor `getUserLocalUseCaseProvider` para leer información del usuario.
+  final getUserUseCase = ref.read(getUserLocalUseCaseProvider);
 
   // Devuelve una implementación concreta de `AvatarBucketDataSource`.
   return AvatarBucketDataSourceImpl(firebaseStorage, getUserUseCase);
@@ -39,7 +39,7 @@ AvatarBucketDataSource avatarBucketDataSource(AvatarBucketDataSourceRef ref) {
 // Implementación concreta de la interfaz `AvatarBucketDataSource`.
 class AvatarBucketDataSourceImpl implements AvatarBucketDataSource {
   final FirebaseStorage _firebaseStorage;
-  final GetUserUseCase _getUserUseCase;
+  final GetUserLocalUseCase _getUserUseCase;
 
   AvatarBucketDataSourceImpl(this._firebaseStorage, this._getUserUseCase);
 

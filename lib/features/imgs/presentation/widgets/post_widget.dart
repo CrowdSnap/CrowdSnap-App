@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_blurhash/flutter_blurhash.dart';
+import 'package:go_router/go_router.dart';
 import 'package:octo_image/octo_image.dart';
 import 'package:pinch_zoom_release_unzoom/pinch_zoom_release_unzoom.dart';
 import 'package:crowd_snap/core/data/models/post_model.dart';
@@ -59,43 +60,60 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
             child: Row(
               children: [
                 const SizedBox(width: 4.0),
-                SizedBox(
-                  width: 40,
-                  height: 40,
-                  child: CachedNetworkImage(
-                    imageUrl: widget.post.userAvatarUrl,
-                    placeholder: (context, url) => ClipOval(
-                      child: SizedBox(
+                GestureDetector(
+                  onTap: () {
+                    context.push(
+                      '/users/${widget.post.userId}',
+                      extra: {
+                        'username': widget.post.userName,
+                        'avatarUrl': widget.post.userAvatarUrl,
+                        'blurHashImage': widget.post.blurHashImage,
+                      },
+                    );
+                  },
+                  child: Row(
+                    children: [
+                      SizedBox(
                         width: 40,
                         height: 40,
-                        child: BlurHash(
-                          hash: widget.post.blurHashAvatar,
-                          imageFit: BoxFit.cover,
+                        child: CachedNetworkImage(
+                          imageUrl: widget.post.userAvatarUrl,
+                          placeholder: (context, url) => ClipOval(
+                            child: SizedBox(
+                              width: 40,
+                              height: 40,
+                              child: BlurHash(
+                                hash: widget.post.blurHashAvatar,
+                                imageFit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => ClipOval(
+                            child: SizedBox(
+                              width: 40,
+                              height: 40,
+                              child: BlurHash(
+                                hash: widget.post.blurHashAvatar,
+                                imageFit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          imageBuilder: (context, imageProvider) =>
+                              CircleAvatar(
+                            backgroundImage: imageProvider,
+                          ),
+                          fadeInDuration: const Duration(milliseconds: 400),
+                          fadeOutDuration: const Duration(milliseconds: 400),
                         ),
                       ),
-                    ),
-                    errorWidget: (context, url, error) => ClipOval(
-                      child: SizedBox(
-                        width: 40,
-                        height: 40,
-                        child: BlurHash(
-                          hash: widget.post.blurHashAvatar,
-                          imageFit: BoxFit.cover,
+                      const SizedBox(width: 12.0),
+                      Text(
+                        widget.post.userName,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    ),
-                    imageBuilder: (context, imageProvider) => CircleAvatar(
-                      backgroundImage: imageProvider,
-                    ),
-                    fadeInDuration: const Duration(milliseconds: 400),
-                    fadeOutDuration: const Duration(milliseconds: 400),
-                  ),
-                ),
-                const SizedBox(width: 12.0),
-                Text(
-                  widget.post.userName,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
+                    ],
                   ),
                 ),
                 const Spacer(),

@@ -1,5 +1,5 @@
 import 'package:crowd_snap/core/data/models/comment_model.dart';
-import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_use_case.dart';
+import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_local_use_case.dart';
 import 'package:crowd_snap/features/imgs/data/repositories_impl/comment_repository_impl.dart';
 import 'package:crowd_snap/features/imgs/domain/repository/comment_repository.dart';
 import 'package:crowd_snap/features/imgs/presentation/notifier/comments_provider.dart';
@@ -9,7 +9,7 @@ import 'package:uuid/uuid.dart';
 part 'comment_create_use_case.g.dart';
 
 class CreateCommentUseCase {
-  final GetUserUseCase _getUserUseCase;
+  final GetUserLocalUseCase _getUserUseCase;
   final CommentRepository _commentRepository;
   final Uuid _uuid;
   final CommentsNotifier _commentsNotifier;
@@ -36,7 +36,7 @@ class CreateCommentUseCase {
 
 @riverpod
 CreateCommentUseCase createCommentUseCase(CreateCommentUseCaseRef ref, String postId) {
-  final getUserUseCase = ref.watch(getUserUseCaseProvider);
+  final getUserUseCase = ref.watch(getUserLocalUseCaseProvider);
   final commentRepository = ref.watch(commentRepositoryProvider);
   const uuid = Uuid();
   final commentsNotifier = ref.watch(commentsNotifierProvider(postId).notifier);

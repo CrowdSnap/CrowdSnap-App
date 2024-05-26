@@ -1,7 +1,7 @@
 import 'package:crowd_snap/core/data/models/comment_model.dart';
 import 'package:crowd_snap/core/data/models/like_model.dart';
 import 'package:crowd_snap/core/data/models/post_model.dart';
-import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_use_case.dart';
+import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_local_use_case.dart';
 import 'package:crowd_snap/features/imgs/domain/use_case/comment_create_use_case.dart';
 import 'package:crowd_snap/features/imgs/domain/use_case/comment_delete_use_case.dart';
 import 'package:crowd_snap/features/imgs/domain/use_case/post_add_like_use_case.dart';
@@ -58,12 +58,12 @@ class _PostCardState extends ConsumerState<PostCard> {
   }
 
   Future<String> _getUserId() async {
-    final getUserUseCase = await ref.read(getUserUseCaseProvider).execute();
+    final getUserUseCase = await ref.read(getUserLocalUseCaseProvider).execute();
     return getUserUseCase.userId;
   }
 
   Future<void> _checkIfUserLikedPost() async {
-    final getUserUseCase = await ref.read(getUserUseCaseProvider).execute();
+    final getUserUseCase = await ref.read(getUserLocalUseCaseProvider).execute();
     final userId = getUserUseCase.userId;
     final isLiked = widget.post.likes.any((like) => like.userId == userId);
     if (mounted) {
@@ -74,7 +74,7 @@ class _PostCardState extends ConsumerState<PostCard> {
   }
 
   void _toggleLike() async {
-    final getUserUseCase = await ref.read(getUserUseCaseProvider).execute();
+    final getUserUseCase = await ref.read(getUserLocalUseCaseProvider).execute();
     final userId = getUserUseCase.userId;
     final postId = widget.post.mongoId!;
 

@@ -1,25 +1,25 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'get_user_use_case.dart';
+part of 'users_repository_impl.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$getUserUseCaseHash() => r'25312fa488ceb7b41441bf61bd7a97be6a424676';
+String _$usersRepositoryHash() => r'904f43e3c4d279830d4765106279efef4ffad183';
 
-/// See also [getUserUseCase].
-@ProviderFor(getUserUseCase)
-final getUserUseCaseProvider = Provider<GetUserUseCase>.internal(
-  getUserUseCase,
-  name: r'getUserUseCaseProvider',
+/// See also [usersRepository].
+@ProviderFor(usersRepository)
+final usersRepositoryProvider = Provider<UsersRepository>.internal(
+  usersRepository,
+  name: r'usersRepositoryProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$getUserUseCaseHash,
+      : _$usersRepositoryHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef GetUserUseCaseRef = ProviderRef<GetUserUseCase>;
+typedef UsersRepositoryRef = ProviderRef<UsersRepository>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

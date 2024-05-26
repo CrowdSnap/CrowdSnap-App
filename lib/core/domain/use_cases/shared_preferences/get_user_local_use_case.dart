@@ -3,12 +3,12 @@ import 'package:crowd_snap/core/data/repository_impl/shared_preferences/user_rep
 import 'package:crowd_snap/core/domain/repositories/shared_preferences/user_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'get_user_use_case.g.dart';
+part 'get_user_local_use_case.g.dart';
 
-class GetUserUseCase {
+class GetUserLocalUseCase {
   final UserRepository _repository;
 
-  GetUserUseCase(this._repository);
+  GetUserLocalUseCase(this._repository);
 
   Future<UserModel> execute() async {
     return await _repository.getUser();
@@ -16,7 +16,7 @@ class GetUserUseCase {
 }
 
 @Riverpod(keepAlive: true)
-GetUserUseCase getUserUseCase(GetUserUseCaseRef ref) {
+GetUserLocalUseCase getUserLocalUseCase(GetUserLocalUseCaseRef ref) {
   final userRepository = ref.watch(userRepositoryProvider);
-  return GetUserUseCase(userRepository);
+  return GetUserLocalUseCase(userRepository);
 }

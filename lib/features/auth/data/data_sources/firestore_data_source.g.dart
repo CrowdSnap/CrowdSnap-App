@@ -7,7 +7,7 @@ part of 'firestore_data_source.dart';
 // **************************************************************************
 
 String _$firestoreDataSourceHash() =>
-    r'533e60a30876006046115b86872dfcd43203985e';
+    r'c5f455a38a8b74d80d71cd81793672663c8e8cee';
 
 /// See also [firestoreDataSource].
 @ProviderFor(firestoreDataSource)

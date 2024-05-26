@@ -1,4 +1,4 @@
-import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_use_case.dart';
+import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_local_use_case.dart';
 import 'package:crowd_snap/core/domain/use_cases/shared_preferences/store_user_use_case.dart';
 import 'package:crowd_snap/features/auth/data/repositories_impl/auth_repository_impl.dart';
 import 'package:crowd_snap/features/auth/domain/repositories/auth_repository.dart';
@@ -16,7 +16,7 @@ class SignInUseCase {
   final StoreUserUseCase _storeUserUseCase;
   final AvatarGetUseCase _avatarGetUseCase;
   final ProfileNotifier _profileNotifier;
-  final GetUserUseCase _getUserUseCase;
+  final GetUserLocalUseCase _getUserUseCase;
   final PostRepository _postRepository;
 
   SignInUseCase(this._authRepository, this._storeUserUseCase,
@@ -61,7 +61,7 @@ SignInUseCase signInUseCase(SignInUseCaseRef ref) {
   final storeUserUseCase = ref.watch(storeUserUseCaseProvider);
   final avatarGetUseCase = ref.watch(avatarGetUseCaseProvider);
   final profileNotifier = ref.read(profileNotifierProvider.notifier);
-  final getUserUseCase = ref.read(getUserUseCaseProvider);
+  final getUserUseCase = ref.read(getUserLocalUseCaseProvider);
   final postRepository = ref.read(postRepositoryProvider);
   _logger.info('SignInUseCase');
   return SignInUseCase(authRepository, storeUserUseCase, avatarGetUseCase,

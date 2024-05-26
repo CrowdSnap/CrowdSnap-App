@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:crowd_snap/app/router/redirect/auth_state_provider.dart';
 import 'package:crowd_snap/core/data/repository_impl/shared_preferences/user_repository_impl.dart';
-import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_use_case.dart';
+import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_local_use_case.dart';
 import 'package:crowd_snap/features/auth/data/repositories_impl/firestore_repository_impl.dart';
 import 'package:crowd_snap/features/imgs/domain/use_case/avatar_upload_use_case.dart';
 import 'package:crowd_snap/features/imgs/presentation/notifier/image_picker_state.dart';
@@ -92,7 +92,7 @@ class AvatarUploadView extends ConsumerWidget {
     final firestoreRepository = ref.watch(firestoreRepositoryProvider);
     final userRepository = ref.watch(userRepositoryProvider);
     final profileNotifier = ref.read(profileNotifierProvider.notifier);
-    final getUserUseCase = ref.read(getUserUseCaseProvider);
+    final getUserUseCase = ref.read(getUserLocalUseCaseProvider);
 
     // Obtiene el usuario actual del repositorio de usuarios.
     final userModel = await userRepository.getUser();

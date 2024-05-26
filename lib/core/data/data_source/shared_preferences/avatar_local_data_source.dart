@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_use_case.dart';
+import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_local_use_case.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -13,12 +13,12 @@ abstract class AvatarLocalDataSource {
 
 @Riverpod(keepAlive: true)
 AvatarLocalDataSource avatarLocalDataSource(AvatarLocalDataSourceRef ref) {
-  final getUserUseCase = ref.read(getUserUseCaseProvider);
+  final getUserUseCase = ref.read(getUserLocalUseCaseProvider);
   return AvatarLocalDataSourceImpl(getUserUseCase);
 }
 
 class AvatarLocalDataSourceImpl implements AvatarLocalDataSource {
-  final GetUserUseCase _getUserUseCase;
+  final GetUserLocalUseCase _getUserUseCase;
   AvatarLocalDataSourceImpl(this._getUserUseCase);
 
   @override
