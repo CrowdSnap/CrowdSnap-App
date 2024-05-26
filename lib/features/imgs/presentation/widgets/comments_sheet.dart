@@ -7,6 +7,7 @@ import 'package:crowd_snap/core/data/models/post_model.dart';
 import 'package:crowd_snap/features/auth/data/repositories_impl/firestore_repository_impl.dart';
 import 'package:crowd_snap/features/imgs/presentation/notifier/comments_provider.dart';
 import 'package:flutter_blurhash/flutter_blurhash.dart';
+import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class CommentsSheet extends ConsumerStatefulWidget {
@@ -117,6 +118,16 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
                           return GestureDetector(
                             onLongPress: () {
                               widget.showPopupMenu(context, comment, user.userId);
+                            },
+                            onTap: () {
+                              context.push(
+                                '/users/${user.userId}',
+                                extra: {
+                                  'username': user.username,
+                                  'avatarUrl': user.avatarUrl!,
+                                  'blurHashImage': widget.post.blurHashImage,
+                                }
+                              );
                             },
                             child: Card(
                               shape: RoundedRectangleBorder(
