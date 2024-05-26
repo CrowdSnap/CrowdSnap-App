@@ -135,7 +135,7 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 400),
                           curve: Curves.easeInOut,
-                          height: _isLongPressed ? height * 1.15 : height,
+                          height: _isLongPressed ? height * 1.05 : height,
                           width: _isLongPressed ? maxWidth * 1.2 : maxWidth,
                           child: Stack(
                             children: [
