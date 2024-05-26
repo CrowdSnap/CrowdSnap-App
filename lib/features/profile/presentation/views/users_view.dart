@@ -86,14 +86,14 @@ class UsersView extends ConsumerWidget {
           padding: const EdgeInsets.all(16.0),
           child: Center(
             child: SizedBox(
-              width: 200,
-              height: 200,
+              width: 150,
+              height: 150,
               child: CachedNetworkImage(
                 imageUrl: user.avatarUrl!,
                 placeholder: (context, url) => ClipOval(
                   child: SizedBox(
-                    width: 200,
-                    height: 200,
+                    width: 150,
+                    height: 150,
                     child: BlurHash(
                       hash: user.blurHashImage!,
                     ),
@@ -101,8 +101,8 @@ class UsersView extends ConsumerWidget {
                 ),
                 errorWidget: (context, url, error) => ClipOval(
                   child: SizedBox(
-                    width: 200,
-                    height: 200,
+                    width: 150,
+                    height: 150,
                     child: BlurHash(
                       hash: user.blurHashImage!,
                     ),
@@ -136,53 +136,102 @@ class UsersView extends ConsumerWidget {
           ],
         ),
         const SizedBox(height: 16),
-        userPostsAsyncValue.when(
-          data: (posts) => Expanded(
-            child: PageView(
-              controller: pageController,
-              onPageChanged: (index) {
-                usersNotifier.updateIndex(index);
-              },
-              children: [
-                GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    crossAxisSpacing: 5,
-                    mainAxisSpacing: 5,
+        Expanded(
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 500),
+            child: userPostsAsyncValue.when(
+              data: (posts) => PageView(
+                key: ValueKey('posts'),
+                controller: pageController,
+                onPageChanged: (index) {
+                  usersNotifier.updateIndex(index);
+                },
+                children: [
+                  GridView.builder(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 5,
+                      mainAxisSpacing: 5,
+                    ),
+                    itemCount: posts.length,
+                    itemBuilder: (context, index) {
+                      final post = posts[index];
+                      return ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image(
+                          image: CachedNetworkImageProvider(post.imageUrl),
+                          fit: BoxFit.cover,
+                        ),
+                      );
+                    },
                   ),
-                  itemCount: posts.length,
-                  itemBuilder: (context, index) {
-                    final post = posts[index];
-                    return ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image(
-                        image: CachedNetworkImageProvider(post.imageUrl),
-                        fit: BoxFit.cover,
-                      ),
-                    );
-                  },
-                ),
-                GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    crossAxisSpacing: 5,
-                    mainAxisSpacing: 5,
+                  GridView.builder(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 5,
+                      mainAxisSpacing: 5,
+                    ),
+                    itemCount: 0, // Reemplaza con el número real de posts etiquetados
+                    itemBuilder: (context, index) {
+                      return Container(
+                        color: Colors.grey[200],
+                        child: Center(
+                          child: Text('Tagged Post ${index + 1}'),
+                        ),
+                      );
+                    },
                   ),
-                  itemCount: 0, // Reemplaza con el número real de posts etiquetados
-                  itemBuilder: (context, index) {
-                    return Container(
-                      color: Colors.grey[200],
-                      child: Center(
-                        child: Text('Tagged Post ${index + 1}'),
-                      ),
-                    );
-                  },
-                ),
-              ],
+                ],
+              ),
+              loading: () => PageView(
+                key: ValueKey('loading'),
+                controller: pageController,
+                children: [
+                  GridView.builder(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 5,
+                      mainAxisSpacing: 5,
+                    ),
+                    itemCount: 9, // Número de placeholders que deseas mostrar
+                    itemBuilder: (context, index) {
+                      return ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Skeletonizer(
+                          enabled: true,
+                          effect: const ShimmerEffect(), // Añadir efecto shimmer
+                          child: Container(
+                            color: Colors.grey[800],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  GridView.builder(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 5,
+                      mainAxisSpacing: 5,
+                    ),
+                    itemCount: 9, // Número de placeholders que deseas mostrar
+                    itemBuilder: (context, index) {
+                      return ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Skeletonizer(
+                          enabled: true,
+                          effect: const ShimmerEffect(), // Añadir efecto shimmer
+                          child: Container(
+                            color: Colors.grey[800],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+              error: (error, stack) => Center(child: Text('Error: $error')),
             ),
           ),
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, stack) => Center(child: Text('Error: $error')),
         ),
       ],
     );
