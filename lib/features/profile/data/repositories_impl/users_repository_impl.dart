@@ -25,4 +25,14 @@ class UsersRepositoryImpl implements UsersRepository {
       throw Exception('Failed to get user from Firestore');
     }
   }
+
+  @override
+  Future<void> addConnection(String userId, String connectionId) async {
+    await _usersModelDataSource.addConnection(userId, connectionId);
+  }
+
+  @override
+  Future<void> removeConnection(String userId, String connectionId) async {
+    await _usersModelDataSource.removeConnection(userId, connectionId);
+  }
 }

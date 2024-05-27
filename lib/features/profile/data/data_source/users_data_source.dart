@@ -6,6 +6,8 @@ part 'users_data_source.g.dart';
 
 abstract class UsersDataSource {
   Future<UserModel> getUser(String userId);
+  Future<void> addConnection(String userId, String connectionId);
+  Future<void> removeConnection(String userId, String connectionId);
 }
 
 @Riverpod(keepAlive: true)
@@ -31,6 +33,48 @@ class UsersDataSourceImpl implements UsersDataSource {
       }
     } catch (e) {
       throw Exception('Failed to get user from Firestore');
+    }
+  }
+
+  @override
+  Future<void> addConnection(String userId, String connectionId) async {
+    try {
+      final userRef = _firestore.collection('users').doc(userId);
+      final connectionRef = _firestore.collection('users').doc(connectionId);
+
+      await _firestore.runTransaction((transaction) async {
+        transaction.update(userRef, {
+          'connectionsCount': FieldValue.increment(1),
+          'connections': FieldValue.arrayUnion([connectionId])
+        });
+        transaction.update(connectionRef, {
+          'connectionsCount': FieldValue.increment(1),
+          'connections': FieldValue.arrayUnion([userId])
+        });
+      });
+    } catch (e) {
+      throw Exception('Failed to add connection: $e');
+    }
+  }
+
+  @override
+  Future<void> removeConnection(String userId, String connectionId) async {
+    try {
+      final userRef = _firestore.collection('users').doc(userId);
+      final connectionRef = _firestore.collection('users').doc(connectionId);
+
+      await _firestore.runTransaction((transaction) async {
+        transaction.update(userRef, {
+          'connectionsCount': FieldValue.increment(-1),
+          'connections': FieldValue.arrayRemove([connectionId])
+        });
+        transaction.update(connectionRef, {
+          'connectionsCount': FieldValue.increment(-1),
+          'connections': FieldValue.arrayRemove([userId])
+        });
+      });
+    } catch (e) {
+      throw Exception('Failed to remove connection: $e');
     }
   }
 }

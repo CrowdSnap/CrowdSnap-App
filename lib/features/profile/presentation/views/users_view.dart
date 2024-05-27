@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crowd_snap/core/data/models/post_model.dart';
 import 'package:crowd_snap/core/data/models/user_model.dart';
+import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_local_use_case.dart';
+import 'package:crowd_snap/features/profile/domain/use_cases/add_connection_use_case.dart';
 import 'package:crowd_snap/features/profile/domain/use_cases/get_user_posts_use_case.dart';
 import 'package:crowd_snap/features/profile/domain/use_cases/get_user_use_case.dart';
 import 'package:crowd_snap/features/profile/presentation/notifier/users_notifier.dart';
@@ -76,10 +78,16 @@ class UsersView extends ConsumerWidget {
         appBar: AppBar(
           title: const Text('Error'), // Título en caso de error
         ),
-        body: const Center(child: Text('Usuario no encontrado probablemente se eliminó')),
+        body: const Center(
+            child: Text('Usuario no encontrado probablemente se eliminó')),
       ),
     );
   }
+
+   Future<UserModel> getLocalUser(WidgetRef ref) async {
+      final getUserUseCase = ref.read(getUserLocalUseCaseProvider);
+      return await getUserUseCase.execute();
+    }
 
   Widget _buildUserProfile(BuildContext context, UserModel user,
       AsyncValue<List<PostModel>> userPostsAsyncValue, WidgetRef ref) {
@@ -124,9 +132,24 @@ class UsersView extends ConsumerWidget {
             ),
           ),
         ),
-        const SizedBox(height: 16),
         Text(user.name, style: Theme.of(context).textTheme.headlineLarge),
         const SizedBox(height: 16),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Conexiones: ${user.connectionsCount}', style: TextStyle(
+              fontSize: 20,
+              color: Colors.grey[700],
+            ),),
+            const SizedBox(height: 8),
+            ElevatedButton(onPressed: () {
+              getLocalUser(ref).then((localUser) {
+                ref.read(addConnectionUseCaseProvider).execute(localUser.userId, user.userId);
+              });
+            }, child: Text('Conecta con ${user.name.split(' ')[0]}')),
+            const SizedBox(height: 16),
+          ],
+        ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -179,21 +202,17 @@ class UsersView extends ConsumerWidget {
                       );
                     },
                   ),
-                  GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 5,
-                      mainAxisSpacing: 5,
-                    ),
-                    itemCount:
-                        0, // Reemplaza con el número real de posts etiquetados
+                  ListView.builder(
+                    itemCount: posts.length,
                     itemBuilder: (context, index) {
-                      return Container(
-                        color: Colors.grey[200],
-                        child: Center(
-                          child: Text('Tagged Post ${index + 1}'),
+                      final post = posts[index];
+                      return ListTile(
+                        leading: CircleAvatar(
+                          backgroundImage:
+                              CachedNetworkImageProvider(post.imageUrl),
                         ),
+                        title: Text(post.userName),
+                        subtitle: Text(post.description ?? ''),
                       );
                     },
                   ),

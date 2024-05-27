@@ -144,8 +144,13 @@ class _SearchViewState extends ConsumerState<SearchView> {
                               ),
                               title: Row(
                                 children: [
-                                  Text(user['username']),
-                                  const SizedBox(width: 8),
+                                  Text(user['username']),                                  
+                                ],
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(user['name']),
                                   Text(
                                     '${user['connectionsCount']} conexiones',
                                     style: TextStyle(
@@ -153,7 +158,10 @@ class _SearchViewState extends ConsumerState<SearchView> {
                                   ),
                                 ],
                               ),
-                              subtitle: Text(user['name']),
+                              trailing: const Icon(
+                                Icons.arrow_forward_ios,
+                                size: 16.0,
+                              )
                             ),
                           ),
                         ),
