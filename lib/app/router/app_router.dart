@@ -4,6 +4,7 @@ import 'package:crowd_snap/features/chats/presentation/chats_view.dart';
 import 'package:crowd_snap/features/imgs/presentation/views/avatar_upload_view.dart';
 import 'package:crowd_snap/features/imgs/presentation/views/image_upload_view.dart';
 import 'package:crowd_snap/features/profile/presentation/views/settings_view.dart';
+import 'package:crowd_snap/features/profile/presentation/views/users_view.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:crowd_snap/features/auth/presentation/views/login_view.dart';
@@ -57,6 +58,19 @@ class AppRouter extends _$AppRouter {
               builder: (context, state) => const SearchView(),
             ),
             GoRoute(
+              path: '/users/:userId',
+              builder: (context, state) {
+                final userId = state.pathParameters['userId']!;
+                final extra = state.extra as Map<String, String>;
+                return UsersView(
+                  userId: userId,
+                  username: extra['username']!,
+                  avatarUrl: extra['avatarUrl']!,
+                  blurHashImage: extra['blurHashImage']!,
+                );
+              },
+            ),
+            GoRoute(
               path: '/profile',
               builder: (context, state) => const ProfileView(),
             ),
@@ -67,7 +81,7 @@ class AppRouter extends _$AppRouter {
                 builder: (context, state) => const ImageUploadView()),
             GoRoute(
                 path: '/settings',
-                builder: (context, state) => const SettingsView())
+                builder: (context, state) => const SettingsView()),
           ],
         ),
       ],

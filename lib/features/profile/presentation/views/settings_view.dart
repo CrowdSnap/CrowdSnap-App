@@ -1,5 +1,5 @@
 import 'package:crowd_snap/app/theme/notifier/theme_notifier.dart';
-import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_use_case.dart';
+import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_local_use_case.dart';
 import 'package:crowd_snap/features/auth/data/repositories_impl/firestore_repository_impl.dart';
 import 'package:crowd_snap/features/auth/domain/use_cases/sign_out_use_case.dart';
 import 'package:crowd_snap/features/auth/presentation/notifier/auth_notifier.dart';
@@ -19,7 +19,7 @@ class SettingsView extends ConsumerWidget {
         .read(profileNotifierProvider)
         .userId; // Obtiene el ID del usuario del estado del perfil.
     final userModel = await ref
-        .read(getUserUseCaseProvider)
+        .read(getUserLocalUseCaseProvider)
         .execute(); // Obtiene la información del usuario actual.
     print(
         'Deleting user: $userModel'); // Imprime información del usuario a eliminar (opcional para debug).

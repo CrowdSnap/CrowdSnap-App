@@ -6,6 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crowd_snap/core/data/models/user_model.dart';
 import 'package:crowd_snap/core/data/models/post_model.dart';
 import 'package:flutter_blurhash/flutter_blurhash.dart';
+import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class LikesSheet extends ConsumerStatefulWidget {
@@ -77,73 +78,82 @@ class _LikesSheetState extends ConsumerState<LikesSheet> {
                                       ),
                                     ),
                                     title: Container(
-                                      width: 100,
-                                      height: 10,
-                                      color: Colors.grey[300],
-                                    ),
+                                        width: 100,
+                                        height: 25,
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey[300],
+                                        )),
                                     subtitle: Container(
-                                      width: 150,
-                                      height: 10,
-                                      color: Colors.grey[300],
-                                    ),
+                                        width: 100,
+                                        height: 20,
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey[300],
+                                        )),
                                   ),
                                 ),
                               ),
                             );
                           }
-                          if (snapshot.hasError) {
-                            return Text('Error: ${snapshot.error}');
-                          }
+                          if (snapshot.hasError) {}
                           final user = snapshot.data;
                           if (user == null) {
-                            return const Text('User not found');
+                            return Container();
                           }
-                          return Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(40.0),
-                            ),
-                            color: Theme.of(context).hoverColor,
-                            margin: const EdgeInsets.symmetric(vertical: 4.0),
-                            child: ListTile(
-                              leading: SizedBox(
-                                width: 50,
-                                height: 50,
-                                child: CachedNetworkImage(
-                                  imageUrl: user.avatarUrl!,
-                                  placeholder: (context, url) => ClipOval(
-                                    child: SizedBox(
-                                      width: 50,
-                                      height: 50,
-                                      child: BlurHash(
-                                        hash: widget.post.blurHashAvatar,
-                                        imageFit: BoxFit.cover,
+                          return GestureDetector(
+                            onTap: () {
+                              context.push('/users/${user.userId}', extra: {
+                                'username': user.username,
+                                'avatarUrl': user.avatarUrl!,
+                                'blurHashImage': widget.post.blurHashAvatar,
+                              });
+                            },
+                            child: Card(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(40.0),
+                              ),
+                              color: Theme.of(context).hoverColor,
+                              margin: const EdgeInsets.symmetric(vertical: 4.0),
+                              child: ListTile(
+                                leading: SizedBox(
+                                  width: 50,
+                                  height: 50,
+                                  child: CachedNetworkImage(
+                                    imageUrl: user.avatarUrl!,
+                                    placeholder: (context, url) => ClipOval(
+                                      child: SizedBox(
+                                        width: 50,
+                                        height: 50,
+                                        child: BlurHash(
+                                          hash: widget.post.blurHashAvatar,
+                                          imageFit: BoxFit.cover,
+                                        ),
                                       ),
                                     ),
+                                    errorWidget: (context, url, error) =>
+                                        const Icon(Icons.person),
+                                    imageBuilder: (context, imageProvider) =>
+                                        CircleAvatar(
+                                      backgroundImage: imageProvider,
+                                    ),
+                                    fadeInDuration:
+                                        const Duration(milliseconds: 400),
+                                    fadeOutDuration:
+                                        const Duration(milliseconds: 400),
                                   ),
-                                  errorWidget: (context, url, error) =>
-                                      const Icon(Icons.person),
-                                  imageBuilder: (context, imageProvider) =>
-                                      CircleAvatar(
-                                    backgroundImage: imageProvider,
-                                  ),
-                                  fadeInDuration:
-                                      const Duration(milliseconds: 400),
-                                  fadeOutDuration:
-                                      const Duration(milliseconds: 400),
                                 ),
+                                title: Row(
+                                  children: [
+                                    Text(user.username),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      widget.getElapsedTime(like.createdAt),
+                                      style: const TextStyle(
+                                          fontSize: 12, color: Colors.grey),
+                                    ),
+                                  ],
+                                ),
+                                subtitle: Text(user.name),
                               ),
-                              title: Row(
-                                children: [
-                                  Text(user.username),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    widget.getElapsedTime(like.createdAt),
-                                    style: const TextStyle(
-                                        fontSize: 12, color: Colors.grey),
-                                  ),
-                                ],
-                              ),
-                              subtitle: Text(user.name),
                             ),
                           );
                         },

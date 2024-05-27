@@ -7,7 +7,7 @@ part of 'avatar_bucket_data_source.dart';
 // **************************************************************************
 
 String _$avatarBucketDataSourceHash() =>
-    r'08c79f5ff4b2f83d7b32b6c51109a802e33e7bd6';
+    r'6d0baee185ec7dd89d452b3d132c017385e70356';
 
 /// See also [avatarBucketDataSource].
 @ProviderFor(avatarBucketDataSource)

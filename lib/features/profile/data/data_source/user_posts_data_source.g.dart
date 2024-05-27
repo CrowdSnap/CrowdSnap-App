@@ -1,27 +1,26 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'google_sign_in_use_case.dart';
+part of 'user_posts_data_source.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$googleSignInUseCaseHash() =>
-    r'46f9fd8adf7a6ef95214305997fdd51b8bc337b4';
+String _$userPostsDataSourceHash() =>
+    r'9d2667b7a90b45dba62234c71dfe8e580356dcb5';
 
-/// See also [googleSignInUseCase].
-@ProviderFor(googleSignInUseCase)
-final googleSignInUseCaseProvider =
-    AutoDisposeProvider<GoogleSignInUseCase>.internal(
-  googleSignInUseCase,
-  name: r'googleSignInUseCaseProvider',
+/// See also [userPostsDataSource].
+@ProviderFor(userPostsDataSource)
+final userPostsDataSourceProvider = Provider<UserPostsDataSource>.internal(
+  userPostsDataSource,
+  name: r'userPostsDataSourceProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$googleSignInUseCaseHash,
+      : _$userPostsDataSourceHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef GoogleSignInUseCaseRef = AutoDisposeProviderRef<GoogleSignInUseCase>;
+typedef UserPostsDataSourceRef = ProviderRef<UserPostsDataSource>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

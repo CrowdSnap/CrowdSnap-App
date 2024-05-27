@@ -1,10 +1,11 @@
 import 'package:crowd_snap/core/constants.dart';
-import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_use_case.dart';
+import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_local_use_case.dart';
 import 'package:crowd_snap/features/imgs/data/data_source/comment_data_source.dart';
 import 'package:crowd_snap/features/imgs/data/data_source/post_data_source.dart';
 import 'package:crowd_snap/features/imgs/data/data_source/image_bucket_data_source.dart';
 import 'package:crowd_snap/features/imgs/data/repositories_impl/post_repository_impl.dart';
 import 'package:crowd_snap/features/imgs/domain/use_case/avatar_get_use_case.dart';
+import 'package:crowd_snap/features/profile/data/data_source/user_posts_data_source.dart';
 import 'package:crowd_snap/features/profile/presentation/notifier/profile_notifier.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,9 @@ void main() async {
   await postDataSource.loadEnvVariables();
   final CommentDataSourceImpl commentDataSource = CommentDataSourceImpl();
   await commentDataSource.loadEnvVariables();
+  final UserPostsDataSourceImpl userPostsDataSource =
+      UserPostsDataSourceImpl();
+  await userPostsDataSource.loadEnvVariables();
   // Inicializa Firebase antes de ejecutar la aplicación.
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -39,6 +43,7 @@ void main() async {
         imageBucketDataSourceProvider.overrideWithValue(imageBucketDataSource),
         postDataSourceProvider.overrideWithValue(postDataSource),
         commentDataSourceProvider.overrideWithValue(commentDataSource),
+        userPostsDataSourceProvider.overrideWithValue(userPostsDataSource),
       ],
       child: Consumer(
         builder: (context, ref, child) {
@@ -48,7 +53,7 @@ void main() async {
           if (user != null) {
             try {
               // Obtiene la información del usuario y sus posts al iniciar la aplicación.
-              final getUserUseCase = ref.read(getUserUseCaseProvider);
+              final getUserUseCase = ref.read(getUserLocalUseCaseProvider);
               final profileNotifier =
                   ref.read(profileNotifierProvider.notifier);
               final postRepository = ref.read(postRepositoryProvider);

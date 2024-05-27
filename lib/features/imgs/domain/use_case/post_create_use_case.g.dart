@@ -6,7 +6,7 @@ part of 'post_create_use_case.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$createPostUseCaseHash() => r'f1b7deae9aaf55150c810a79fdf0a0522dea8846';
+String _$createPostUseCaseHash() => r'1746d8238850340e7b8c2bf0b8f3e4047ff18f69';
 
 /// See also [createPostUseCase].
 @ProviderFor(createPostUseCase)

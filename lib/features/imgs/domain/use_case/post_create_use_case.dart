@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:crowd_snap/core/data/models/post_model.dart';
-import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_use_case.dart';
+import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_local_use_case.dart';
 import 'package:crowd_snap/features/imgs/data/repositories_impl/post_repository_impl.dart';
 import 'package:crowd_snap/features/imgs/domain/repository/post_repository.dart';
 import 'package:crowd_snap/features/imgs/domain/use_case/image_upload_use_case.dart';
@@ -11,7 +11,7 @@ part 'post_create_use_case.g.dart';
 
 class CreatePostUseCase {
   final PostRepository _postRepository;
-  final GetUserUseCase _getUserUseCase;
+  final GetUserLocalUseCase _getUserUseCase;
   final ImageUploadUseCase _imageUploadUseCase;
 
   CreatePostUseCase(
@@ -49,7 +49,7 @@ class CreatePostUseCase {
 CreatePostUseCase createPostUseCase(CreatePostUseCaseRef ref) {
   final postRepository = ref.watch(postRepositoryProvider);
   final imageUploadUseCase = ref.watch(imageUploadUseCaseProvider);
-  final getUserUseCase = ref.watch(getUserUseCaseProvider);
+  final getUserUseCase = ref.watch(getUserLocalUseCaseProvider);
 
   return CreatePostUseCase(postRepository, getUserUseCase, imageUploadUseCase);
 }

@@ -88,6 +88,7 @@ class _GoogleSignUpScreenState extends ConsumerState<GoogleSignUpView>
         MaterialPageRoute(
           builder: (context) => ImageCropper(
             image: imageData, // <-- Uint8List of image
+            reversible: true,
           ),
         ),
       );
@@ -116,6 +117,7 @@ class _GoogleSignUpScreenState extends ConsumerState<GoogleSignUpView>
         MaterialPageRoute(
           builder: (context) => ImageCropper(
             image: imageData, // <-- Uint8List of image
+            reversible: true,
           ),
         ),
       );

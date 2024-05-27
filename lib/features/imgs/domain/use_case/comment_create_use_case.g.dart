@@ -7,7 +7,7 @@ part of 'comment_create_use_case.dart';
 // **************************************************************************
 
 String _$createCommentUseCaseHash() =>
-    r'fe55a978c9fe4c70441f8154d719f1361aac3b59';
+    r'786434223be581fb4b9d0eefa589ecbc58af09db';
 
 /// Copied from Dart SDK
 class _SystemHash {

@@ -13,11 +13,11 @@ class ProfileView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profileValues = ref.watch(profileNotifierProvider);
     final profileNotifier = ref.read(profileNotifierProvider.notifier);
-    final _pageController = PageController();
+    final pageController = PageController();
 
     void _onGridSelected(int index) {
       profileNotifier.updateIndex(index);
-      _pageController.animateToPage(
+      pageController.animateToPage(
         index,
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
@@ -84,7 +84,7 @@ class ProfileView extends ConsumerWidget {
             const SizedBox(height: 16),
             Expanded(
               child: PageView(
-                controller: _pageController,
+                controller: pageController,
                 onPageChanged: (index) {
                   profileNotifier.updateIndex(index);
                 },

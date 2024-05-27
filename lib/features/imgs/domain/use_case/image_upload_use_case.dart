@@ -38,7 +38,7 @@ class ImageUploadUseCase {
 
   String _encodeBlurHash(Uint8List data) {
     final imageBlur = img.decodeImage(data);
-    final blurHash = BlurHash.encode(imageBlur!, numCompX: 8, numCompY: 7);
+    final blurHash = BlurHash.encode(imageBlur!, numCompX: 4, numCompY: 3);
     return blurHash.hash;
   }
 }

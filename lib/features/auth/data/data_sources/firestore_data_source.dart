@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crowd_snap/core/data/models/user_model.dart';
-import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_use_case.dart';
+import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_local_use_case.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:logging/logging.dart';
 
@@ -20,14 +20,14 @@ final _logger = Logger('FirestoreDataSource');
 @Riverpod(keepAlive: true)
 FirestoreDataSource firestoreDataSource(FirestoreDataSourceRef ref) {
   final firestore = FirebaseFirestore.instance;
-  final getUserUseCase = ref.read(getUserUseCaseProvider);
+  final getUserUseCase = ref.read(getUserLocalUseCaseProvider);
   return FirestoreDataSourceImpl(firestore, getUserUseCase);
 }
 
 // Implementación concreta de FirestoreDataSource que utiliza Firestore.
 class FirestoreDataSourceImpl implements FirestoreDataSource {
   final FirebaseFirestore _firestore;
-  final GetUserUseCase _getUserUseCase;
+  final GetUserLocalUseCase _getUserUseCase;
 
   FirestoreDataSourceImpl(this._firestore, this._getUserUseCase);
 

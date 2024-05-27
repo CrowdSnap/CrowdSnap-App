@@ -7,7 +7,7 @@ part of 'avatar_local_data_source.dart';
 // **************************************************************************
 
 String _$avatarLocalDataSourceHash() =>
-    r'c661143ac9c0d2ea0e5f620b95e05f8040845451';
+    r'bc3715c011d563b2e02a5d5db0220056e149fb86';
 
 /// See also [avatarLocalDataSource].
 @ProviderFor(avatarLocalDataSource)
