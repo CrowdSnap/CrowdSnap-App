@@ -31,13 +31,15 @@ class UsersView extends ConsumerWidget {
     return userProfileAsyncValue.when(
       data: (user) => Scaffold(
         appBar: AppBar(
-          title: Text('@$username'), // Mostrar el nombre del usuario en el AppBar
+          title:
+              Text('@$username'), // Mostrar el nombre del usuario en el AppBar
         ),
         body: _buildUserProfile(context, user, userPostsAsyncValue, ref),
       ),
       loading: () => Scaffold(
         appBar: AppBar(
-          title: Text('@$username'), // Mostrar el nombre del usuario en el AppBar
+          title:
+              Text('@$username'), // Mostrar el nombre del usuario en el AppBar
         ),
         body: Column(
           children: [
@@ -45,8 +47,8 @@ class UsersView extends ConsumerWidget {
               padding: const EdgeInsets.all(16.0),
               child: Center(
                 child: SizedBox(
-                  width: 200,
-                  height: 200,
+                  width: 150,
+                  height: 150,
                   child: ClipOval(
                     child: BlurHash(
                       hash: blurHashImage,
@@ -56,11 +58,15 @@ class UsersView extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 16),
-            const Skeletonizer(
+            Skeletonizer(
               enabled: true,
-              child: Text(
-                'Loading...',
-                style: TextStyle(fontSize: 24),
+              child: Container(
+                width: 300,
+                height: 30,
+                decoration: BoxDecoration(
+                  color: Colors.grey[400],
+                  borderRadius: BorderRadius.circular(20),
+                ),
               ),
             ),
           ],
@@ -70,12 +76,13 @@ class UsersView extends ConsumerWidget {
         appBar: AppBar(
           title: const Text('Error'), // Título en caso de error
         ),
-        body: Center(child: Text('Error: $error')),
+        body: const Center(child: Text('Usuario no encontrado probablemente se eliminó')),
       ),
     );
   }
 
-  Widget _buildUserProfile(BuildContext context, UserModel user, AsyncValue<List<PostModel>> userPostsAsyncValue, WidgetRef ref) {
+  Widget _buildUserProfile(BuildContext context, UserModel user,
+      AsyncValue<List<PostModel>> userPostsAsyncValue, WidgetRef ref) {
     final userValues = ref.watch(usersNotifierProvider);
     final usersNotifier = ref.read(usersNotifierProvider.notifier);
     final pageController = PageController();
@@ -125,13 +132,19 @@ class UsersView extends ConsumerWidget {
           children: [
             IconButton(
               icon: const Icon(Icons.grid_on),
-              color: userValues.index == 0 ? Theme.of(context).colorScheme.primary : Colors.grey,
-              onPressed: () => _onGridSelected(0, usersNotifier, pageController),
+              color: userValues.index == 0
+                  ? Theme.of(context).colorScheme.primary
+                  : Colors.grey,
+              onPressed: () =>
+                  _onGridSelected(0, usersNotifier, pageController),
             ),
             IconButton(
               icon: const Icon(Icons.person),
-              color: userValues.index == 1 ? Theme.of(context).colorScheme.primary : Colors.grey,
-              onPressed: () => _onGridSelected(1, usersNotifier, pageController),
+              color: userValues.index == 1
+                  ? Theme.of(context).colorScheme.primary
+                  : Colors.grey,
+              onPressed: () =>
+                  _onGridSelected(1, usersNotifier, pageController),
             ),
           ],
         ),
@@ -141,14 +154,15 @@ class UsersView extends ConsumerWidget {
             duration: const Duration(milliseconds: 500),
             child: userPostsAsyncValue.when(
               data: (posts) => PageView(
-                key: ValueKey('posts'),
+                key: const ValueKey('posts'),
                 controller: pageController,
                 onPageChanged: (index) {
                   usersNotifier.updateIndex(index);
                 },
                 children: [
                   GridView.builder(
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
                       crossAxisSpacing: 5,
                       mainAxisSpacing: 5,
@@ -166,12 +180,14 @@ class UsersView extends ConsumerWidget {
                     },
                   ),
                   GridView.builder(
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
                       crossAxisSpacing: 5,
                       mainAxisSpacing: 5,
                     ),
-                    itemCount: 0, // Reemplaza con el número real de posts etiquetados
+                    itemCount:
+                        0, // Reemplaza con el número real de posts etiquetados
                     itemBuilder: (context, index) {
                       return Container(
                         color: Colors.grey[200],
@@ -184,11 +200,12 @@ class UsersView extends ConsumerWidget {
                 ],
               ),
               loading: () => PageView(
-                key: ValueKey('loading'),
+                key: const ValueKey('loading'),
                 controller: pageController,
                 children: [
                   GridView.builder(
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
                       crossAxisSpacing: 5,
                       mainAxisSpacing: 5,
@@ -199,7 +216,8 @@ class UsersView extends ConsumerWidget {
                         borderRadius: BorderRadius.circular(8),
                         child: Skeletonizer(
                           enabled: true,
-                          effect: const ShimmerEffect(), // Añadir efecto shimmer
+                          effect:
+                              const ShimmerEffect(), // Añadir efecto shimmer
                           child: Container(
                             color: Colors.grey[800],
                           ),
@@ -208,7 +226,8 @@ class UsersView extends ConsumerWidget {
                     },
                   ),
                   GridView.builder(
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
                       crossAxisSpacing: 5,
                       mainAxisSpacing: 5,
@@ -219,7 +238,8 @@ class UsersView extends ConsumerWidget {
                         borderRadius: BorderRadius.circular(8),
                         child: Skeletonizer(
                           enabled: true,
-                          effect: const ShimmerEffect(), // Añadir efecto shimmer
+                          effect:
+                              const ShimmerEffect(), // Añadir efecto shimmer
                           child: Container(
                             color: Colors.grey[800],
                           ),
@@ -237,7 +257,8 @@ class UsersView extends ConsumerWidget {
     );
   }
 
-  void _onGridSelected(int index, UsersNotifier usersNotifier, PageController pageController) {
+  void _onGridSelected(
+      int index, UsersNotifier usersNotifier, PageController pageController) {
     usersNotifier.updateIndex(index);
     pageController.animateToPage(
       index,

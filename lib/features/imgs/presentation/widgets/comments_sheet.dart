@@ -108,26 +108,22 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
                               ),
                             );
                           }
-                          if (snapshot.hasError) {
-                            return Text('Error: ${snapshot.error}');
-                          }
+                          if (snapshot.hasError) {}
                           final user = snapshot.data;
                           if (user == null) {
-                            return const Text('User not found');
+                            return Container();
                           }
                           return GestureDetector(
                             onLongPress: () {
-                              widget.showPopupMenu(context, comment, user.userId);
+                              widget.showPopupMenu(
+                                  context, comment, user.userId);
                             },
                             onTap: () {
-                              context.push(
-                                '/users/${user.userId}',
-                                extra: {
-                                  'username': user.username,
-                                  'avatarUrl': user.avatarUrl!,
-                                  'blurHashImage': widget.post.blurHashImage,
-                                }
-                              );
+                              context.push('/users/${user.userId}', extra: {
+                                'username': user.username,
+                                'avatarUrl': user.avatarUrl!,
+                                'blurHashImage': widget.post.blurHashAvatar,
+                              });
                             },
                             child: Card(
                               shape: RoundedRectangleBorder(

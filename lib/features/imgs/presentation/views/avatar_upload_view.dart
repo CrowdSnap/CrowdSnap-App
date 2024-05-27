@@ -35,6 +35,7 @@ class AvatarUploadView extends ConsumerWidget {
         MaterialPageRoute(
           builder: (context) => ImageCropper(
             image: imageData, // <-- Uint8List of image
+            reversible: true,
           ),
         ),
       );
@@ -67,6 +68,7 @@ class AvatarUploadView extends ConsumerWidget {
         MaterialPageRoute(
           builder: (context) => ImageCropper(
             image: imageData, // <-- Uint8List of image
+            reversible: true,
           ),
         ),
       );

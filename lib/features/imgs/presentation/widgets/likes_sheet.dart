@@ -78,37 +78,34 @@ class _LikesSheetState extends ConsumerState<LikesSheet> {
                                       ),
                                     ),
                                     title: Container(
-                                      width: 100,
-                                      height: 10,
-                                      color: Colors.grey[300],
-                                    ),
+                                        width: 100,
+                                        height: 25,
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey[300],
+                                        )),
                                     subtitle: Container(
-                                      width: 150,
-                                      height: 10,
-                                      color: Colors.grey[300],
-                                    ),
+                                        width: 100,
+                                        height: 20,
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey[300],
+                                        )),
                                   ),
                                 ),
                               ),
                             );
                           }
-                          if (snapshot.hasError) {
-                            return Text('Error: ${snapshot.error}');
-                          }
+                          if (snapshot.hasError) {}
                           final user = snapshot.data;
                           if (user == null) {
-                            return const Text('User not found');
+                            return Container();
                           }
                           return GestureDetector(
                             onTap: () {
-                              context.push(
-                                '/users/${user.userId}',
-                                extra: {
-                                  'username': user.username,
-                                  'avatarUrl': user.avatarUrl!,
-                                  'blurHashImage': widget.post.blurHashImage,
-                                }
-                              );
+                              context.push('/users/${user.userId}', extra: {
+                                'username': user.username,
+                                'avatarUrl': user.avatarUrl!,
+                                'blurHashImage': widget.post.blurHashAvatar,
+                              });
                             },
                             child: Card(
                               shape: RoundedRectangleBorder(

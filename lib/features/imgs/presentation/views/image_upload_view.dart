@@ -25,6 +25,7 @@ class ImageUploadView extends ConsumerWidget {
         MaterialPageRoute(
           builder: (context) => ImageCropper(
             image: imageData, // <-- Uint8List of image
+            reversible: true,
           ),
         ),
       );
@@ -50,6 +51,7 @@ class ImageUploadView extends ConsumerWidget {
         MaterialPageRoute(
           builder: (context) => ImageCropper(
             image: imageData, // <-- Uint8List of image
+            reversible: true,
           ),
         ),
       );

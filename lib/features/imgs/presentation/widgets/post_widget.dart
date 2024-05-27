@@ -67,7 +67,7 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
                       extra: {
                         'username': widget.post.userName,
                         'avatarUrl': widget.post.userAvatarUrl,
-                        'blurHashImage': widget.post.blurHashImage,
+                        'blurHashImage': widget.post.blurHashAvatar,
                       },
                     );
                   },
@@ -401,7 +401,7 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
                                                               color: widget
                                                                       .isLiked
                                                                   ? Colors.red
-                                                                  : null,
+                                                                  : Colors.white,
                                                             ),
                                                           ),
                                                           const SizedBox(
@@ -414,6 +414,10 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
                                                                       1
                                                                   ? '${widget.likeCount} Like'
                                                                   : '${widget.likeCount} Likes',
+                                                              style: const TextStyle(
+                                                                color: Colors
+                                                                    .white,
+                                                              ),
                                                             ),
                                                           ),
                                                         ],
@@ -426,13 +430,20 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
                                                         child: Row(
                                                           children: [
                                                             const Icon(
-                                                                Icons.comment),
+                                                                Icons.comment,
+                                                                color: Colors
+                                                                    .white),
                                                             const SizedBox(
                                                                 width: 8.0),
                                                             Text(widget.commentCount ==
                                                                     1
                                                                 ? '${widget.commentCount} Comentario'
-                                                                : '${widget.commentCount} Comentarios'),
+                                                                : '${widget.commentCount} Comentarios',
+                                                                style: const TextStyle(
+                                                                  color: Colors
+                                                                      .white,
+                                                                ),
+                                                              ),
                                                           ],
                                                         ),
                                                       ),
