@@ -15,7 +15,7 @@ _$UserModelImpl _$$UserModelImplFromJson(Map<String, dynamic> json) =>
       joinedAt: DateTime.parse(json['joinedAt'] as String),
       birthDate: DateTime.parse(json['birthDate'] as String),
       firstTime: json['firstTime'] as bool,
-      connectionsCount: json['connectionsCount'] as String,
+      connectionsCount: (json['connectionsCount'] as num).toInt(),
       statusString: json['statusString'] as String?,
       avatarUrl: json['avatarUrl'] as String?,
       blurHashImage: json['blurHashImage'] as String?,

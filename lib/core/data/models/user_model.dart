@@ -13,7 +13,7 @@ class UserModel with _$UserModel {
     required DateTime joinedAt,
     required DateTime birthDate,
     required bool firstTime,
-    required String connectionsCount,
+    required int connectionsCount,
     String? statusString,
     String? avatarUrl,
     String? blurHashImage,

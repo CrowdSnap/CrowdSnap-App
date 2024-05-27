@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:crowd_snap/core/data/models/user_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -6,20 +8,27 @@ part 'users_data_source.g.dart';
 
 abstract class UsersDataSource {
   Future<UserModel> getUser(String userId);
-  Future<void> addConnection(String userId, String connectionId);
-  Future<void> removeConnection(String userId, String connectionId);
+  Future<void> addConnection(String localUserId, String userId);
+  Future<void> removeConnection(String localUserId, String userId);
+  Future<bool> checkConnection(String localUserId, String userId);
 }
 
 @Riverpod(keepAlive: true)
 UsersDataSource usersDataSource(UsersDataSourceRef ref) {
   final firestore = FirebaseFirestore.instance;
-  return UsersDataSourceImpl(firestore);
+  final firebaseApp = Firebase.app();
+  final realtimeDatabase = FirebaseDatabase.instanceFor(
+      app: firebaseApp,
+      databaseURL:
+          'https://crowd-snap-default-rtdb.europe-west1.firebasedatabase.app/');
+  return UsersDataSourceImpl(firestore, realtimeDatabase);
 }
 
 class UsersDataSourceImpl implements UsersDataSource {
   final FirebaseFirestore _firestore;
+  final FirebaseDatabase _realtimeDatabase;
 
-  UsersDataSourceImpl(this._firestore);
+  UsersDataSourceImpl(this._firestore, this._realtimeDatabase);
 
   @override
   Future<UserModel> getUser(String userId) async {
@@ -37,20 +46,28 @@ class UsersDataSourceImpl implements UsersDataSource {
   }
 
   @override
-  Future<void> addConnection(String userId, String connectionId) async {
+  Future<void> addConnection(String localUserId, String userId) async {
     try {
+      final localUserRef = _firestore.collection('users').doc(localUserId);
       final userRef = _firestore.collection('users').doc(userId);
-      final connectionRef = _firestore.collection('users').doc(connectionId);
+      final connectionRef = _realtimeDatabase.ref().child('connections').push();
 
       await _firestore.runTransaction((transaction) async {
         transaction.update(userRef, {
           'connectionsCount': FieldValue.increment(1),
-          'connections': FieldValue.arrayUnion([connectionId])
         });
-        transaction.update(connectionRef, {
+      });
+
+      await _firestore.runTransaction((transaction) async {
+        transaction.update(localUserRef, {
           'connectionsCount': FieldValue.increment(1),
-          'connections': FieldValue.arrayUnion([userId])
         });
+      });
+
+      await connectionRef.set({
+        'userId': localUserId,
+        'connectionUserId': userId,
+        'connectedAt': DateTime.now().toIso8601String(),
       });
     } catch (e) {
       throw Exception('Failed to add connection: $e');
@@ -58,23 +75,70 @@ class UsersDataSourceImpl implements UsersDataSource {
   }
 
   @override
-  Future<void> removeConnection(String userId, String connectionId) async {
+  Future<void> removeConnection(String localUserId, String userId) async {
     try {
+      final localUserRef = _firestore.collection('users').doc(localUserId);
       final userRef = _firestore.collection('users').doc(userId);
-      final connectionRef = _firestore.collection('users').doc(connectionId);
 
-      await _firestore.runTransaction((transaction) async {
-        transaction.update(userRef, {
-          'connectionsCount': FieldValue.increment(-1),
-          'connections': FieldValue.arrayRemove([connectionId])
+      // Encuentra el nodo de conexión a eliminar
+      final connectionQuery = await _realtimeDatabase
+          .ref()
+          .child('connections')
+          .orderByChild('connectionUserId')
+          .equalTo(userId)
+          .once();
+
+      if (connectionQuery.snapshot.exists) {
+        final connectionKey = connectionQuery.snapshot.children.first.key;
+
+        // Elimina el nodo de conexión
+        await _realtimeDatabase
+            .ref()
+            .child('connections')
+            .child(connectionKey!)
+            .remove();
+
+        // Actualiza el conteo de conexiones en Firestore
+        await _firestore.runTransaction((transaction) async {
+          transaction.update(localUserRef, {
+            'connectionsCount': FieldValue.increment(-1),
+          });
         });
-        transaction.update(connectionRef, {
-          'connectionsCount': FieldValue.increment(-1),
-          'connections': FieldValue.arrayRemove([userId])
+
+        await _firestore.runTransaction((transaction) async {
+          transaction.update(userRef, {
+            'connectionsCount': FieldValue.increment(-1),
+          });
         });
-      });
+
+      } else {
+        throw Exception('Connection not found');
+      }
     } catch (e) {
       throw Exception('Failed to remove connection: $e');
+    }
+  }
+
+  @override
+  Future<bool> checkConnection(String localUserId, String userId) async {
+    try {
+      final connectionQuery = await _realtimeDatabase
+          .ref()
+          .child('connections')
+          .orderByChild('userId')
+          .equalTo(localUserId)
+          .once();
+
+      if (connectionQuery.snapshot.exists) {
+        for (var connection in connectionQuery.snapshot.children) {
+          if (connection.child('connectionUserId').value == userId) {
+            return true;
+          }
+        }
+      }
+      return false;
+    } catch (e) {
+      throw Exception('Failed to check connection: $e');
     }
   }
 }

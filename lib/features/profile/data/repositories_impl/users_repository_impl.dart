@@ -27,12 +27,18 @@ class UsersRepositoryImpl implements UsersRepository {
   }
 
   @override
-  Future<void> addConnection(String userId, String connectionId) async {
-    await _usersModelDataSource.addConnection(userId, connectionId);
+  Future<void> addConnection(String localUserId, String userId) async {
+    await _usersModelDataSource.addConnection(localUserId, userId);
   }
 
   @override
-  Future<void> removeConnection(String userId, String connectionId) async {
-    await _usersModelDataSource.removeConnection(userId, connectionId);
+  Future<void> removeConnection(String localUserId, String userId) async {
+    await _usersModelDataSource.removeConnection(localUserId, userId);
+  }
+
+  @override
+  Future<bool> checkConnection(String localUserId, String userId) async {
+    final result = await _usersModelDataSource.checkConnection(localUserId, userId);
+    return result;
   }
 }

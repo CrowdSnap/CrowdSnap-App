@@ -83,7 +83,7 @@ class AuthDataSourceImpl implements AuthDataSource {
         birthDate: birthDate,
         firstTime: true,
         joinedAt: DateTime.now(),
-        connectionsCount: '0',
+        connectionsCount: 0,
       );
       return userModel;
     } else {

@@ -27,7 +27,7 @@ mixin _$UserModel {
   DateTime get joinedAt => throw _privateConstructorUsedError;
   DateTime get birthDate => throw _privateConstructorUsedError;
   bool get firstTime => throw _privateConstructorUsedError;
-  String get connectionsCount => throw _privateConstructorUsedError;
+  int get connectionsCount => throw _privateConstructorUsedError;
   String? get statusString => throw _privateConstructorUsedError;
   String? get avatarUrl => throw _privateConstructorUsedError;
   String? get blurHashImage => throw _privateConstructorUsedError;
@@ -52,7 +52,7 @@ abstract class $UserModelCopyWith<$Res> {
       DateTime joinedAt,
       DateTime birthDate,
       bool firstTime,
-      String connectionsCount,
+      int connectionsCount,
       String? statusString,
       String? avatarUrl,
       String? blurHashImage,
@@ -117,7 +117,7 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
       connectionsCount: null == connectionsCount
           ? _value.connectionsCount
           : connectionsCount // ignore: cast_nullable_to_non_nullable
-              as String,
+              as int,
       statusString: freezed == statusString
           ? _value.statusString
           : statusString // ignore: cast_nullable_to_non_nullable
@@ -154,7 +154,7 @@ abstract class _$$UserModelImplCopyWith<$Res>
       DateTime joinedAt,
       DateTime birthDate,
       bool firstTime,
-      String connectionsCount,
+      int connectionsCount,
       String? statusString,
       String? avatarUrl,
       String? blurHashImage,
@@ -217,7 +217,7 @@ class __$$UserModelImplCopyWithImpl<$Res>
       connectionsCount: null == connectionsCount
           ? _value.connectionsCount
           : connectionsCount // ignore: cast_nullable_to_non_nullable
-              as String,
+              as int,
       statusString: freezed == statusString
           ? _value.statusString
           : statusString // ignore: cast_nullable_to_non_nullable
@@ -273,7 +273,7 @@ class _$UserModelImpl implements _UserModel {
   @override
   final bool firstTime;
   @override
-  final String connectionsCount;
+  final int connectionsCount;
   @override
   final String? statusString;
   @override
@@ -355,7 +355,7 @@ abstract class _UserModel implements UserModel {
       required final DateTime joinedAt,
       required final DateTime birthDate,
       required final bool firstTime,
-      required final String connectionsCount,
+      required final int connectionsCount,
       final String? statusString,
       final String? avatarUrl,
       final String? blurHashImage,
@@ -379,7 +379,7 @@ abstract class _UserModel implements UserModel {
   @override
   bool get firstTime;
   @override
-  String get connectionsCount;
+  int get connectionsCount;
   @override
   String? get statusString;
   @override

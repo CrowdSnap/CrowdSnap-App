@@ -66,7 +66,7 @@ class GoogleSignUpUseCase {
         firstTime: true,
         avatarUrl: userAvatar,
         blurHashImage: blurHash,
-        connectionsCount: '0',
+        connectionsCount: 0,
       );
       print('User Avatar: ${user.avatarUrl}');
       print('Uploaded user selected avatar ${user.avatarUrl}');

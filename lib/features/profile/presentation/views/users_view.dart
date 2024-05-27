@@ -5,6 +5,10 @@ import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_loc
 import 'package:crowd_snap/features/profile/domain/use_cases/add_connection_use_case.dart';
 import 'package:crowd_snap/features/profile/domain/use_cases/get_user_posts_use_case.dart';
 import 'package:crowd_snap/features/profile/domain/use_cases/get_user_use_case.dart';
+import 'package:crowd_snap/features/profile/domain/use_cases/remove_connection_use_case.dart';
+import 'package:crowd_snap/features/profile/presentation/notifier/connection_status_provider.dart';
+import 'package:crowd_snap/features/profile/presentation/notifier/connections_counter.dart';
+import 'package:crowd_snap/features/profile/presentation/notifier/is_connected_provider.dart';
 import 'package:crowd_snap/features/profile/presentation/notifier/users_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blurhash/flutter_blurhash.dart';
@@ -29,15 +33,23 @@ class UsersView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final userProfileAsyncValue = ref.watch(userProviderProvider(userId));
     final userPostsAsyncValue = ref.watch(userPostsProviderProvider(userId));
+    final connectionStatusAsyncValue =
+        ref.watch(connectionStatusProviderProvider(userId));
 
     return userProfileAsyncValue.when(
-      data: (user) => Scaffold(
-        appBar: AppBar(
-          title:
-              Text('@$username'), // Mostrar el nombre del usuario en el AppBar
-        ),
-        body: _buildUserProfile(context, user, userPostsAsyncValue, ref),
-      ),
+      data: (user) {
+        // Inicializar el contador de conexiones con el valor del usuario
+        ref.read(connectionsCounterProvider(user.connectionsCount).notifier);
+
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(
+                '@$username'), // Mostrar el nombre del usuario en el AppBar
+          ),
+          body: _buildUserProfile(context, user, userPostsAsyncValue,
+              connectionStatusAsyncValue, ref),
+        );
+      },
       loading: () => Scaffold(
         appBar: AppBar(
           title:
@@ -84,16 +96,24 @@ class UsersView extends ConsumerWidget {
     );
   }
 
-   Future<UserModel> getLocalUser(WidgetRef ref) async {
-      final getUserUseCase = ref.read(getUserLocalUseCaseProvider);
-      return await getUserUseCase.execute();
-    }
+  Future<UserModel> getLocalUser(WidgetRef ref) async {
+    final getUserUseCase = ref.read(getUserLocalUseCaseProvider);
+    return await getUserUseCase.execute();
+  }
 
-  Widget _buildUserProfile(BuildContext context, UserModel user,
-      AsyncValue<List<PostModel>> userPostsAsyncValue, WidgetRef ref) {
+  Widget _buildUserProfile(
+      BuildContext context,
+      UserModel user,
+      AsyncValue<List<PostModel>> userPostsAsyncValue,
+      AsyncValue<bool> connectionStatusAsyncValue,
+      WidgetRef ref) {
     final userValues = ref.watch(usersNotifierProvider);
     final usersNotifier = ref.read(usersNotifierProvider.notifier);
     final pageController = PageController();
+    final counterState =
+        ref.watch(connectionsCounterProvider(user.connectionsCount));
+    final isconnectedState =
+        ref.watch(connectionStatusProviderProvider(user.userId));
 
     return Column(
       children: [
@@ -137,16 +157,77 @@ class UsersView extends ConsumerWidget {
         Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Conexiones: ${user.connectionsCount}', style: TextStyle(
-              fontSize: 20,
-              color: Colors.grey[700],
-            ),),
+            Text(
+              'Conexiones: ${counterState.count}',
+              style: TextStyle(
+                fontSize: 20,
+                color: Colors.grey[700],
+              ),
+            ),
             const SizedBox(height: 8),
-            ElevatedButton(onPressed: () {
-              getLocalUser(ref).then((localUser) {
-                ref.read(addConnectionUseCaseProvider).execute(localUser.userId, user.userId);
-              });
-            }, child: Text('Conecta con ${user.name.split(' ')[0]}')),
+            FutureBuilder<UserModel>(
+              future: getLocalUser(ref),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Skeletonizer(
+                    child: Container(
+                      width: 200,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[400],
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                  );
+                } else if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else if (snapshot.hasData) {
+                  final localUser = snapshot.data!;
+                  if (localUser.userId == user.userId) {
+                    return Container(); // No mostrar el botón si es el mismo usuario
+                  } else {
+                    return connectionStatusAsyncValue.when(
+                      data: (isFollowing) => ElevatedButton(
+                        onPressed: () {
+                          if (isFollowing) {
+                            ref
+                                .read(removeConnectionUseCaseProvider)
+                                .execute(localUser.userId, user.userId);
+                            ref
+                                .read(connectionsCounterProvider(
+                                        user.connectionsCount)
+                                    .notifier)
+                                .decrement();
+                            ref
+                                .read(isConnectedProvider(isFollowing).notifier)
+                                .setDisconnected();
+                          } else {
+                            ref
+                                .read(addConnectionUseCaseProvider)
+                                .execute(localUser.userId, user.userId);
+                            ref
+                                .read(connectionsCounterProvider(
+                                        user.connectionsCount)
+                                    .notifier)
+                                .increment();
+                            ref
+                                .read(isConnectedProvider(isFollowing).notifier)
+                                .setDisconnected();
+                          }
+                        },
+                        child: Text(isFollowing
+                            ? 'Desconectar'
+                            : 'Conectar con ${user.name.split(' ')[0]}'),
+                      ),
+                      loading: () => Container(),
+                      error: (error, stack) => Text('Error: $error'),
+                    );
+                  }
+                } else {
+                  return Container();
+                }
+              },
+            ),
             const SizedBox(height: 16),
           ],
         ),
