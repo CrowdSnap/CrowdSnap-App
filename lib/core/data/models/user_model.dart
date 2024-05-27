@@ -13,10 +13,13 @@ class UserModel with _$UserModel {
     required DateTime joinedAt,
     required DateTime birthDate,
     required bool firstTime,
+    required String connectionsCount,
     String? statusString,
     String? avatarUrl,
     String? blurHashImage,
+    String? city,
   }) = _UserModel;
 
-  factory UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);
+  factory UserModel.fromJson(Map<String, dynamic> json) =>
+      _$UserModelFromJson(json);
 }

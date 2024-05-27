@@ -27,9 +27,11 @@ mixin _$UserModel {
   DateTime get joinedAt => throw _privateConstructorUsedError;
   DateTime get birthDate => throw _privateConstructorUsedError;
   bool get firstTime => throw _privateConstructorUsedError;
+  String get connectionsCount => throw _privateConstructorUsedError;
   String? get statusString => throw _privateConstructorUsedError;
   String? get avatarUrl => throw _privateConstructorUsedError;
   String? get blurHashImage => throw _privateConstructorUsedError;
+  String? get city => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -50,9 +52,11 @@ abstract class $UserModelCopyWith<$Res> {
       DateTime joinedAt,
       DateTime birthDate,
       bool firstTime,
+      String connectionsCount,
       String? statusString,
       String? avatarUrl,
-      String? blurHashImage});
+      String? blurHashImage,
+      String? city});
 }
 
 /// @nodoc
@@ -75,9 +79,11 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
     Object? joinedAt = null,
     Object? birthDate = null,
     Object? firstTime = null,
+    Object? connectionsCount = null,
     Object? statusString = freezed,
     Object? avatarUrl = freezed,
     Object? blurHashImage = freezed,
+    Object? city = freezed,
   }) {
     return _then(_value.copyWith(
       userId: null == userId
@@ -108,6 +114,10 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
           ? _value.firstTime
           : firstTime // ignore: cast_nullable_to_non_nullable
               as bool,
+      connectionsCount: null == connectionsCount
+          ? _value.connectionsCount
+          : connectionsCount // ignore: cast_nullable_to_non_nullable
+              as String,
       statusString: freezed == statusString
           ? _value.statusString
           : statusString // ignore: cast_nullable_to_non_nullable
@@ -119,6 +129,10 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
       blurHashImage: freezed == blurHashImage
           ? _value.blurHashImage
           : blurHashImage // ignore: cast_nullable_to_non_nullable
+              as String?,
+      city: freezed == city
+          ? _value.city
+          : city // ignore: cast_nullable_to_non_nullable
               as String?,
     ) as $Val);
   }
@@ -140,9 +154,11 @@ abstract class _$$UserModelImplCopyWith<$Res>
       DateTime joinedAt,
       DateTime birthDate,
       bool firstTime,
+      String connectionsCount,
       String? statusString,
       String? avatarUrl,
-      String? blurHashImage});
+      String? blurHashImage,
+      String? city});
 }
 
 /// @nodoc
@@ -163,9 +179,11 @@ class __$$UserModelImplCopyWithImpl<$Res>
     Object? joinedAt = null,
     Object? birthDate = null,
     Object? firstTime = null,
+    Object? connectionsCount = null,
     Object? statusString = freezed,
     Object? avatarUrl = freezed,
     Object? blurHashImage = freezed,
+    Object? city = freezed,
   }) {
     return _then(_$UserModelImpl(
       userId: null == userId
@@ -196,6 +214,10 @@ class __$$UserModelImplCopyWithImpl<$Res>
           ? _value.firstTime
           : firstTime // ignore: cast_nullable_to_non_nullable
               as bool,
+      connectionsCount: null == connectionsCount
+          ? _value.connectionsCount
+          : connectionsCount // ignore: cast_nullable_to_non_nullable
+              as String,
       statusString: freezed == statusString
           ? _value.statusString
           : statusString // ignore: cast_nullable_to_non_nullable
@@ -207,6 +229,10 @@ class __$$UserModelImplCopyWithImpl<$Res>
       blurHashImage: freezed == blurHashImage
           ? _value.blurHashImage
           : blurHashImage // ignore: cast_nullable_to_non_nullable
+              as String?,
+      city: freezed == city
+          ? _value.city
+          : city // ignore: cast_nullable_to_non_nullable
               as String?,
     ));
   }
@@ -223,9 +249,11 @@ class _$UserModelImpl implements _UserModel {
       required this.joinedAt,
       required this.birthDate,
       required this.firstTime,
+      required this.connectionsCount,
       this.statusString,
       this.avatarUrl,
-      this.blurHashImage});
+      this.blurHashImage,
+      this.city});
 
   factory _$UserModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserModelImplFromJson(json);
@@ -245,15 +273,19 @@ class _$UserModelImpl implements _UserModel {
   @override
   final bool firstTime;
   @override
+  final String connectionsCount;
+  @override
   final String? statusString;
   @override
   final String? avatarUrl;
   @override
   final String? blurHashImage;
+  @override
+  final String? city;
 
   @override
   String toString() {
-    return 'UserModel(userId: $userId, username: $username, name: $name, email: $email, joinedAt: $joinedAt, birthDate: $birthDate, firstTime: $firstTime, statusString: $statusString, avatarUrl: $avatarUrl, blurHashImage: $blurHashImage)';
+    return 'UserModel(userId: $userId, username: $username, name: $name, email: $email, joinedAt: $joinedAt, birthDate: $birthDate, firstTime: $firstTime, connectionsCount: $connectionsCount, statusString: $statusString, avatarUrl: $avatarUrl, blurHashImage: $blurHashImage, city: $city)';
   }
 
   @override
@@ -272,18 +304,33 @@ class _$UserModelImpl implements _UserModel {
                 other.birthDate == birthDate) &&
             (identical(other.firstTime, firstTime) ||
                 other.firstTime == firstTime) &&
+            (identical(other.connectionsCount, connectionsCount) ||
+                other.connectionsCount == connectionsCount) &&
             (identical(other.statusString, statusString) ||
                 other.statusString == statusString) &&
             (identical(other.avatarUrl, avatarUrl) ||
                 other.avatarUrl == avatarUrl) &&
             (identical(other.blurHashImage, blurHashImage) ||
-                other.blurHashImage == blurHashImage));
+                other.blurHashImage == blurHashImage) &&
+            (identical(other.city, city) || other.city == city));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, userId, username, name, email,
-      joinedAt, birthDate, firstTime, statusString, avatarUrl, blurHashImage);
+  int get hashCode => Object.hash(
+      runtimeType,
+      userId,
+      username,
+      name,
+      email,
+      joinedAt,
+      birthDate,
+      firstTime,
+      connectionsCount,
+      statusString,
+      avatarUrl,
+      blurHashImage,
+      city);
 
   @JsonKey(ignore: true)
   @override
@@ -308,9 +355,11 @@ abstract class _UserModel implements UserModel {
       required final DateTime joinedAt,
       required final DateTime birthDate,
       required final bool firstTime,
+      required final String connectionsCount,
       final String? statusString,
       final String? avatarUrl,
-      final String? blurHashImage}) = _$UserModelImpl;
+      final String? blurHashImage,
+      final String? city}) = _$UserModelImpl;
 
   factory _UserModel.fromJson(Map<String, dynamic> json) =
       _$UserModelImpl.fromJson;
@@ -330,11 +379,15 @@ abstract class _UserModel implements UserModel {
   @override
   bool get firstTime;
   @override
+  String get connectionsCount;
+  @override
   String? get statusString;
   @override
   String? get avatarUrl;
   @override
   String? get blurHashImage;
+  @override
+  String? get city;
   @override
   @JsonKey(ignore: true)
   _$$UserModelImplCopyWith<_$UserModelImpl> get copyWith =>
