@@ -95,7 +95,7 @@ class _SearchViewState extends ConsumerState<SearchView> {
                     itemBuilder: (context, index) {
                       final user = users[index];
                       return Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                         child: GestureDetector(
                           onTap: () {
                             context.push(

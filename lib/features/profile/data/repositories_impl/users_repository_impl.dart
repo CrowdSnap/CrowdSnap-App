@@ -41,4 +41,9 @@ class UsersRepositoryImpl implements UsersRepository {
     final result = await _usersModelDataSource.checkConnection(localUserId, userId);
     return result;
   }
+
+  @override
+  Future<void> getUserConnections(String userId) async {
+    await _usersModelDataSource.getUserConnections(userId);
+  }
 }

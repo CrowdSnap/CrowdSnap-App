@@ -51,10 +51,6 @@ class _UsersViewState extends ConsumerState<UsersView> {
     final user = await ref.read(usersRepositoryProvider).getUser(widget.userId);
     final userPosts = await ref.read(userPostsRepositoryProvider).getUserPosts(widget.userId);
     final isConnected = await ref.read(usersRepositoryProvider).checkConnection(localUser.userId, widget.userId);
-    print('isConnected: $isConnected');
-    print('user: $user');
-    print('userPosts: $userPosts');
-    print('localUser: $localUser');
 
     if (mounted) {
       setState(() {
@@ -62,7 +58,7 @@ class _UsersViewState extends ConsumerState<UsersView> {
         this.user = user;
         this.userPosts = userPosts;
         this.isConnected = isConnected;
-        this.connectionsCount = user.connectionsCount;
+        connectionsCount = user.connectionsCount;
       });
     }
   }

@@ -5,4 +5,5 @@ abstract class UsersRepository {
   Future<void> addConnection(String localUserId, String userId);
   Future<void> removeConnection(String localUserId, String userId);
   Future<bool> checkConnection(String localUserId, String userId);
+  Future<void> getUserConnections(String userId);
 }

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:crowd_snap/features/profile/data/models/connection_model.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:crowd_snap/core/data/models/user_model.dart';
@@ -11,6 +12,7 @@ abstract class UsersDataSource {
   Future<void> addConnection(String localUserId, String userId);
   Future<void> removeConnection(String localUserId, String userId);
   Future<bool> checkConnection(String localUserId, String userId);
+  Future<List<ConnectionModel>> getUserConnections(String userId);
 }
 
 @Riverpod(keepAlive: true)
@@ -110,7 +112,6 @@ class UsersDataSourceImpl implements UsersDataSource {
             'connectionsCount': FieldValue.increment(-1),
           });
         });
-
       } else {
         throw Exception('Connection not found');
       }
@@ -139,6 +140,31 @@ class UsersDataSourceImpl implements UsersDataSource {
       return false;
     } catch (e) {
       throw Exception('Failed to check connection: $e');
+    }
+  }
+
+  @override
+  Future<List<ConnectionModel>> getUserConnections(String userId) async {
+    try {
+      final connectionQuery = await _realtimeDatabase
+          .ref()
+          .child('connections')
+          .orderByChild('userId')
+          .equalTo(userId)
+          .once();
+
+      if (connectionQuery.snapshot.exists) {
+        final connections = <ConnectionModel>[];
+        for (var connection in connectionQuery.snapshot.children) {
+          connections.add(ConnectionModel.fromJson(
+              connection.value as Map<String, dynamic>));
+        }
+        return connections;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      throw Exception('Failed to get user connections: $e');
     }
   }
 }
