@@ -3,7 +3,7 @@ import 'package:crowd_snap/features/profile/data/data_source/user_posts_data_sou
 import 'package:crowd_snap/features/profile/domain/repositories/user_posts_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'user_post_repository_impl.g.dart';
+part 'user_posts_repository_impl.g.dart';
 
 @Riverpod(keepAlive: true)
 UserPostsRepository userPostsRepository(UserPostsRepositoryRef ref) {

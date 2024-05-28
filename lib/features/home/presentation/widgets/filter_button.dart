@@ -8,13 +8,20 @@ class FilterButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Obtener la fecha actual
+    final now = DateTime.now();
+
+    // Calcular el lunes y el domingo de la semana actual
+    final monday = DateTime(now.year, now.month, now.day - (now.weekday - 1));
+    final sunday = DateTime(now.year, now.month, now.day + (8 - now.weekday));
+
     return PopupMenuButton<String>(
       onSelected: (value) async {
         switch (value) {
           case 'startDate':
             final selectedDate = await showDatePicker(
               context: context,
-              initialDate: DateTime.now(),
+              initialDate: monday,
               firstDate: DateTime(2024, 05, 05),
               lastDate: DateTime(2100),
               locale: const Locale('es', 'ES'),
@@ -28,7 +35,7 @@ class FilterButton extends ConsumerWidget {
           case 'endDate':
             final selectedDate = await showDatePicker(
               context: context,
-              initialDate: DateTime.now(),
+              initialDate: sunday,
               firstDate: DateTime(2024, 05, 05),
               lastDate: DateTime(2100),
               locale: const Locale('es', 'ES'),

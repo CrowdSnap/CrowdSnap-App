@@ -12,6 +12,7 @@ import 'package:crowd_snap/features/imgs/presentation/widgets/comments_sheet.dar
 import 'package:crowd_snap/features/imgs/presentation/widgets/likes_sheet.dart';
 import 'package:crowd_snap/features/imgs/presentation/widgets/post_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class PostCard extends ConsumerStatefulWidget {
@@ -58,12 +59,14 @@ class _PostCardState extends ConsumerState<PostCard> {
   }
 
   Future<String> _getUserId() async {
-    final getUserUseCase = await ref.read(getUserLocalUseCaseProvider).execute();
+    final getUserUseCase =
+        await ref.read(getUserLocalUseCaseProvider).execute();
     return getUserUseCase.userId;
   }
 
   Future<void> _checkIfUserLikedPost() async {
-    final getUserUseCase = await ref.read(getUserLocalUseCaseProvider).execute();
+    final getUserUseCase =
+        await ref.read(getUserLocalUseCaseProvider).execute();
     final userId = getUserUseCase.userId;
     final isLiked = widget.post.likes.any((like) => like.userId == userId);
     if (mounted) {
@@ -74,9 +77,11 @@ class _PostCardState extends ConsumerState<PostCard> {
   }
 
   void _toggleLike() async {
-    final getUserUseCase = await ref.read(getUserLocalUseCaseProvider).execute();
+    final getUserUseCase =
+        await ref.read(getUserLocalUseCaseProvider).execute();
     final userId = getUserUseCase.userId;
     final postId = widget.post.mongoId!;
+    HapticFeedback.lightImpact();
 
     if (mounted) {
       setState(() {

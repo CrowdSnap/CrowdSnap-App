@@ -62,6 +62,7 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
                 const SizedBox(width: 4.0),
                 GestureDetector(
                   onTap: () {
+                    HapticFeedback.selectionClick();
                     context.push(
                       '/users/${widget.post.userId}',
                       extra: {
@@ -225,237 +226,8 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
                                         ),
                                       ),
                               ),
-                              AnimatedPositioned(
-                                duration: const Duration(milliseconds: 200),
-                                bottom: _isLongPressed ? height / 2 - 30 : 8.0,
-                                curve: Curves.easeInOut,
-                                left: 0.0,
-                                right: 0.0,
-                                child: Center(
-                                  child: IntrinsicWidth(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: height < 300
-                                            ? Colors.transparent
-                                            : Colors.grey[800]
-                                                ?.withOpacity(0.85),
-                                        borderRadius:
-                                            BorderRadius.circular(15.0),
-                                        boxShadow: height >= 300
-                                            ? [
-                                                BoxShadow(
-                                                  color: Colors.black
-                                                      .withOpacity(0.5),
-                                                  spreadRadius: 1,
-                                                  blurRadius: 10,
-                                                  offset: const Offset(0, 3),
-                                                ),
-                                              ]
-                                            : null,
-                                      ),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: _isLongPressed
-                                            ? [
-                                                Padding(
-                                                  padding: const EdgeInsets.all(
-                                                      12.0),
-                                                  child: TapRegion(
-                                                    onTapOutside: (event) {
-                                                      if (isLongPressed) {
-                                                        postNotifier
-                                                            .resetLongPress();
-                                                        HapticFeedback
-                                                            .lightImpact();
-                                                        setState(() {
-                                                          _isLongPressed =
-                                                              false;
-                                                        });
-                                                      }
-                                                    },
-                                                    child: Row(
-                                                      children: [
-                                                        if (widget
-                                                            .isOwner) // Verifica si el usuario es el propietario
-                                                          GestureDetector(
-                                                            onTap: () {
-                                                              showDialog(
-                                                                context:
-                                                                    context,
-                                                                builder:
-                                                                    (BuildContext
-                                                                        context) {
-                                                                  return AlertDialog(
-                                                                    title: const Text(
-                                                                        'Eliminar Publicación'),
-                                                                    content:
-                                                                        const Text(
-                                                                            '¿Estás seguro de que quieres eliminar esta publicación?'),
-                                                                    actions: [
-                                                                      TextButton(
-                                                                        child: const Text(
-                                                                            'Cancelar'),
-                                                                        onPressed:
-                                                                            () {
-                                                                          Navigator.of(context)
-                                                                              .pop();
-                                                                        },
-                                                                      ),
-                                                                      TextButton(
-                                                                        child: const Text(
-                                                                            'Eliminar'),
-                                                                        onPressed:
-                                                                            () {
-                                                                          ref.read(deletePostUseCaseProvider).execute(
-                                                                              widget.post.mongoId!,
-                                                                              widget.post.imageUrl);
-                                                                          ref
-                                                                              .read(postNotifierProvider(widget.post.mongoId!).notifier)
-                                                                              .markAsDeleted();
-                                                                          Navigator.of(context)
-                                                                              .pop();
-                                                                        },
-                                                                      ),
-                                                                    ],
-                                                                  );
-                                                                },
-                                                              );
-                                                            },
-                                                            child: const Row(
-                                                              children: [
-                                                                Icon(
-                                                                  Icons.delete,
-                                                                  color: Colors
-                                                                      .red,
-                                                                ),
-                                                                SizedBox(
-                                                                    width: 8.0),
-                                                                Text(
-                                                                  'Eliminar',
-                                                                  style:
-                                                                      TextStyle(
-                                                                    color: Colors
-                                                                        .red,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold,
-                                                                  ),
-                                                                ),
-                                                                SizedBox(
-                                                                    width:
-                                                                        16.0),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                        GestureDetector(
-                                                          onTap: () {
-                                                            // Lógica para reportar el post
-                                                          },
-                                                          child: const Row(
-                                                            children: [
-                                                              Icon(
-                                                                Icons.report,
-                                                                color:
-                                                                    Colors.red,
-                                                              ),
-                                                              SizedBox(
-                                                                  width: 8.0),
-                                                              Text(
-                                                                'Reportar',
-                                                                style:
-                                                                    TextStyle(
-                                                                  color: Colors
-                                                                      .red,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                ),
-                                                              )
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ]
-                                            : [
-                                                Padding(
-                                                  padding: const EdgeInsets.all(
-                                                      12.0),
-                                                  child: Row(
-                                                    children: [
-                                                      Row(
-                                                        children: [
-                                                          GestureDetector(
-                                                            onTap: widget
-                                                                .toggleLike,
-                                                            child: Icon(
-                                                              widget.isLiked
-                                                                  ? Icons
-                                                                      .favorite
-                                                                  : Icons
-                                                                      .favorite_border,
-                                                              color: widget
-                                                                      .isLiked
-                                                                  ? Colors.red
-                                                                  : Colors.white,
-                                                            ),
-                                                          ),
-                                                          const SizedBox(
-                                                              width: 8.0),
-                                                          GestureDetector(
-                                                            onTap: widget
-                                                                .showLikedUserSheet,
-                                                            child: Text(
-                                                              widget.likeCount ==
-                                                                      1
-                                                                  ? '${widget.likeCount} Like'
-                                                                  : '${widget.likeCount} Likes',
-                                                              style: const TextStyle(
-                                                                color: Colors
-                                                                    .white,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      const SizedBox(
-                                                          width: 16.0),
-                                                      GestureDetector(
-                                                        onTap: widget
-                                                            .showCommentSheet,
-                                                        child: Row(
-                                                          children: [
-                                                            const Icon(
-                                                                Icons.comment,
-                                                                color: Colors
-                                                                    .white),
-                                                            const SizedBox(
-                                                                width: 8.0),
-                                                            Text(widget.commentCount ==
-                                                                    1
-                                                                ? '${widget.commentCount} Comentario'
-                                                                : '${widget.commentCount} Comentarios',
-                                                                style: const TextStyle(
-                                                                  color: Colors
-                                                                      .white,
-                                                                ),
-                                                              ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
+                              likesAndComments(
+                                  height, isLongPressed, postNotifier, context),
                             ],
                           ),
                         ),
@@ -467,6 +239,198 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
             },
           ),
         ],
+      ),
+    );
+  }
+
+  AnimatedPositioned likesAndComments(double height, bool isLongPressed,
+      PostNotifier postNotifier, BuildContext context) {
+    return AnimatedPositioned(
+      duration: const Duration(milliseconds: 200),
+      bottom: _isLongPressed ? height / 2 - 30 : 8.0,
+      curve: Curves.easeInOut,
+      left: 0.0,
+      right: 0.0,
+      child: Center(
+        child: IntrinsicWidth(
+          child: Container(
+            decoration: BoxDecoration(
+                color: Colors.grey[800]?.withOpacity(0.85),
+                borderRadius: BorderRadius.circular(15.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.5),
+                    spreadRadius: 1,
+                    blurRadius: 10,
+                    offset: const Offset(0, 3),
+                  ),
+                ]),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: _isLongPressed
+                  ? [
+                      Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: TapRegion(
+                          onTapOutside: (event) {
+                            if (isLongPressed) {
+                              postNotifier.resetLongPress();
+                              HapticFeedback.lightImpact();
+                              setState(() {
+                                _isLongPressed = false;
+                              });
+                            }
+                          },
+                          child: Row(
+                            children: [
+                              if (widget
+                                  .isOwner) // Verifica si el usuario es el propietario
+                                GestureDetector(
+                                  onTap: () {
+                                    HapticFeedback.lightImpact();
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: const Text(
+                                              'Eliminar Publicación'),
+                                          content: const Text(
+                                              '¿Estás seguro de que quieres eliminar esta publicación?'),
+                                          actions: [
+                                            TextButton(
+                                              child: const Text('Cancelar'),
+                                              onPressed: () {
+                                                HapticFeedback.lightImpact();
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                            TextButton(
+                                              child: const Text('Eliminar'),
+                                              onPressed: () {
+                                                HapticFeedback.lightImpact();
+                                                ref
+                                                    .read(
+                                                        deletePostUseCaseProvider)
+                                                    .execute(
+                                                        widget.post.mongoId!,
+                                                        widget.post.imageUrl);
+                                                ref
+                                                    .read(postNotifierProvider(
+                                                            widget
+                                                                .post.mongoId!)
+                                                        .notifier)
+                                                    .markAsDeleted();
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                                  child: const Row(
+                                    children: [
+                                      Icon(
+                                        Icons.delete,
+                                        color: Colors.red,
+                                      ),
+                                      SizedBox(width: 8.0),
+                                      Text(
+                                        'Eliminar',
+                                        style: TextStyle(
+                                          color: Colors.red,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      SizedBox(width: 16.0),
+                                    ],
+                                  ),
+                                ),
+                              GestureDetector(
+                                onTap: () {
+                                  // Lógica para reportar el post
+                                },
+                                child: const Row(
+                                  children: [
+                                    Icon(
+                                      Icons.report,
+                                      color: Colors.red,
+                                    ),
+                                    SizedBox(width: 8.0),
+                                    Text(
+                                      'Reportar',
+                                      style: TextStyle(
+                                        color: Colors.red,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ]
+                  : [
+                      Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Row(
+                          children: [
+                            Row(
+                              children: [
+                                GestureDetector(
+                                  onTap: widget.toggleLike,
+                                  child: Icon(
+                                    widget.isLiked
+                                        ? Icons.favorite
+                                        : Icons.favorite_border,
+                                    color: widget.isLiked
+                                        ? Colors.red
+                                        : Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(width: 8.0),
+                                GestureDetector(
+                                  onTap: widget.showLikedUserSheet,
+                                  child: Text(
+                                    widget.likeCount == 1
+                                        ? '${widget.likeCount} Like'
+                                        : '${widget.likeCount} Likes',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(width: 16.0),
+                            GestureDetector(
+                              onTap: widget.showCommentSheet,
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.comment,
+                                      color: Colors.white),
+                                  const SizedBox(width: 8.0),
+                                  Text(
+                                    widget.commentCount == 1
+                                        ? '${widget.commentCount} Comentario'
+                                        : '${widget.commentCount} Comentarios',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+            ),
+          ),
+        ),
       ),
     );
   }

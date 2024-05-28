@@ -3,11 +3,13 @@
         "blurhash",
         "dotenv",
         "HMAC",
+        "monday",
         "numberpicker",
         "octo",
         "povider",
         "skeletonizer",
         "Skeletonizer",
+        "sunday",
         "unzoom"
     ]
 }

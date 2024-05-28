@@ -1,15 +1,17 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crowd_snap/core/data/models/post_model.dart';
 import 'package:crowd_snap/core/data/models/user_model.dart';
-import 'package:crowd_snap/features/profile/domain/use_cases/get_user_posts_use_case.dart';
-import 'package:crowd_snap/features/profile/domain/use_cases/get_user_use_case.dart';
-import 'package:crowd_snap/features/profile/presentation/notifier/users_notifier.dart';
+import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_local_use_case.dart';
+import 'package:crowd_snap/features/profile/data/repositories_impl/user_posts_repository_impl.dart';
+import 'package:crowd_snap/features/profile/data/repositories_impl/users_repository_impl.dart';
+import 'package:crowd_snap/features/profile/domain/use_cases/add_connection_use_case.dart';
+import 'package:crowd_snap/features/profile/domain/use_cases/remove_connection_use_case.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blurhash/flutter_blurhash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class UsersView extends ConsumerWidget {
+class UsersView extends ConsumerStatefulWidget {
   final String userId;
   final String username;
   final String avatarUrl;
@@ -24,69 +26,261 @@ class UsersView extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final userProfileAsyncValue = ref.watch(userProviderProvider(userId));
-    final userPostsAsyncValue = ref.watch(userPostsProviderProvider(userId));
+  _UsersViewState createState() => _UsersViewState();
+}
 
-    return userProfileAsyncValue.when(
-      data: (user) => Scaffold(
-        appBar: AppBar(
-          title:
-              Text('@$username'), // Mostrar el nombre del usuario en el AppBar
-        ),
-        body: _buildUserProfile(context, user, userPostsAsyncValue, ref),
-      ),
-      loading: () => Scaffold(
-        appBar: AppBar(
-          title:
-              Text('@$username'), // Mostrar el nombre del usuario en el AppBar
-        ),
-        body: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Center(
-                child: SizedBox(
-                  width: 150,
-                  height: 150,
-                  child: ClipOval(
-                    child: BlurHash(
-                      hash: blurHashImage,
+class _UsersViewState extends ConsumerState<UsersView> {
+  late PageController pageController;
+  late Future<void> _initializationFuture;
+  late UserModel localUser;
+  late UserModel user;
+  late List<PostModel> userPosts;
+  int index = 0;
+  bool isConnected = false;
+  int connectionsCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    pageController = PageController();
+    _initializationFuture = _initializeData();
+  }
+
+  Future<void> _initializeData() async {
+    final localUser = await ref.read(getUserLocalUseCaseProvider).execute();
+    final user = await ref.read(usersRepositoryProvider).getUser(widget.userId);
+    final userPosts =
+        await ref.read(userPostsRepositoryProvider).getUserPosts(widget.userId);
+    final isConnected = await ref
+        .read(usersRepositoryProvider)
+        .checkConnection(localUser.userId, widget.userId);
+
+    if (mounted) {
+      setState(() {
+        this.localUser = localUser;
+        this.user = user;
+        this.userPosts = userPosts;
+        this.isConnected = isConnected;
+        connectionsCount = user.connectionsCount;
+      });
+    }
+  }
+
+  void _toggleConnection() {
+    if (isConnected) {
+      ref
+          .read(removeConnectionUseCaseProvider)
+          .execute(localUser.userId, widget.userId);
+      setState(() {
+        connectionsCount--;
+        isConnected = false;
+      });
+    } else {
+      ref
+          .read(addConnectionUseCaseProvider)
+          .execute(localUser.userId, widget.userId);
+      setState(() {
+        connectionsCount++;
+        isConnected = true;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<void>(
+      future: _initializationFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(
+                  '@${widget.username}'), // Mostrar el nombre del usuario en el AppBar
+            ),
+            body: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Center(
+                    child: SizedBox(
+                      width: 150,
+                      height: 150,
+                      child: ClipOval(
+                        child: BlurHash(
+                          hash: widget.blurHashImage,
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Skeletonizer(
-              enabled: true,
-              child: Container(
-                width: 300,
-                height: 30,
-                decoration: BoxDecoration(
-                  color: Colors.grey[400],
-                  borderRadius: BorderRadius.circular(20),
+                Column(
+                  children: [
+                    Skeletonizer(
+                      enabled: true,
+                      effect: ShimmerEffect(
+                        highlightColor: Colors.grey[700]!,
+                        baseColor: Colors.grey[500]!,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'User Name',
+                            style: Theme.of(context).textTheme.headlineLarge,
+                          ),
+                          const SizedBox(height: 16),
+                          Column(
+                            children: [
+                              Text(
+                                '230',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.grey[700],
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                'Conexiones',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey[700],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: () {},
+                            child: const Text('Desconectar'),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.grid_on),
+                          color: Theme.of(context).colorScheme.primary,
+                          onPressed: () {},
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.person),
+                          color: Colors.grey,
+                          onPressed: () {},
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-              ),
+                const SizedBox(height: 16),
+                Expanded(
+                  child: PageView(
+                    controller: pageController,
+                    onPageChanged: (index) {
+                      setState(() {
+                        this.index = index;
+                      });
+                    },
+                    children: [
+                      GridView.builder(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          crossAxisSpacing: 5,
+                          mainAxisSpacing: 5,
+                        ),
+                        itemCount: 9,
+                        itemBuilder: (context, index) {
+                          return Skeletonizer(
+                            enabled: true,
+                            effect: ShimmerEffect(
+                              highlightColor: Colors.grey[700]!,
+                              baseColor: Colors.grey[500]!,
+                            ),
+                            child: Container(
+                              width: 100,
+                              height: 100,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[300],
+                                borderRadius: BorderRadius.circular(
+                                    12.0), // Bordes redondeados
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      ListView.builder(
+                        itemCount: 2,
+                        itemBuilder: (context, index) {
+                          return Skeletonizer(
+                            enabled: true,
+                            effect: ShimmerEffect(
+                              highlightColor: Colors.grey[700]!,
+                              baseColor: Colors.grey[500]!,
+                            ),
+                            child: ListTile(
+                              leading: CircleAvatar(
+                                backgroundColor: Colors.grey[300],
+                              ),
+                              title: Container(
+                                width: 100,
+                                height: 20,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[300],
+                                  borderRadius: BorderRadius.circular(
+                                      12.0), // Bordes redondeados
+                                ),
+                              ),
+                              subtitle: Container(
+                                width: 100,
+                                height: 20,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[300],
+                                  borderRadius: BorderRadius.circular(
+                                      12.0), // Bordes redondeados
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
-      error: (error, stack) => Scaffold(
-        appBar: AppBar(
-          title: const Text('Error'), // Título en caso de error
-        ),
-        body: const Center(child: Text('Usuario no encontrado probablemente se eliminó')),
-      ),
+          );
+        } else if (snapshot.hasError) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(
+                  '@${widget.username}'), // Mostrar el nombre del usuario en el AppBar
+            ),
+            body: Center(
+              child: Text('Error: ${snapshot.error}'),
+            ),
+          );
+        } else {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(
+                  '@${widget.username}'), // Mostrar el nombre del usuario en el AppBar
+            ),
+            body: _buildUserProfile(context),
+          );
+        }
+      },
     );
   }
 
-  Widget _buildUserProfile(BuildContext context, UserModel user,
-      AsyncValue<List<PostModel>> userPostsAsyncValue, WidgetRef ref) {
-    final userValues = ref.watch(usersNotifierProvider);
-    final usersNotifier = ref.read(usersNotifierProvider.notifier);
-    final pageController = PageController();
-
+  Widget _buildUserProfile(BuildContext context) {
     return Column(
       children: [
         Padding(
@@ -124,144 +318,112 @@ class UsersView extends ConsumerWidget {
             ),
           ),
         ),
-        const SizedBox(height: 16),
         Text(user.name, style: Theme.of(context).textTheme.headlineLarge),
         const SizedBox(height: 16),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Column(
+              children: [
+                Text(
+                  connectionsCount.toString(),
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: Colors.grey[700],
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  connectionsCount == 1 ? 'Conexión' : 'Conexiones',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey[700],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            if (localUser.userId != user.userId)
+              ElevatedButton(
+                onPressed: _toggleConnection,
+                child: Text(isConnected ? 'Desconectar' : 'Conectar'),
+              ),
+          ],
+        ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             IconButton(
               icon: const Icon(Icons.grid_on),
-              color: userValues.index == 0
+              color: index == 0
                   ? Theme.of(context).colorScheme.primary
                   : Colors.grey,
-              onPressed: () =>
-                  _onGridSelected(0, usersNotifier, pageController),
+              onPressed: () => _onGridSelected(0),
             ),
             IconButton(
               icon: const Icon(Icons.person),
-              color: userValues.index == 1
+              color: index == 1
                   ? Theme.of(context).colorScheme.primary
                   : Colors.grey,
-              onPressed: () =>
-                  _onGridSelected(1, usersNotifier, pageController),
+              onPressed: () => _onGridSelected(1),
             ),
           ],
         ),
         const SizedBox(height: 16),
         Expanded(
-          child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 500),
-            child: userPostsAsyncValue.when(
-              data: (posts) => PageView(
-                key: const ValueKey('posts'),
-                controller: pageController,
-                onPageChanged: (index) {
-                  usersNotifier.updateIndex(index);
+          child: PageView(
+            controller: pageController,
+            onPageChanged: (index) {
+              setState(() {
+                this.index = index;
+              });
+            },
+            children: [
+              GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 5,
+                  mainAxisSpacing: 5,
+                ),
+                itemCount: userPosts.length,
+                itemBuilder: (context, index) {
+                  final post = userPosts[index];
+                  return ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image(
+                      image: CachedNetworkImageProvider(post.imageUrl),
+                      fit: BoxFit.cover,
+                    ),
+                  );
                 },
-                children: [
-                  GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 5,
-                      mainAxisSpacing: 5,
-                    ),
-                    itemCount: posts.length,
-                    itemBuilder: (context, index) {
-                      final post = posts[index];
-                      return ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Image(
-                          image: CachedNetworkImageProvider(post.imageUrl),
-                          fit: BoxFit.cover,
-                        ),
-                      );
-                    },
-                  ),
-                  GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 5,
-                      mainAxisSpacing: 5,
-                    ),
-                    itemCount:
-                        0, // Reemplaza con el número real de posts etiquetados
-                    itemBuilder: (context, index) {
-                      return Container(
-                        color: Colors.grey[200],
-                        child: Center(
-                          child: Text('Tagged Post ${index + 1}'),
-                        ),
-                      );
-                    },
-                  ),
-                ],
               ),
-              loading: () => PageView(
-                key: const ValueKey('loading'),
-                controller: pageController,
-                children: [
-                  GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 5,
-                      mainAxisSpacing: 5,
+              ListView.builder(
+                itemCount: userPosts.length,
+                itemBuilder: (context, index) {
+                  final post = userPosts[index];
+                  return ListTile(
+                    leading: CircleAvatar(
+                      backgroundImage:
+                          CachedNetworkImageProvider(post.imageUrl),
                     ),
-                    itemCount: 9, // Número de placeholders que deseas mostrar
-                    itemBuilder: (context, index) {
-                      return ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Skeletonizer(
-                          enabled: true,
-                          effect:
-                              const ShimmerEffect(), // Añadir efecto shimmer
-                          child: Container(
-                            color: Colors.grey[800],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                  GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 5,
-                      mainAxisSpacing: 5,
-                    ),
-                    itemCount: 9, // Número de placeholders que deseas mostrar
-                    itemBuilder: (context, index) {
-                      return ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Skeletonizer(
-                          enabled: true,
-                          effect:
-                              const ShimmerEffect(), // Añadir efecto shimmer
-                          child: Container(
-                            color: Colors.grey[800],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ],
+                    title: Text(post.userName),
+                    subtitle: Text(post.description ?? ''),
+                  );
+                },
               ),
-              error: (error, stack) => Center(child: Text('Error: $error')),
-            ),
+            ],
           ),
         ),
       ],
     );
   }
 
-  void _onGridSelected(
-      int index, UsersNotifier usersNotifier, PageController pageController) {
-    usersNotifier.updateIndex(index);
+  void _onGridSelected(int index) {
+    setState(() {
+      this.index = index;
+    });
     pageController.animateToPage(
-      index,
+      this.index,
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
