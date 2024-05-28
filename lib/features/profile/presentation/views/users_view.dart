@@ -49,8 +49,11 @@ class _UsersViewState extends ConsumerState<UsersView> {
   Future<void> _initializeData() async {
     final localUser = await ref.read(getUserLocalUseCaseProvider).execute();
     final user = await ref.read(usersRepositoryProvider).getUser(widget.userId);
-    final userPosts = await ref.read(userPostsRepositoryProvider).getUserPosts(widget.userId);
-    final isConnected = await ref.read(usersRepositoryProvider).checkConnection(localUser.userId, widget.userId);
+    final userPosts =
+        await ref.read(userPostsRepositoryProvider).getUserPosts(widget.userId);
+    final isConnected = await ref
+        .read(usersRepositoryProvider)
+        .checkConnection(localUser.userId, widget.userId);
 
     if (mounted) {
       setState(() {
@@ -65,13 +68,17 @@ class _UsersViewState extends ConsumerState<UsersView> {
 
   void _toggleConnection() {
     if (isConnected) {
-      ref.read(removeConnectionUseCaseProvider).execute(localUser.userId, widget.userId);
+      ref
+          .read(removeConnectionUseCaseProvider)
+          .execute(localUser.userId, widget.userId);
       setState(() {
         connectionsCount--;
         isConnected = false;
       });
     } else {
-      ref.read(addConnectionUseCaseProvider).execute(localUser.userId, widget.userId);
+      ref
+          .read(addConnectionUseCaseProvider)
+          .execute(localUser.userId, widget.userId);
       setState(() {
         connectionsCount++;
         isConnected = true;
@@ -93,7 +100,8 @@ class _UsersViewState extends ConsumerState<UsersView> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Scaffold(
             appBar: AppBar(
-              title: Text('@${widget.username}'), // Mostrar el nombre del usuario en el AppBar
+              title: Text(
+                  '@${widget.username}'), // Mostrar el nombre del usuario en el AppBar
             ),
             body: Column(
               children: [
@@ -111,16 +119,139 @@ class _UsersViewState extends ConsumerState<UsersView> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
-                Skeletonizer(
-                  enabled: true,
-                  child: Container(
-                    width: 300,
-                    height: 30,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[400],
-                      borderRadius: BorderRadius.circular(20),
+                Column(
+                  children: [
+                    Skeletonizer(
+                      enabled: true,
+                      effect: ShimmerEffect(
+                        highlightColor: Colors.grey[700]!,
+                        baseColor: Colors.grey[500]!,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'User Name',
+                            style: Theme.of(context).textTheme.headlineLarge,
+                          ),
+                          const SizedBox(height: 16),
+                          Column(
+                            children: [
+                              Text(
+                                '230',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.grey[700],
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                'Conexiones',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey[700],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: () {},
+                            child: const Text('Desconectar'),
+                          ),
+                        ],
+                      ),
                     ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.grid_on),
+                          color: Theme.of(context).colorScheme.primary,
+                          onPressed: () {},
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.person),
+                          color: Colors.grey,
+                          onPressed: () {},
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Expanded(
+                  child: PageView(
+                    controller: pageController,
+                    onPageChanged: (index) {
+                      setState(() {
+                        this.index = index;
+                      });
+                    },
+                    children: [
+                      GridView.builder(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          crossAxisSpacing: 5,
+                          mainAxisSpacing: 5,
+                        ),
+                        itemCount: 9,
+                        itemBuilder: (context, index) {
+                          return Skeletonizer(
+                            enabled: true,
+                            effect: ShimmerEffect(
+                              highlightColor: Colors.grey[700]!,
+                              baseColor: Colors.grey[500]!,
+                            ),
+                            child: Container(
+                              width: 100,
+                              height: 100,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[300],
+                                borderRadius: BorderRadius.circular(
+                                    12.0), // Bordes redondeados
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      ListView.builder(
+                        itemCount: 2,
+                        itemBuilder: (context, index) {
+                          return Skeletonizer(
+                            enabled: true,
+                            effect: ShimmerEffect(
+                              highlightColor: Colors.grey[700]!,
+                              baseColor: Colors.grey[500]!,
+                            ),
+                            child: ListTile(
+                              leading: CircleAvatar(
+                                backgroundColor: Colors.grey[300],
+                              ),
+                              title: Container(
+                                width: 100,
+                                height: 20,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[300],
+                                  borderRadius: BorderRadius.circular(
+                                      12.0), // Bordes redondeados
+                                ),
+                              ),
+                              subtitle: Container(
+                                width: 100,
+                                height: 20,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[300],
+                                  borderRadius: BorderRadius.circular(
+                                      12.0), // Bordes redondeados
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -129,7 +260,8 @@ class _UsersViewState extends ConsumerState<UsersView> {
         } else if (snapshot.hasError) {
           return Scaffold(
             appBar: AppBar(
-              title: Text('@${widget.username}'), // Mostrar el nombre del usuario en el AppBar
+              title: Text(
+                  '@${widget.username}'), // Mostrar el nombre del usuario en el AppBar
             ),
             body: Center(
               child: Text('Error: ${snapshot.error}'),
@@ -138,7 +270,8 @@ class _UsersViewState extends ConsumerState<UsersView> {
         } else {
           return Scaffold(
             appBar: AppBar(
-              title: Text('@${widget.username}'), // Mostrar el nombre del usuario en el AppBar
+              title: Text(
+                  '@${widget.username}'), // Mostrar el nombre del usuario en el AppBar
             ),
             body: _buildUserProfile(context),
           );
@@ -190,19 +323,31 @@ class _UsersViewState extends ConsumerState<UsersView> {
         Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              'Conexiones: $connectionsCount',
-              style: TextStyle(
-                fontSize: 20,
-                color: Colors.grey[700],
-              ),
+            Column(
+              children: [
+                Text(
+                  connectionsCount.toString(),
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: Colors.grey[700],
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  connectionsCount == 1 ? 'Conexión' : 'Conexiones',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey[700],
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 16),
             if (localUser.userId != user.userId)
-            ElevatedButton(
-              onPressed: _toggleConnection,
-              child: Text(isConnected ? 'Desconectar' : 'Conectar'),
-            ),
+              ElevatedButton(
+                onPressed: _toggleConnection,
+                child: Text(isConnected ? 'Desconectar' : 'Conectar'),
+              ),
           ],
         ),
         Row(
@@ -258,7 +403,8 @@ class _UsersViewState extends ConsumerState<UsersView> {
                   final post = userPosts[index];
                   return ListTile(
                     leading: CircleAvatar(
-                      backgroundImage: CachedNetworkImageProvider(post.imageUrl),
+                      backgroundImage:
+                          CachedNetworkImageProvider(post.imageUrl),
                     ),
                     title: Text(post.userName),
                     subtitle: Text(post.description ?? ''),

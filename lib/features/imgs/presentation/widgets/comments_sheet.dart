@@ -1,5 +1,6 @@
 import 'package:crowd_snap/core/data/models/comment_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crowd_snap/core/data/models/user_model.dart';
@@ -115,10 +116,12 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
                           }
                           return GestureDetector(
                             onLongPress: () {
+                              HapticFeedback.heavyImpact();
                               widget.showPopupMenu(
                                   context, comment, user.userId);
                             },
                             onTap: () {
+                              HapticFeedback.selectionClick();
                               context.push('/users/${user.userId}', extra: {
                                 'username': user.username,
                                 'avatarUrl': user.avatarUrl!,
@@ -203,6 +206,7 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
                     icon: const Icon(Icons.send),
                     onPressed: isEnabled
                         ? () {
+                            HapticFeedback.mediumImpact();
                             widget.addComment(_commentText);
                             _scrollToBottom();
                             widget.commentController.clear();
