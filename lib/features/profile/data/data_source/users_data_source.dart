@@ -123,20 +123,36 @@ class UsersDataSourceImpl implements UsersDataSource {
   @override
   Future<bool> checkConnection(String localUserId, String userId) async {
     try {
-      final connectionQuery = await _realtimeDatabase
-          .ref()
-          .child('connections')
+      final connectionRef = _realtimeDatabase.ref().child('connections');
+
+      // Query to check if localUserId is in userId field
+      final connectionQuery1 = await connectionRef
           .orderByChild('userId')
           .equalTo(localUserId)
           .once();
 
-      if (connectionQuery.snapshot.exists) {
-        for (var connection in connectionQuery.snapshot.children) {
+      if (connectionQuery1.snapshot.exists) {
+        for (var connection in connectionQuery1.snapshot.children) {
           if (connection.child('connectionUserId').value == userId) {
             return true;
           }
         }
       }
+
+      // Query to check if localUserId is in connectionUserId field
+      final connectionQuery2 = await connectionRef
+          .orderByChild('connectionUserId')
+          .equalTo(localUserId)
+          .once();
+
+      if (connectionQuery2.snapshot.exists) {
+        for (var connection in connectionQuery2.snapshot.children) {
+          if (connection.child('userId').value == userId) {
+            return true;
+          }
+        }
+      }
+
       return false;
     } catch (e) {
       throw Exception('Failed to check connection: $e');
