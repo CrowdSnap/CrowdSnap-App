@@ -32,6 +32,7 @@ dependencies:
   cached_network_image: ^3.3.1
   cloud_firestore: ^4.17.0
   cupertino_icons: ^1.0.2
+  custom_refresh_indicator: ^3.1.0
   dio: ^5.4.3+1
   firebase_auth: ^4.19.2
   firebase_core: ^2.30.0
@@ -53,6 +54,7 @@ dependencies:
   image_picker: ^1.1.0
   intl: any
   logging: ^1.2.0
+  lottie: ^3.1.2
   mongo_dart: ^0.10.2
   numberpicker: ^2.1.2
   octo_image: ^2.0.0
@@ -112,3 +114,5 @@ flutter:
   assets:
     - assets/icons/
     - .env
+    - assets/Principal-Disco-Ball.json
+    - assets/Secondary-Disco-Ball.json

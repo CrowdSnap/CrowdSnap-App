@@ -329,6 +329,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.3"
+  custom_refresh_indicator:
+    dependency: "direct main"
+    description:
+      name: custom_refresh_indicator
+      sha256: "841dd90ded708b6a73df3fcebbedc534bbb842b8c3a491570846b534cd0a2547"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.0"
   dart_style:
     dependency: transitive
     description:
@@ -1037,6 +1045,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
+  lottie:
+    dependency: "direct main"
+    description:
+      name: lottie
+      sha256: "6a24ade5d3d918c306bb1c21a6b9a04aab0489d51a2582522eea820b4093b62b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.2"
   matcher:
     dependency: transitive
     description:
