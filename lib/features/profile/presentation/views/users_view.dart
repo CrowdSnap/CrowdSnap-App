@@ -318,7 +318,13 @@ class _UsersViewState extends ConsumerState<UsersView> {
             ),
           ),
         ),
-        Text(user.name, style: Theme.of(context).textTheme.headlineLarge),
+        Center(
+          child: Text(
+            user.name,
+            style: Theme.of(context).textTheme.headlineLarge,
+            textAlign: TextAlign.center,
+          ),
+        ),
         const SizedBox(height: 16),
         Column(
           mainAxisAlignment: MainAxisAlignment.center,
