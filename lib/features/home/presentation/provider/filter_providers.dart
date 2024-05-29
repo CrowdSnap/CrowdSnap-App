@@ -29,7 +29,7 @@ class City extends _$City {
 @riverpod
 class NumberOfPosts extends _$NumberOfPosts {
   @override
-  int build() => 2;
+  int build() => 3;
 
   void setNumberOfPosts(int number) => state = number;
 }

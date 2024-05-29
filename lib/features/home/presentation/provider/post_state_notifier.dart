@@ -17,7 +17,8 @@ class PostList extends _$PostList {
   }
 
   Future<List<PostModel>> _fetchPosts() async {
-    final getPostsRandomByDateRangeUseCase = ref.watch(getPostsRandomByDateRangeUseCaseProvider);
+    final getPostsRandomByDateRangeUseCase =
+        ref.watch(getPostsRandomByDateRangeUseCaseProvider);
     final startDate = ref.watch(startDateProvider);
     final endDate = ref.watch(endDateProvider);
     final city = ref.watch(cityProvider);
@@ -49,7 +50,8 @@ class PostList extends _$PostList {
     );
 
     // Filtrar posts que ya han sido cargados
-    final newPosts = query.where((post) => !_loadedPostIds.contains(post.mongoId)).toList();
+    final newPosts =
+        query.where((post) => !_loadedPostIds.contains(post.mongoId)).toList();
 
     // Actualizar la lista de IDs cargados
     _loadedPostIds.addAll(newPosts.map((post) => post.mongoId!));

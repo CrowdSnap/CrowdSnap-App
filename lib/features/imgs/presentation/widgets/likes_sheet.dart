@@ -55,41 +55,51 @@ class _LikesSheetState extends ConsumerState<LikesSheet> {
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
-                            return Skeletonizer(
-                              enabled: true,
-                              child: ClipRRect(
+                            return Card(
+                              shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30.0),
-                                child: Card(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30.0),
-                                  ),
-                                  color: Theme.of(context).hoverColor,
-                                  margin:
-                                      const EdgeInsets.symmetric(vertical: 4.0),
-                                  child: ListTile(
-                                    leading: ClipOval(
-                                      child: SizedBox(
-                                        width: 50,
-                                        height: 50,
-                                        child: BlurHash(
-                                          hash: widget.post.blurHashAvatar,
-                                          imageFit: BoxFit.cover,
-                                        ),
-                                      ),
+                              ),
+                              color: Theme.of(context).hoverColor,
+                              margin: const EdgeInsets.symmetric(vertical: 4.0),
+                              child: ListTile(
+                                leading: ClipOval(
+                                  child: SizedBox(
+                                    width: 50,
+                                    height: 50,
+                                    child: BlurHash(
+                                      hash: widget.post.blurHashAvatar,
+                                      imageFit: BoxFit.cover,
                                     ),
-                                    title: Container(
-                                        width: 100,
-                                        height: 25,
-                                        decoration: BoxDecoration(
-                                          color: Colors.grey[300],
-                                        )),
-                                    subtitle: Container(
-                                        width: 100,
-                                        height: 20,
-                                        decoration: BoxDecoration(
-                                          color: Colors.grey[300],
-                                        )),
                                   ),
+                                ),
+                                title: Skeletonizer(
+                                  enabled: true,
+                                  effect: ShimmerEffect(
+                                    highlightColor: Colors.grey[700]!,
+                                    baseColor: Colors.grey[500]!,
+                                  ),
+                                  child: Container(
+                                      width: 100,
+                                      height: 15,
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(12.0),
+                                      )),
+                                ),
+                                subtitle: Skeletonizer(
+                                  enabled: true,
+                                  effect: ShimmerEffect(
+                                    highlightColor: Colors.grey[700]!,
+                                    baseColor: Colors.grey[500]!,
+                                  ),
+                                  child: Container(
+                                      width: 100,
+                                      height: 10,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[300],
+                                        borderRadius:
+                                            BorderRadius.circular(12.0),
+                                      )),
                                 ),
                               ),
                             );
