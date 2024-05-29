@@ -10,6 +10,7 @@ import 'package:crowd_snap/features/profile/data/repositories_impl/user_posts_re
 import 'package:crowd_snap/features/profile/data/repositories_impl/users_repository_impl.dart';
 import 'package:crowd_snap/features/profile/presentation/notifier/profile_notifier.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -92,13 +93,14 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
 
   double _calculateHeight(ProfileState profileValues, int index) {
     const width = 411.42857142857144;
+    const otherHeights = 20 + 40 + 18;
     final double height =
         profileValues.posts.sublist(0, index).fold(0, (previousValue, post) {
       final aspectRatio = post.aspectRatio;
       return previousValue + (width / aspectRatio);
     });
 
-    return height;
+    return height + (index * otherHeights);
   }
 
   @override
@@ -349,6 +351,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                                   final post = profileValues.posts[index];
                                   return GestureDetector(
                                     onTap: () {
+                                      HapticFeedback.selectionClick();
                                       ref.read(appRouterProvider).push(
                                         '/posts-list',
                                         extra: {

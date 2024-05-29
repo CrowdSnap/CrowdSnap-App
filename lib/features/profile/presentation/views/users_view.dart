@@ -8,6 +8,7 @@ import 'package:crowd_snap/features/profile/data/repositories_impl/users_reposit
 import 'package:crowd_snap/features/profile/domain/use_cases/add_connection_use_case.dart';
 import 'package:crowd_snap/features/profile/domain/use_cases/remove_connection_use_case.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_blurhash/flutter_blurhash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -95,14 +96,14 @@ class _UsersViewState extends ConsumerState<UsersView> {
 
   double _calculateHeight(List<PostModel> userPosts, int index) {
     const width = 411.42857142857144;
-    // Calcula la altura del listado de imagenes recorriendo el list de posts y sacando la altura de cada imagen con el aspect ratio y la variable width que se define arriba y asi con todas hasta llegar hasta el index que se le pasa
+    const otherHeights = 20 + 40 + 18;
     final double height =
         userPosts.sublist(0, index).fold(0, (previousValue, post) {
       final aspectRatio = post.aspectRatio;
       return previousValue + (width / aspectRatio);
     });
 
-    return height;
+    return height + (index * otherHeights);
   }
 
   @override
@@ -407,6 +408,7 @@ class _UsersViewState extends ConsumerState<UsersView> {
                   final post = userPosts[index];
                   return GestureDetector(
                     onTap: () {
+                      HapticFeedback.selectionClick();
                       ref.read(appRouterProvider).push(
                         '/posts-list',
                         extra: {
