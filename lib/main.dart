@@ -1,4 +1,5 @@
 import 'package:crowd_snap/core/constants.dart';
+import 'package:crowd_snap/core/data/repository_impl/shared_preferences/user_repository_impl.dart';
 import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_local_use_case.dart';
 import 'package:crowd_snap/features/imgs/data/data_source/comment_data_source.dart';
 import 'package:crowd_snap/features/imgs/data/data_source/post_data_source.dart';
@@ -27,8 +28,7 @@ void main() async {
   await postDataSource.loadEnvVariables();
   final CommentDataSourceImpl commentDataSource = CommentDataSourceImpl();
   await commentDataSource.loadEnvVariables();
-  final UserPostsDataSourceImpl userPostsDataSource =
-      UserPostsDataSourceImpl();
+  final UserPostsDataSourceImpl userPostsDataSource = UserPostsDataSourceImpl();
   await userPostsDataSource.loadEnvVariables();
   // Inicializa Firebase antes de ejecutar la aplicación.
   WidgetsFlutterBinding.ensureInitialized();
@@ -56,8 +56,12 @@ void main() async {
               final getUserUseCase = ref.read(getUserLocalUseCaseProvider);
               final profileNotifier =
                   ref.read(profileNotifierProvider.notifier);
-              final postRepository = ref.read(postRepositoryProvider);
               final getAvatarUseCase = ref.read(avatarGetUseCaseProvider);
+              ref.read(userRepositoryProvider).getPosts().then(
+                (posts) {
+                  profileNotifier.updatePosts(posts);
+                },
+              );
 
               getUserUseCase.execute().then((user) {
                 profileNotifier.updateUserId(user.userId);
@@ -65,11 +69,7 @@ void main() async {
                 profileNotifier.updateEmail(user.email);
                 profileNotifier.updateUserName(user.username);
                 profileNotifier.updateAge(user.birthDate);
-
-                // Obtiene los posts del usuario y los actualiza en el profileNotifier
-                postRepository.getPostsByUser(user.userId).then((posts) {
-                  profileNotifier.updatePosts(posts);
-                });
+                profileNotifier.updateConnectionsCount(user.connectionsCount);
               });
 
               getAvatarUseCase.execute(userName).then((avatar) {

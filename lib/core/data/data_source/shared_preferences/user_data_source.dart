@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:crowd_snap/core/data/models/post_model.dart';
 import 'package:crowd_snap/core/data/models/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -10,6 +11,8 @@ abstract class UserModelDataSource {
   Future<void> saveUserModel(UserModel userModel);
   Future<UserModel> getUserModel();
   Future<void> updateUserAvatar(String avatarUrl, String blurHash);
+  Future<void> savePosts(List<PostModel> posts);
+  Future<List<PostModel>> getPosts();
   Future<void> deleteUserModel();
 }
 
@@ -27,6 +30,26 @@ class UserModelDataSourceImpl implements UserModelDataSource {
     String userModelJson = jsonEncode(userModel.toJson());
     print('Saving user model: $userModel');
     await prefs.setString('userModel', userModelJson);
+  }
+
+  @override
+  Future<void> savePosts(List<PostModel> posts) async {
+    final prefs = await SharedPreferences.getInstance();
+    List<Map<String, dynamic>> postList = posts.map((post) => post.toJson()).toList();
+    String postsJson = jsonEncode(postList);
+    await prefs.setString('posts', postsJson);
+  }
+
+  @override
+  Future<List<PostModel>> getPosts() async {
+    final prefs = await SharedPreferences.getInstance();
+    final postsJson = prefs.getString('posts');
+    if (postsJson != null) {
+      List<dynamic> postList = jsonDecode(postsJson);
+      return postList.map((post) => PostModel.fromJson(post)).toList();
+    } else {
+      throw Exception('Posts not found in SharedPreferences');
+    }
   }
 
   @override

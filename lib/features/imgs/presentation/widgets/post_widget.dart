@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_blurhash/flutter_blurhash.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:octo_image/octo_image.dart';
 import 'package:pinch_zoom_release_unzoom/pinch_zoom_release_unzoom.dart';
 import 'package:crowd_snap/core/data/models/post_model.dart';
@@ -41,6 +42,7 @@ class PostWidget extends ConsumerStatefulWidget {
 
 class _PostWidgetState extends ConsumerState<PostWidget> {
   bool _isLongPressed = false;
+  bool _timeSelected = false;
 
   @override
   Widget build(BuildContext context) {
@@ -118,9 +120,19 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
                   ),
                 ),
                 const Spacer(),
-                Text(
-                  'Subido hace ${widget.getElapsedTime(widget.post.createdAt)}',
-                  style: Theme.of(context).textTheme.bodySmall,
+                GestureDetector(
+                  onTap: () {
+                    HapticFeedback.selectionClick();
+                    setState(() {
+                      _timeSelected = !_timeSelected;
+                    });
+                  },
+                  child: Text(
+                    _timeSelected
+                        ? formatDateTime(widget.post.createdAt)
+                        : 'Subido hace ${widget.getElapsedTime(widget.post.createdAt)}',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
                 ),
                 const SizedBox(width: 4.0),
               ],
@@ -129,6 +141,7 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
           LayoutBuilder(
             builder: (context, constraints) {
               final maxWidth = constraints.maxWidth;
+              print('maxWidth: $maxWidth');
               const maxHeight = 650.0;
               const minHeight = 200.0;
               final height = (maxWidth / widget.post.aspectRatio)
@@ -241,6 +254,16 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
         ],
       ),
     );
+  }
+
+  String formatDateTime(DateTime dateTime) {
+    final dayOfWeek =
+        DateFormat('EEEE', 'es').format(dateTime)[0].toUpperCase() + DateFormat('EEEE', 'es').format(dateTime).substring(1); // Nombre del día de la semana en español con la primera letra en mayúscula
+          final date = DateFormat('dd/MM/yyyy')
+        .format(dateTime); // Fecha en formato dd/MM/yyyy
+    final time = DateFormat('HH:mm').format(dateTime); // Hora en formato HH:mm
+
+    return '$dayOfWeek, $date $time';
   }
 
   AnimatedPositioned likesAndComments(double height, bool isLongPressed,

@@ -30,9 +30,18 @@ class UserPostsDataSourceImpl implements UserPostsDataSource {
     await db.open();
     final postsCollection = db.collection('posts');
 
-    final posts = await postsCollection.find(where.eq('userId', userId)).toList();
-    await db.close(); 
+    final posts =
+        await postsCollection.find(where.eq('userId', userId)).toList();
+    await db.close();
 
-    return posts.map<PostModel>((json) => PostModel.fromJson(json)).toList();
+    return posts.map((json) {
+      final id =
+          json['_id'].toString().split('"')[1]; // Extract the ObjectId value
+      final postJson = {
+        ...json,
+        'mongoId': id,
+      };
+      return PostModel.fromJson(postJson);
+    }).toList();
   }
 }

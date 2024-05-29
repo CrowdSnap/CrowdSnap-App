@@ -1,8 +1,10 @@
+import 'package:crowd_snap/core/data/models/post_model.dart';
 import 'package:crowd_snap/features/auth/presentation/views/forgot_password_view.dart';
 import 'package:crowd_snap/features/auth/presentation/views/google_sign_up_view.dart';
 import 'package:crowd_snap/features/chats/presentation/chats_view.dart';
 import 'package:crowd_snap/features/imgs/presentation/views/avatar_upload_view.dart';
 import 'package:crowd_snap/features/imgs/presentation/views/image_upload_view.dart';
+import 'package:crowd_snap/features/imgs/presentation/views/posts_list_view.dart';
 import 'package:crowd_snap/features/profile/presentation/views/settings_view.dart';
 import 'package:crowd_snap/features/profile/presentation/views/users_view.dart';
 import 'package:flutter/material.dart';
@@ -67,6 +69,18 @@ class AppRouter extends _$AppRouter {
                   username: extra['username']!,
                   avatarUrl: extra['avatarUrl']!,
                   blurHashImage: extra['blurHashImage']!,
+                );
+              },
+            ),
+            GoRoute(
+              path: '/posts-list',
+              builder: (context, state) {
+                final extra = state.extra as Map<String, dynamic>;
+                final posts = extra['posts'] as List<PostModel>;
+                final height = extra['height'] as double;
+                return PostsListView(
+                  posts: posts,
+                  height: height,
                 );
               },
             ),

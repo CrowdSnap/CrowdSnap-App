@@ -13,6 +13,7 @@ class ProfileState {
   final DateTime? birthDate;
   final File? image;
   final List<PostModel> posts;
+  final int connectionsCount;
   final int index;
 
   ProfileState(
@@ -23,6 +24,7 @@ class ProfileState {
       this.birthDate,
       this.image,
       this.posts = const [],
+      this.connectionsCount = 0,
       this.index = 0});
 
   // Crea una copia del estado actual con las propiedades modificadas.
@@ -34,6 +36,7 @@ class ProfileState {
     DateTime? birthDate,
     File? image,
     List<PostModel>? posts,
+    int? connectionsCount,
     int? index,
   }) {
     return ProfileState(
@@ -44,6 +47,7 @@ class ProfileState {
       birthDate: birthDate ?? this.birthDate,
       image: image ?? this.image,
       posts: posts ?? this.posts,
+      connectionsCount: connectionsCount ?? this.connectionsCount,
       index: index ?? this.index,
     );
   }
@@ -91,6 +95,11 @@ class ProfileNotifier extends _$ProfileNotifier {
   // Actualiza la lista de publicaciones del usuario en el estado.
   void updatePosts(List<PostModel> posts) {
     state = state.copyWith(posts: posts);
+  }
+
+  // Actualiza el número de conexiones del usuario en el estado.
+  void updateConnectionsCount(int connectionsCount) {
+    state = state.copyWith(connectionsCount: connectionsCount);
   }
 
   // Actualiza el índice de la grid seleccionada en el estado.

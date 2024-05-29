@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:crowd_snap/app/router/app_router.dart';
 import 'package:crowd_snap/core/data/models/post_model.dart';
 import 'package:crowd_snap/core/data/models/user_model.dart';
 import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_local_use_case.dart';
@@ -92,6 +93,18 @@ class _UsersViewState extends ConsumerState<UsersView> {
     super.dispose();
   }
 
+  double _calculateHeight(List<PostModel> userPosts, int index) {
+    const width = 411.42857142857144;
+    // Calcula la altura del listado de imagenes recorriendo el list de posts y sacando la altura de cada imagen con el aspect ratio y la variable width que se define arriba y asi con todas hasta llegar hasta el index que se le pasa
+    final double height =
+        userPosts.sublist(0, index).fold(0, (previousValue, post) {
+      final aspectRatio = post.aspectRatio;
+      return previousValue + (width / aspectRatio);
+    });
+
+    return height;
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<void>(
@@ -144,7 +157,6 @@ class _UsersViewState extends ConsumerState<UsersView> {
                                   color: Colors.grey[700],
                                 ),
                               ),
-                              const SizedBox(height: 6),
                               Text(
                                 'Conexiones',
                                 style: TextStyle(
@@ -338,7 +350,6 @@ class _UsersViewState extends ConsumerState<UsersView> {
                     color: Colors.grey[700],
                   ),
                 ),
-                const SizedBox(height: 6),
                 Text(
                   connectionsCount == 1 ? 'Conexión' : 'Conexiones',
                   style: TextStyle(
@@ -394,11 +405,22 @@ class _UsersViewState extends ConsumerState<UsersView> {
                 itemCount: userPosts.length,
                 itemBuilder: (context, index) {
                   final post = userPosts[index];
-                  return ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image(
-                      image: CachedNetworkImageProvider(post.imageUrl),
-                      fit: BoxFit.cover,
+                  return GestureDetector(
+                    onTap: () {
+                      ref.read(appRouterProvider).push(
+                        '/posts-list',
+                        extra: {
+                          'posts': userPosts,
+                          'height': _calculateHeight(userPosts, index),
+                        },
+                      );
+                    },
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image(
+                        image: CachedNetworkImageProvider(post.imageUrl),
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   );
                 },

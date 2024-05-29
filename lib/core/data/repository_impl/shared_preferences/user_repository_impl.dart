@@ -1,5 +1,6 @@
 
 import 'package:crowd_snap/core/data/data_source/shared_preferences/user_data_source.dart';
+import 'package:crowd_snap/core/data/models/post_model.dart';
 import 'package:crowd_snap/core/data/models/user_model.dart';
 import 'package:crowd_snap/core/domain/repositories/shared_preferences/user_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -42,6 +43,25 @@ class UserRepositoryImpl implements UserRepository {
       await _userModelDataSource.updateUserAvatar(avatarUrl, blurHash);
     } catch (e) {
       throw Exception('Failed to update user avatar in SharedPreferences');
+    }
+  }
+
+  @override
+  Future<void> savePosts(List<PostModel> posts) async {
+    try {
+      await _userModelDataSource.savePosts(posts);
+    } catch (e) {
+      throw Exception('Failed to save posts to SharedPreferences');
+    }
+  }
+
+  @override
+  Future<List<PostModel>> getPosts() async {
+    try {
+      final posts = await _userModelDataSource.getPosts();
+      return posts;
+    } catch (e) {
+      throw Exception('Failed to get posts from SharedPreferences');
     }
   }
 

@@ -62,13 +62,21 @@ class _LikesSheetState extends ConsumerState<LikesSheet> {
                               color: Theme.of(context).hoverColor,
                               margin: const EdgeInsets.symmetric(vertical: 4.0),
                               child: ListTile(
-                                leading: ClipOval(
-                                  child: SizedBox(
-                                    width: 50,
-                                    height: 50,
-                                    child: BlurHash(
-                                      hash: widget.post.blurHashAvatar,
-                                      imageFit: BoxFit.cover,
+                                leading: Skeletonizer(
+                                  enabled: true,
+                                  effect: ShimmerEffect(
+                                    highlightColor: Colors.grey[700]!,
+                                    baseColor: Colors.grey[500]!,
+                                  ),
+                                  child: ClipOval(
+                                    child: SizedBox(
+                                      width: 50,
+                                      height: 50,
+                                      child: Container(
+                                        width: 50,
+                                        height: 50,
+                                        color: Colors.grey[300],
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -114,7 +122,7 @@ class _LikesSheetState extends ConsumerState<LikesSheet> {
                               context.push('/users/${user.userId}', extra: {
                                 'username': user.username,
                                 'avatarUrl': user.avatarUrl!,
-                                'blurHashImage': widget.post.blurHashAvatar,
+                                'blurHashImage': user.blurHashImage!,
                               });
                             },
                             child: Card(
