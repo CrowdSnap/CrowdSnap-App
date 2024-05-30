@@ -38,12 +38,22 @@ class UsersRepositoryImpl implements UsersRepository {
 
   @override
   Future<bool> checkConnection(String localUserId, String userId) async {
-    final result = await _usersModelDataSource.checkConnection(localUserId, userId);
+    final result =
+        await _usersModelDataSource.checkConnection(localUserId, userId);
     return result;
   }
 
   @override
-  Future<void> getUserConnections(String userId) async {
-    await _usersModelDataSource.getUserConnections(userId);
+  Future<List<Map<String, DateTime>>> getUserConnections(String userId,
+      {String? startAfter, int limit = 30}) async {
+    try {
+      return await _usersModelDataSource.getUserConnections(
+        userId,
+        startAfter: startAfter,
+        limit: limit,
+      );
+    } on Exception catch (e) {
+      throw Exception(e);
+    }
   }
 }

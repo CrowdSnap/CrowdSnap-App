@@ -6,6 +6,7 @@ import 'package:crowd_snap/core/data/repository_impl/shared_preferences/user_rep
 import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_local_use_case.dart';
 import 'package:crowd_snap/core/domain/use_cases/shared_preferences/store_user_use_case.dart';
 import 'package:crowd_snap/core/navbar/providers/navbar_provider.dart';
+import 'package:crowd_snap/features/imgs/presentation/widgets/connections_modal_bottom_sheet.dart';
 import 'package:crowd_snap/features/profile/data/repositories_impl/user_posts_repository_impl.dart';
 import 'package:crowd_snap/features/profile/data/repositories_impl/users_repository_impl.dart';
 import 'package:crowd_snap/features/profile/presentation/notifier/profile_notifier.dart';
@@ -68,6 +69,30 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
         );
 
     await ref.read(userRepositoryProvider).savePosts(userPosts);
+  }
+
+  void _showConnectionSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(40.0)),
+      ),
+      builder: (BuildContext context) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.4,
+          maxChildSize: 0.7,
+          minChildSize: 0.25,
+          expand: false,
+          builder: (BuildContext context, ScrollController scrollController) {
+            return ConnectionsModalBottomSheet(
+              userId: localUser.userId,
+              pageController: scrollController,
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -157,6 +182,10 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                             ),
                             const SizedBox(height: 16),
                             GestureDetector(
+                              onTap: () {
+                                HapticFeedback.selectionClick();
+                                _showConnectionSheet();
+                              },
                               child: Column(
                                 children: [
                                   Text(
@@ -304,23 +333,29 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                               style: Theme.of(context).textTheme.headlineLarge,
                             ),
                             const SizedBox(height: 16),
-                            Column(
-                              children: [
-                                Text(
-                                  profileValues.connectionsCount.toString(),
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    color: Colors.grey[700],
+                            GestureDetector(
+                              onTap: () {
+                                HapticFeedback.selectionClick();
+                                _showConnectionSheet();
+                              },
+                              child: Column(
+                                children: [
+                                  Text(
+                                    profileValues.connectionsCount.toString(),
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: Colors.grey[700],
+                                    ),
                                   ),
-                                ),
-                                Text(
-                                  'Conexiones',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.grey[700],
+                                  Text(
+                                    'Conexiones',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.grey[700],
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ],
                         ),

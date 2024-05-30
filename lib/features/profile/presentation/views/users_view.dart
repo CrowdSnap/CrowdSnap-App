@@ -3,6 +3,7 @@ import 'package:crowd_snap/app/router/app_router.dart';
 import 'package:crowd_snap/core/data/models/post_model.dart';
 import 'package:crowd_snap/core/data/models/user_model.dart';
 import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_local_use_case.dart';
+import 'package:crowd_snap/features/imgs/presentation/widgets/connections_modal_bottom_sheet.dart';
 import 'package:crowd_snap/features/profile/data/repositories_impl/user_posts_repository_impl.dart';
 import 'package:crowd_snap/features/profile/data/repositories_impl/users_repository_impl.dart';
 import 'package:crowd_snap/features/profile/domain/use_cases/add_connection_use_case.dart';
@@ -70,22 +71,85 @@ class _UsersViewState extends ConsumerState<UsersView> {
 
   void _toggleConnection() {
     if (isConnected) {
-      ref
-          .read(removeConnectionUseCaseProvider)
-          .execute(localUser.userId, widget.userId);
-      setState(() {
-        connectionsCount--;
-        isConnected = false;
-      });
+      try {
+        ref
+            .read(removeConnectionUseCaseProvider)
+            .execute(localUser.userId, widget.userId);
+
+        setState(() {
+          connectionsCount--;
+          isConnected = false;
+        });
+      } on Exception catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Column(
+              children: [
+                Text('No se pudo desconectar, inténtalo de nuevo: $e'),
+                const SizedBox(height: 8),
+                ElevatedButton(
+                  onPressed: () => ref
+                      .read(removeConnectionUseCaseProvider)
+                      .execute(localUser.userId, widget.userId),
+                  child: const Text('Reintentar'),
+                ),
+              ],
+            ),
+          ),
+        );
+      }
     } else {
-      ref
-          .read(addConnectionUseCaseProvider)
-          .execute(localUser.userId, widget.userId);
-      setState(() {
-        connectionsCount++;
-        isConnected = true;
-      });
+      try {
+        ref
+            .read(addConnectionUseCaseProvider)
+            .execute(localUser.userId, widget.userId);
+        setState(() {
+          connectionsCount++;
+          isConnected = true;
+        });
+      } on Exception catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Column(
+              children: [
+                Text('No se pudo conectar, inténtalo de nuevo: $e'),
+                const SizedBox(height: 8),
+                ElevatedButton(
+                  onPressed: () => ref
+                      .read(addConnectionUseCaseProvider)
+                      .execute(localUser.userId, widget.userId),
+                  child: const Text('Reintentar'),
+                ),
+              ],
+            ),
+          ),
+        );
+      }
     }
+  }
+
+  void _showConnectionSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(40.0)),
+      ),
+      builder: (BuildContext context) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.4,
+          maxChildSize: 0.7,
+          minChildSize: 0.25,
+          expand: false,
+          builder: (BuildContext context, ScrollController scrollController) {
+            return ConnectionsModalBottomSheet(
+              userId: widget.userId,
+              pageController: scrollController,
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -342,23 +406,29 @@ class _UsersViewState extends ConsumerState<UsersView> {
         Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Column(
-              children: [
-                Text(
-                  connectionsCount.toString(),
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.grey[700],
+            GestureDetector(
+              onTap: () {
+                HapticFeedback.selectionClick();
+                _showConnectionSheet();
+              },
+              child: Column(
+                children: [
+                  Text(
+                    connectionsCount.toString(),
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.grey[700],
+                    ),
                   ),
-                ),
-                Text(
-                  connectionsCount == 1 ? 'Conexión' : 'Conexiones',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey[700],
+                  Text(
+                    connectionsCount == 1 ? 'Conexión' : 'Conexiones',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[700],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             const SizedBox(height: 16),
             if (localUser.userId != user.userId)

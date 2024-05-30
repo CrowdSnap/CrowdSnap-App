@@ -12,7 +12,8 @@ abstract class UsersDataSource {
   Future<void> addConnection(String localUserId, String userId);
   Future<void> removeConnection(String localUserId, String userId);
   Future<bool> checkConnection(String localUserId, String userId);
-  Future<List<ConnectionModel>> getUserConnections(String userId);
+  Future<List<Map<String, DateTime>>> getUserConnections(String userId,
+      {String? startAfter, int limit = 30});
 }
 
 @Riverpod(keepAlive: true)
@@ -58,9 +59,6 @@ class UsersDataSourceImpl implements UsersDataSource {
         transaction.update(userRef, {
           'connectionsCount': FieldValue.increment(1),
         });
-      });
-
-      await _firestore.runTransaction((transaction) async {
         transaction.update(localUserRef, {
           'connectionsCount': FieldValue.increment(1),
         });
@@ -82,22 +80,52 @@ class UsersDataSourceImpl implements UsersDataSource {
       final localUserRef = _firestore.collection('users').doc(localUserId);
       final userRef = _firestore.collection('users').doc(userId);
 
-      // Encuentra el nodo de conexión a eliminar
-      final connectionQuery = await _realtimeDatabase
+      // Realiza ambas consultas en paralelo
+      final connectionQuery1 = _realtimeDatabase
+          .ref()
+          .child('connections')
+          .orderByChild('userId')
+          .equalTo(localUserId)
+          .once();
+
+      final connectionQuery2 = _realtimeDatabase
           .ref()
           .child('connections')
           .orderByChild('connectionUserId')
-          .equalTo(userId)
+          .equalTo(localUserId)
           .once();
 
-      if (connectionQuery.snapshot.exists) {
-        final connectionKey = connectionQuery.snapshot.children.first.key;
+      // Espera a que ambas consultas se completen
+      final results = await Future.wait([connectionQuery1, connectionQuery2]);
 
+      String? connectionKey;
+
+      // Procesa los resultados de la primera consulta
+      if (results[0].snapshot.exists) {
+        for (var connection in results[0].snapshot.children) {
+          if (connection.child('connectionUserId').value == userId) {
+            connectionKey = connection.key;
+            break;
+          }
+        }
+      }
+
+      // Procesa los resultados de la segunda consulta si no se encontró en la primera
+      if (connectionKey == null && results[1].snapshot.exists) {
+        for (var connection in results[1].snapshot.children) {
+          if (connection.child('userId').value == userId) {
+            connectionKey = connection.key;
+            break;
+          }
+        }
+      }
+
+      if (connectionKey != null) {
         // Elimina el nodo de conexión
         await _realtimeDatabase
             .ref()
             .child('connections')
-            .child(connectionKey!)
+            .child(connectionKey)
             .remove();
 
         // Actualiza el conteo de conexiones en Firestore
@@ -105,9 +133,6 @@ class UsersDataSourceImpl implements UsersDataSource {
           transaction.update(localUserRef, {
             'connectionsCount': FieldValue.increment(-1),
           });
-        });
-
-        await _firestore.runTransaction((transaction) async {
           transaction.update(userRef, {
             'connectionsCount': FieldValue.increment(-1),
           });
@@ -125,28 +150,30 @@ class UsersDataSourceImpl implements UsersDataSource {
     try {
       final connectionRef = _realtimeDatabase.ref().child('connections');
 
-      // Query to check if localUserId is in userId field
-      final connectionQuery1 = await connectionRef
-          .orderByChild('userId')
+      // Realiza ambas consultas en paralelo
+      final connectionQuery1 =
+          connectionRef.orderByChild('userId').equalTo(localUserId).once();
+
+      final connectionQuery2 = connectionRef
+          .orderByChild('connectionUserId')
           .equalTo(localUserId)
           .once();
 
-      if (connectionQuery1.snapshot.exists) {
-        for (var connection in connectionQuery1.snapshot.children) {
+      // Espera a que ambas consultas se completen
+      final results = await Future.wait([connectionQuery1, connectionQuery2]);
+
+      // Procesa los resultados de la primera consulta
+      if (results[0].snapshot.exists) {
+        for (var connection in results[0].snapshot.children) {
           if (connection.child('connectionUserId').value == userId) {
             return true;
           }
         }
       }
 
-      // Query to check if localUserId is in connectionUserId field
-      final connectionQuery2 = await connectionRef
-          .orderByChild('connectionUserId')
-          .equalTo(localUserId)
-          .once();
-
-      if (connectionQuery2.snapshot.exists) {
-        for (var connection in connectionQuery2.snapshot.children) {
+      // Procesa los resultados de la segunda consulta
+      if (results[1].snapshot.exists) {
+        for (var connection in results[1].snapshot.children) {
           if (connection.child('userId').value == userId) {
             return true;
           }
@@ -160,25 +187,68 @@ class UsersDataSourceImpl implements UsersDataSource {
   }
 
   @override
-  Future<List<ConnectionModel>> getUserConnections(String userId) async {
+  Future<List<Map<String, DateTime>>> getUserConnections(String userId,
+      {String? startAfter, int limit = 30}) async {
     try {
-      final connectionQuery = await _realtimeDatabase
-          .ref()
-          .child('connections')
-          .orderByChild('userId')
-          .equalTo(userId)
-          .once();
+      final connectionRef = _realtimeDatabase.ref().child('connections');
 
-      if (connectionQuery.snapshot.exists) {
-        final connections = <ConnectionModel>[];
-        for (var connection in connectionQuery.snapshot.children) {
-          connections.add(ConnectionModel.fromJson(
-              connection.value as Map<String, dynamic>));
+      // Realiza ambas consultas en paralelo con paginación
+      final connectionQuery1 = startAfter != null
+          ? connectionRef
+              .orderByChild('userId')
+              .equalTo(userId)
+              .startAt(startAfter)
+              .limitToFirst(limit)
+              .once()
+          : connectionRef
+              .orderByChild('userId')
+              .equalTo(userId)
+              .limitToFirst(limit)
+              .once();
+
+      final connectionQuery2 = startAfter != null
+          ? connectionRef
+              .orderByChild('connectionUserId')
+              .equalTo(userId)
+              .startAt(startAfter)
+              .limitToFirst(limit)
+              .once()
+          : connectionRef
+              .orderByChild('connectionUserId')
+              .equalTo(userId)
+              .limitToFirst(limit)
+              .once();
+
+      // Espera a que ambas consultas se completen
+      final results = await Future.wait([connectionQuery1, connectionQuery2]);
+
+      final connections = <Map<String, DateTime>>[];
+
+      // Procesa los resultados de la primera consulta
+      if (results[0].snapshot.exists) {
+        for (var connection in results[0].snapshot.children) {
+          final connectionData =
+              Map<String, dynamic>.from(connection.value as Map);
+          final connectionModel = ConnectionModel.fromJson(connectionData);
+          connections.add({
+            connectionModel.connectionUserId: connectionModel.connectedAt,
+          });
         }
-        return connections;
-      } else {
-        return [];
       }
+
+      // Procesa los resultados de la segunda consulta
+      if (results[1].snapshot.exists) {
+        for (var connection in results[1].snapshot.children) {
+          final connectionData =
+              Map<String, dynamic>.from(connection.value as Map);
+          final connectionModel = ConnectionModel.fromJson(connectionData);
+          connections.add({
+            connectionModel.userId: connectionModel.connectedAt,
+          });
+        }
+      }
+
+      return connections;
     } catch (e) {
       throw Exception('Failed to get user connections: $e');
     }
