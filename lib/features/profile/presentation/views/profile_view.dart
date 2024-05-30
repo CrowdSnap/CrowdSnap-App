@@ -156,23 +156,25 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                               style: Theme.of(context).textTheme.headlineLarge,
                             ),
                             const SizedBox(height: 16),
-                            Column(
-                              children: [
-                                Text(
-                                  profileValues.connectionsCount.toString(),
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    color: Colors.grey[700],
+                            GestureDetector(
+                              child: Column(
+                                children: [
+                                  Text(
+                                    profileValues.connectionsCount.toString(),
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: Colors.grey[700],
+                                    ),
                                   ),
-                                ),
-                                Text(
-                                  'Conexiones',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.grey[700],
+                                  Text(
+                                    'Conexiones',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.grey[700],
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ],
                         ),
@@ -216,12 +218,25 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                                 itemCount: profileValues.posts.length,
                                 itemBuilder: (context, index) {
                                   final post = profileValues.posts[index];
-                                  return ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: Image(
-                                      image: CachedNetworkImageProvider(
-                                          post.imageUrl),
-                                      fit: BoxFit.cover,
+                                  return GestureDetector(
+                                    onTap: () {
+                                      HapticFeedback.selectionClick();
+                                      ref.read(appRouterProvider).push(
+                                        '/posts-list',
+                                        extra: {
+                                          'posts': profileValues.posts,
+                                          'height': _calculateHeight(
+                                              profileValues, index),
+                                        },
+                                      );
+                                    },
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Image(
+                                        image: CachedNetworkImageProvider(
+                                            post.imageUrl),
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
                                   );
                                 },

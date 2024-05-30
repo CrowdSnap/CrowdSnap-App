@@ -86,13 +86,17 @@ class _LikesSheetState extends ConsumerState<LikesSheet> {
                                     highlightColor: Colors.grey[700]!,
                                     baseColor: Colors.grey[500]!,
                                   ),
-                                  child: Container(
-                                      width: 100,
-                                      height: 15,
-                                      decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(12.0),
-                                      )),
+                                  child: const Row(
+                                  children: [
+                                    Text('User Name User'),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      'Hace 1 día',
+                                      style: TextStyle(
+                                          fontSize: 12, color: Colors.grey),
+                                    ),
+                                  ],
+                                ),
                                 ),
                                 subtitle: Skeletonizer(
                                   enabled: true,

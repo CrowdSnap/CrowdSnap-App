@@ -103,24 +103,32 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
                                     highlightColor: Colors.grey[700]!,
                                     baseColor: Colors.grey[500]!,
                                   ),
-                                  child: Container(
-                                    width: 100,
-                                    height: 10,
-                                    color: Colors.grey[300],
+                                  child: const Row(
+                                    children: [
+                                      Text('User Name User'),
+                                      SizedBox(width: 8),
+                                      Text(
+                                        'Hace 1 día',
+                                        style: TextStyle(
+                                            fontSize: 12, color: Colors.grey),
+                                      ),
+                                    ],
                                   ),
                                 ),
                                 subtitle: Skeletonizer(
-                                  enabled: true,
-                                  effect: ShimmerEffect(
-                                    highlightColor: Colors.grey[700]!,
-                                    baseColor: Colors.grey[500]!,
-                                  ),
-                                  child: Container(
-                                    width: 150,
-                                    height: 10,
-                                    color: Colors.grey[300],
-                                  ),
-                                ),
+                                    enabled: true,
+                                    effect: ShimmerEffect(
+                                      highlightColor: Colors.grey[700]!,
+                                      baseColor: Colors.grey[500]!,
+                                    ),
+                                    child: Container(
+                                        width: 100,
+                                        height: 10,
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey[300],
+                                          borderRadius:
+                                              BorderRadius.circular(12.0),
+                                        ))),
                               ),
                             );
                           }
