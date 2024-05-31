@@ -1,3 +1,4 @@
+import 'package:crowd_snap/app/notifications/notification_service.dart';
 import 'package:crowd_snap/core/constants.dart';
 import 'package:crowd_snap/core/data/repository_impl/shared_preferences/user_repository_impl.dart';
 import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_local_use_case.dart';
@@ -33,11 +34,14 @@ void main() async {
   await userPostsDataSource.loadEnvVariables();
   // Inicializa Firebase antes de ejecutar la aplicación.
   WidgetsFlutterBinding.ensureInitialized();
-  final FirebaseMessaging messaging = FirebaseMessaging.instance;
-  final fcmToken = await messaging.getToken();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  NotificationService();
+
+  final FirebaseMessaging messaging = FirebaseMessaging.instance;
+  final fcmToken = await messaging.getToken();
 
   runApp(
     // El widget ProviderScope permitirá que toda tu aplicación tenga acceso a los proveedores de Riverpod.
