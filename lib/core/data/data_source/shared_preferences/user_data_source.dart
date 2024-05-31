@@ -11,6 +11,7 @@ abstract class UserModelDataSource {
   Future<void> saveUserModel(UserModel userModel);
   Future<UserModel> getUserModel();
   Future<void> updateUserAvatar(String avatarUrl, String blurHash);
+  Future<void> updateUserFCMToken(String fcmToken);
   Future<void> savePosts(List<PostModel> posts);
   Future<List<PostModel>> getPosts();
   Future<void> deleteUserModel();
@@ -74,6 +75,20 @@ class UserModelDataSourceImpl implements UserModelDataSource {
       Map<String, dynamic> userModelMap = jsonDecode(userModelJson);
       userModelMap['avatarUrl'] = avatarUrl;
       userModelMap['blurHashImage'] = blurHash;
+      String updatedUserModelJson = jsonEncode(userModelMap);
+      await prefs.setString('userModel', updatedUserModelJson);
+    } else {
+      throw Exception('UserModel not found in SharedPreferences');
+    }
+  }
+
+  @override
+  Future<void> updateUserFCMToken(String fcmToken) async {
+    final prefs = await SharedPreferences.getInstance();
+    final userModelJson = prefs.getString('userModel');
+    if (userModelJson != null) {
+      Map<String, dynamic> userModelMap = jsonDecode(userModelJson);
+      userModelMap['fcmToken'] = fcmToken;
       String updatedUserModelJson = jsonEncode(userModelMap);
       await prefs.setString('userModel', updatedUserModelJson);
     } else {

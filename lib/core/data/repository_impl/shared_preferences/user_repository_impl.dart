@@ -47,6 +47,15 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
+  Future<void> updateUserFCMToken(String fcmToken) async {
+    try {
+      await _userModelDataSource.updateUserFCMToken(fcmToken);
+    } catch (e) {
+      throw Exception('Failed to update user FCM token in SharedPreferences');
+    }
+  }
+
+  @override
   Future<void> savePosts(List<PostModel> posts) async {
     try {
       await _userModelDataSource.savePosts(posts);

@@ -6,8 +6,10 @@ import 'package:crowd_snap/features/imgs/data/data_source/post_data_source.dart'
 import 'package:crowd_snap/features/imgs/data/data_source/image_bucket_data_source.dart';
 import 'package:crowd_snap/features/imgs/domain/use_case/avatar_get_use_case.dart';
 import 'package:crowd_snap/features/profile/data/data_source/user_posts_data_source.dart';
+import 'package:crowd_snap/features/profile/data/repositories_impl/users_repository_impl.dart';
 import 'package:crowd_snap/features/profile/presentation/notifier/profile_notifier.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,6 +33,8 @@ void main() async {
   await userPostsDataSource.loadEnvVariables();
   // Inicializa Firebase antes de ejecutar la aplicación.
   WidgetsFlutterBinding.ensureInitialized();
+  final FirebaseMessaging messaging = FirebaseMessaging.instance;
+  final fcmToken = await messaging.getToken();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -49,10 +53,12 @@ void main() async {
           ref.watch(authRedirectProvider);
 
           final User? user = FirebaseAuth.instance.currentUser;
+
           if (user != null) {
             try {
               // Obtiene la información del usuario y sus posts al iniciar la aplicación.
               final getUserUseCase = ref.read(getUserLocalUseCaseProvider);
+
               final profileNotifier =
                   ref.read(profileNotifierProvider.notifier);
               final getAvatarUseCase = ref.read(avatarGetUseCaseProvider);
@@ -69,6 +75,15 @@ void main() async {
                 profileNotifier.updateUserName(user.username);
                 profileNotifier.updateAge(user.birthDate);
                 profileNotifier.updateConnectionsCount(user.connectionsCount);
+
+                if (fcmToken != user.fcmToken) {
+                  ref
+                      .read(userRepositoryProvider)
+                      .updateUserFCMToken(fcmToken!);
+                  ref
+                      .read(usersRepositoryProvider)
+                      .updateUserFCMToken(user, fcmToken);
+                }
               });
 
               getAvatarUseCase.execute(userName).then((avatar) {

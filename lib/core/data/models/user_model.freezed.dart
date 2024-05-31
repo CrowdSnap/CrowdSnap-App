@@ -28,6 +28,7 @@ mixin _$UserModel {
   DateTime get birthDate => throw _privateConstructorUsedError;
   bool get firstTime => throw _privateConstructorUsedError;
   int get connectionsCount => throw _privateConstructorUsedError;
+  String? get fcmToken => throw _privateConstructorUsedError;
   String? get statusString => throw _privateConstructorUsedError;
   String? get avatarUrl => throw _privateConstructorUsedError;
   String? get blurHashImage => throw _privateConstructorUsedError;
@@ -53,6 +54,7 @@ abstract class $UserModelCopyWith<$Res> {
       DateTime birthDate,
       bool firstTime,
       int connectionsCount,
+      String? fcmToken,
       String? statusString,
       String? avatarUrl,
       String? blurHashImage,
@@ -80,6 +82,7 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
     Object? birthDate = null,
     Object? firstTime = null,
     Object? connectionsCount = null,
+    Object? fcmToken = freezed,
     Object? statusString = freezed,
     Object? avatarUrl = freezed,
     Object? blurHashImage = freezed,
@@ -118,6 +121,10 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
           ? _value.connectionsCount
           : connectionsCount // ignore: cast_nullable_to_non_nullable
               as int,
+      fcmToken: freezed == fcmToken
+          ? _value.fcmToken
+          : fcmToken // ignore: cast_nullable_to_non_nullable
+              as String?,
       statusString: freezed == statusString
           ? _value.statusString
           : statusString // ignore: cast_nullable_to_non_nullable
@@ -155,6 +162,7 @@ abstract class _$$UserModelImplCopyWith<$Res>
       DateTime birthDate,
       bool firstTime,
       int connectionsCount,
+      String? fcmToken,
       String? statusString,
       String? avatarUrl,
       String? blurHashImage,
@@ -180,6 +188,7 @@ class __$$UserModelImplCopyWithImpl<$Res>
     Object? birthDate = null,
     Object? firstTime = null,
     Object? connectionsCount = null,
+    Object? fcmToken = freezed,
     Object? statusString = freezed,
     Object? avatarUrl = freezed,
     Object? blurHashImage = freezed,
@@ -218,6 +227,10 @@ class __$$UserModelImplCopyWithImpl<$Res>
           ? _value.connectionsCount
           : connectionsCount // ignore: cast_nullable_to_non_nullable
               as int,
+      fcmToken: freezed == fcmToken
+          ? _value.fcmToken
+          : fcmToken // ignore: cast_nullable_to_non_nullable
+              as String?,
       statusString: freezed == statusString
           ? _value.statusString
           : statusString // ignore: cast_nullable_to_non_nullable
@@ -250,6 +263,7 @@ class _$UserModelImpl implements _UserModel {
       required this.birthDate,
       required this.firstTime,
       required this.connectionsCount,
+      this.fcmToken,
       this.statusString,
       this.avatarUrl,
       this.blurHashImage,
@@ -275,6 +289,8 @@ class _$UserModelImpl implements _UserModel {
   @override
   final int connectionsCount;
   @override
+  final String? fcmToken;
+  @override
   final String? statusString;
   @override
   final String? avatarUrl;
@@ -285,7 +301,7 @@ class _$UserModelImpl implements _UserModel {
 
   @override
   String toString() {
-    return 'UserModel(userId: $userId, username: $username, name: $name, email: $email, joinedAt: $joinedAt, birthDate: $birthDate, firstTime: $firstTime, connectionsCount: $connectionsCount, statusString: $statusString, avatarUrl: $avatarUrl, blurHashImage: $blurHashImage, city: $city)';
+    return 'UserModel(userId: $userId, username: $username, name: $name, email: $email, joinedAt: $joinedAt, birthDate: $birthDate, firstTime: $firstTime, connectionsCount: $connectionsCount, fcmToken: $fcmToken, statusString: $statusString, avatarUrl: $avatarUrl, blurHashImage: $blurHashImage, city: $city)';
   }
 
   @override
@@ -306,6 +322,8 @@ class _$UserModelImpl implements _UserModel {
                 other.firstTime == firstTime) &&
             (identical(other.connectionsCount, connectionsCount) ||
                 other.connectionsCount == connectionsCount) &&
+            (identical(other.fcmToken, fcmToken) ||
+                other.fcmToken == fcmToken) &&
             (identical(other.statusString, statusString) ||
                 other.statusString == statusString) &&
             (identical(other.avatarUrl, avatarUrl) ||
@@ -327,6 +345,7 @@ class _$UserModelImpl implements _UserModel {
       birthDate,
       firstTime,
       connectionsCount,
+      fcmToken,
       statusString,
       avatarUrl,
       blurHashImage,
@@ -356,6 +375,7 @@ abstract class _UserModel implements UserModel {
       required final DateTime birthDate,
       required final bool firstTime,
       required final int connectionsCount,
+      final String? fcmToken,
       final String? statusString,
       final String? avatarUrl,
       final String? blurHashImage,
@@ -380,6 +400,8 @@ abstract class _UserModel implements UserModel {
   bool get firstTime;
   @override
   int get connectionsCount;
+  @override
+  String? get fcmToken;
   @override
   String? get statusString;
   @override

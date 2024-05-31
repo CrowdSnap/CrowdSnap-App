@@ -14,6 +14,7 @@ class UserModel with _$UserModel {
     required DateTime birthDate,
     required bool firstTime,
     required int connectionsCount,
+    String? fcmToken,
     String? statusString,
     String? avatarUrl,
     String? blurHashImage,

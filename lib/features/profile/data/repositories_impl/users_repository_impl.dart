@@ -27,6 +27,15 @@ class UsersRepositoryImpl implements UsersRepository {
   }
 
   @override
+  Future<void> updateUserFCMToken(UserModel user, String fcmToken) async {
+    try {
+      await _usersModelDataSource.updateUserFCMToken(user, fcmToken);
+    } catch (e) {
+      throw Exception('Failed to update user FCM token: $e');
+    }
+  }
+
+  @override
   Future<void> addConnection(String localUserId, String userId) async {
     await _usersModelDataSource.addConnection(localUserId, userId);
   }

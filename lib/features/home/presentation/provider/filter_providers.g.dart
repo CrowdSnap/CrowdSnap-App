@@ -50,7 +50,7 @@ final cityProvider = AutoDisposeNotifierProvider<City, String?>.internal(
 );
 
 typedef _$City = AutoDisposeNotifier<String?>;
-String _$numberOfPostsHash() => r'f910c2981e854ec5c7370108e1e85201e71a68f9';
+String _$numberOfPostsHash() => r'88b963a0cfbc0a24e861c720feb70e99890f3cd1';
 
 /// See also [NumberOfPosts].
 @ProviderFor(NumberOfPosts)

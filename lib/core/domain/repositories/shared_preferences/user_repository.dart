@@ -4,6 +4,7 @@ import 'package:crowd_snap/core/data/models/user_model.dart';
 abstract class UserRepository {
   Future<void> saveUser(UserModel user);
   Future<void> updateUserAvatar(String avatarUrl, String blurHash);
+  Future<void> updateUserFCMToken(String fcmToken);
   Future<UserModel> getUser();
   Future<void> savePosts(List<PostModel> posts);
   Future<List<PostModel>> getPosts();

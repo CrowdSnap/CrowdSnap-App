@@ -9,6 +9,7 @@ part 'users_data_source.g.dart';
 
 abstract class UsersDataSource {
   Future<UserModel> getUser(String userId);
+  Future<void> updateUserFCMToken(UserModel user, String fcmToken);
   Future<void> addConnection(String localUserId, String userId);
   Future<void> removeConnection(String localUserId, String userId);
   Future<bool> checkConnection(String localUserId, String userId);
@@ -45,6 +46,17 @@ class UsersDataSourceImpl implements UsersDataSource {
       }
     } catch (e) {
       throw Exception('Failed to get user from Firestore');
+    }
+  }
+
+  @override
+  Future<void> updateUserFCMToken(UserModel user, String fcmToken) async {
+    try {
+      await _firestore.collection('users').doc(user.userId).update({
+        'fcmToken': fcmToken,
+      });
+    } catch (e) {
+      throw Exception('Failed to update user FCM token: $e');
     }
   }
 

@@ -57,8 +57,7 @@ class _ConnectionsModalBottomSheetState
 
     final userConnections = await ref
         .read(usersRepositoryProvider)
-        .getUserConnections(widget.userId,
-            startAfter: _lastConnectionId);
+        .getUserConnections(widget.userId, startAfter: _lastConnectionId);
 
     if (mounted) {
       setState(() {
@@ -257,7 +256,7 @@ class _ConnectionsModalBottomSheetState
                                     Text(user.username),
                                     const SizedBox(width: 8),
                                     Text(
-                                      'Conectasteis hace ${_getElapsedTime(connection.values.first)}',
+                                      _getElapsedTime(connection.values.first),
                                       style: const TextStyle(
                                           fontSize: 12, color: Colors.grey),
                                     ),
