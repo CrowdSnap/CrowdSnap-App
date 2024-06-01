@@ -14,6 +14,8 @@ import 'package:flutter_blurhash/flutter_blurhash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
+import '../../data/models/connection_status.dart';
+
 class UsersView extends ConsumerStatefulWidget {
   final String userId;
   final String username;
@@ -39,7 +41,7 @@ class _UsersViewState extends ConsumerState<UsersView> {
   late UserModel user;
   late List<PostModel> userPosts;
   int index = 0;
-  bool isConnected = false;
+  ConnectionStatus connectionStatus = ConnectionStatus.none;
   int connectionsCount = 0;
 
   @override
@@ -54,7 +56,7 @@ class _UsersViewState extends ConsumerState<UsersView> {
     final user = await ref.read(usersRepositoryProvider).getUser(widget.userId);
     final userPosts =
         await ref.read(userPostsRepositoryProvider).getUserPosts(widget.userId);
-    final isConnected = await ref
+    final connectionStatus = await ref
         .read(usersRepositoryProvider)
         .checkConnection(localUser.userId, widget.userId);
 
@@ -63,14 +65,14 @@ class _UsersViewState extends ConsumerState<UsersView> {
         this.localUser = localUser;
         this.user = user;
         this.userPosts = userPosts;
-        this.isConnected = isConnected;
+        this.connectionStatus = connectionStatus;
         connectionsCount = user.connectionsCount;
       });
     }
   }
 
   void _toggleConnection() {
-    if (isConnected) {
+    if (connectionStatus == ConnectionStatus.connected) {
       try {
         ref
             .read(removeConnectionUseCaseProvider)
@@ -78,7 +80,7 @@ class _UsersViewState extends ConsumerState<UsersView> {
 
         setState(() {
           connectionsCount--;
-          isConnected = false;
+          connectionStatus = ConnectionStatus.none;
         });
       } on Exception catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -98,14 +100,13 @@ class _UsersViewState extends ConsumerState<UsersView> {
           ),
         );
       }
-    } else {
+    } else if (connectionStatus == ConnectionStatus.none) {
       try {
         ref
             .read(addConnectionUseCaseProvider)
             .execute(localUser.userId, widget.userId);
         setState(() {
-          connectionsCount++;
-          isConnected = true;
+          connectionStatus = ConnectionStatus.waitingForAcceptance;
         });
       } on Exception catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -117,6 +118,33 @@ class _UsersViewState extends ConsumerState<UsersView> {
                 ElevatedButton(
                   onPressed: () => ref
                       .read(addConnectionUseCaseProvider)
+                      .execute(localUser.userId, widget.userId),
+                  child: const Text('Reintentar'),
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+    } else if (connectionStatus == ConnectionStatus.pending) {
+      try {
+        ref
+            .read(usersRepositoryProvider)
+            .acceptConnection(localUser.userId, widget.userId);
+        setState(() {
+          connectionStatus = ConnectionStatus.connected;
+          connectionsCount++;
+        });
+      } on Exception catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Column(
+              children: [
+                Text('No se pudo conectar, inténtalo de nuevo: $e'),
+                const SizedBox(height: 8),
+                ElevatedButton(
+                  onPressed: () => ref
+                      .read(removeConnectionUseCaseProvider)
                       .execute(localUser.userId, widget.userId),
                   child: const Text('Reintentar'),
                 ),
@@ -432,10 +460,67 @@ class _UsersViewState extends ConsumerState<UsersView> {
             ),
             const SizedBox(height: 16),
             if (localUser.userId != user.userId)
-              ElevatedButton(
-                onPressed: _toggleConnection,
-                child: Text(isConnected ? 'Desconectar' : 'Conectar'),
-              ),
+              if (connectionStatus == ConnectionStatus.connected)
+                ElevatedButton(
+                  onPressed: _toggleConnection,
+                  child: const Text('Desconectar'),
+                )
+              else if (connectionStatus == ConnectionStatus.none)
+                ElevatedButton(
+                  onPressed: _toggleConnection,
+                  child: const Text('Conectar'),
+                )
+              else if (connectionStatus == ConnectionStatus.pending)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: _toggleConnection,
+                      child: const Text('Aceptar conexión'),
+                    ),
+                    const SizedBox(width: 8),
+                    ElevatedButton(
+                        onPressed: _toggleConnection,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context).colorScheme.error,
+                          foregroundColor:
+                              Theme.of(context).colorScheme.onError,
+                        ),
+                        child: const Text('Rechazar')),
+                  ],
+                )
+              else if (connectionStatus ==
+                  ConnectionStatus.waitingForAcceptance)
+                ElevatedButton(
+                  onPressed: null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.12),
+                    foregroundColor: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.38),
+                  ),
+                  child: const Text('Esperando aceptación'),
+                )
+              else if (connectionStatus == ConnectionStatus.rejected)
+                ElevatedButton(
+                  onPressed: null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.12),
+                    foregroundColor: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.38),
+                  ),
+                  child: const Text('Rechazado'),
+                ),
+            const SizedBox(height: 16),
           ],
         ),
         Row(

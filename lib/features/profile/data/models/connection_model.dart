@@ -9,6 +9,7 @@ class ConnectionModel with _$ConnectionModel {
     required DateTime connectedAt,
     required String userId,
     required String connectionUserId,
+    required String connectionStatus,
     String? connectionPostId,
     String? connectionLocation,
   }) = _ConnectionModel;

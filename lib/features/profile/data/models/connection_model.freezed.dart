@@ -23,6 +23,7 @@ mixin _$ConnectionModel {
   DateTime get connectedAt => throw _privateConstructorUsedError;
   String get userId => throw _privateConstructorUsedError;
   String get connectionUserId => throw _privateConstructorUsedError;
+  String get connectionStatus => throw _privateConstructorUsedError;
   String? get connectionPostId => throw _privateConstructorUsedError;
   String? get connectionLocation => throw _privateConstructorUsedError;
 
@@ -42,6 +43,7 @@ abstract class $ConnectionModelCopyWith<$Res> {
       {DateTime connectedAt,
       String userId,
       String connectionUserId,
+      String connectionStatus,
       String? connectionPostId,
       String? connectionLocation});
 }
@@ -62,6 +64,7 @@ class _$ConnectionModelCopyWithImpl<$Res, $Val extends ConnectionModel>
     Object? connectedAt = null,
     Object? userId = null,
     Object? connectionUserId = null,
+    Object? connectionStatus = null,
     Object? connectionPostId = freezed,
     Object? connectionLocation = freezed,
   }) {
@@ -77,6 +80,10 @@ class _$ConnectionModelCopyWithImpl<$Res, $Val extends ConnectionModel>
       connectionUserId: null == connectionUserId
           ? _value.connectionUserId
           : connectionUserId // ignore: cast_nullable_to_non_nullable
+              as String,
+      connectionStatus: null == connectionStatus
+          ? _value.connectionStatus
+          : connectionStatus // ignore: cast_nullable_to_non_nullable
               as String,
       connectionPostId: freezed == connectionPostId
           ? _value.connectionPostId
@@ -102,6 +109,7 @@ abstract class _$$ConnectionModelImplCopyWith<$Res>
       {DateTime connectedAt,
       String userId,
       String connectionUserId,
+      String connectionStatus,
       String? connectionPostId,
       String? connectionLocation});
 }
@@ -120,6 +128,7 @@ class __$$ConnectionModelImplCopyWithImpl<$Res>
     Object? connectedAt = null,
     Object? userId = null,
     Object? connectionUserId = null,
+    Object? connectionStatus = null,
     Object? connectionPostId = freezed,
     Object? connectionLocation = freezed,
   }) {
@@ -135,6 +144,10 @@ class __$$ConnectionModelImplCopyWithImpl<$Res>
       connectionUserId: null == connectionUserId
           ? _value.connectionUserId
           : connectionUserId // ignore: cast_nullable_to_non_nullable
+              as String,
+      connectionStatus: null == connectionStatus
+          ? _value.connectionStatus
+          : connectionStatus // ignore: cast_nullable_to_non_nullable
               as String,
       connectionPostId: freezed == connectionPostId
           ? _value.connectionPostId
@@ -155,6 +168,7 @@ class _$ConnectionModelImpl implements _ConnectionModel {
       {required this.connectedAt,
       required this.userId,
       required this.connectionUserId,
+      required this.connectionStatus,
       this.connectionPostId,
       this.connectionLocation});
 
@@ -168,13 +182,15 @@ class _$ConnectionModelImpl implements _ConnectionModel {
   @override
   final String connectionUserId;
   @override
+  final String connectionStatus;
+  @override
   final String? connectionPostId;
   @override
   final String? connectionLocation;
 
   @override
   String toString() {
-    return 'ConnectionModel(connectedAt: $connectedAt, userId: $userId, connectionUserId: $connectionUserId, connectionPostId: $connectionPostId, connectionLocation: $connectionLocation)';
+    return 'ConnectionModel(connectedAt: $connectedAt, userId: $userId, connectionUserId: $connectionUserId, connectionStatus: $connectionStatus, connectionPostId: $connectionPostId, connectionLocation: $connectionLocation)';
   }
 
   @override
@@ -187,6 +203,8 @@ class _$ConnectionModelImpl implements _ConnectionModel {
             (identical(other.userId, userId) || other.userId == userId) &&
             (identical(other.connectionUserId, connectionUserId) ||
                 other.connectionUserId == connectionUserId) &&
+            (identical(other.connectionStatus, connectionStatus) ||
+                other.connectionStatus == connectionStatus) &&
             (identical(other.connectionPostId, connectionPostId) ||
                 other.connectionPostId == connectionPostId) &&
             (identical(other.connectionLocation, connectionLocation) ||
@@ -196,7 +214,7 @@ class _$ConnectionModelImpl implements _ConnectionModel {
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, connectedAt, userId,
-      connectionUserId, connectionPostId, connectionLocation);
+      connectionUserId, connectionStatus, connectionPostId, connectionLocation);
 
   @JsonKey(ignore: true)
   @override
@@ -218,6 +236,7 @@ abstract class _ConnectionModel implements ConnectionModel {
       {required final DateTime connectedAt,
       required final String userId,
       required final String connectionUserId,
+      required final String connectionStatus,
       final String? connectionPostId,
       final String? connectionLocation}) = _$ConnectionModelImpl;
 
@@ -230,6 +249,8 @@ abstract class _ConnectionModel implements ConnectionModel {
   String get userId;
   @override
   String get connectionUserId;
+  @override
+  String get connectionStatus;
   @override
   String? get connectionPostId;
   @override

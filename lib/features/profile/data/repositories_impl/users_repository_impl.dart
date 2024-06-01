@@ -1,5 +1,6 @@
 import 'package:crowd_snap/core/data/models/user_model.dart';
 import 'package:crowd_snap/features/profile/data/data_source/users_data_source.dart';
+import 'package:crowd_snap/features/profile/data/models/connection_status.dart';
 import 'package:crowd_snap/features/profile/domain/repositories/users_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -41,12 +42,22 @@ class UsersRepositoryImpl implements UsersRepository {
   }
 
   @override
+  Future<void> acceptConnection(String localUserId, String userId) async {
+    await _usersModelDataSource.acceptConnection(localUserId, userId);
+  }
+
+  @override
+  Future<void> rejectConnection(String localUserId, String userId) async {
+    await _usersModelDataSource.rejectConnection(localUserId, userId);
+  }
+
+  @override
   Future<void> removeConnection(String localUserId, String userId) async {
     await _usersModelDataSource.removeConnection(localUserId, userId);
   }
 
   @override
-  Future<bool> checkConnection(String localUserId, String userId) async {
+  Future<ConnectionStatus> checkConnection(String localUserId, String userId) async {
     final result =
         await _usersModelDataSource.checkConnection(localUserId, userId);
     return result;

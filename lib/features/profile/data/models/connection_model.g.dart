@@ -12,6 +12,7 @@ _$ConnectionModelImpl _$$ConnectionModelImplFromJson(
       connectedAt: DateTime.parse(json['connectedAt'] as String),
       userId: json['userId'] as String,
       connectionUserId: json['connectionUserId'] as String,
+      connectionStatus: json['connectionStatus'] as String,
       connectionPostId: json['connectionPostId'] as String?,
       connectionLocation: json['connectionLocation'] as String?,
     );
@@ -22,6 +23,7 @@ Map<String, dynamic> _$$ConnectionModelImplToJson(
       'connectedAt': instance.connectedAt.toIso8601String(),
       'userId': instance.userId,
       'connectionUserId': instance.connectionUserId,
+      'connectionStatus': instance.connectionStatus,
       'connectionPostId': instance.connectionPostId,
       'connectionLocation': instance.connectionLocation,
     };

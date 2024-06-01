@@ -5,14 +5,25 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:crowd_snap/core/data/models/user_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../models/connection_status.dart';
+
 part 'users_data_source.g.dart';
 
 abstract class UsersDataSource {
   Future<UserModel> getUser(String userId);
+
   Future<void> updateUserFCMToken(UserModel user, String fcmToken);
+
   Future<void> addConnection(String localUserId, String userId);
+
+  Future<void> acceptConnection(String localUserId, String userId);
+
+  Future<void> rejectConnection(String localUserId, String userId);
+
   Future<void> removeConnection(String localUserId, String userId);
-  Future<bool> checkConnection(String localUserId, String userId);
+
+  Future<ConnectionStatus> checkConnection(String localUserId, String userId);
+
   Future<List<Map<String, DateTime>>> getUserConnections(String userId,
       {String? startAfter, int limit = 30});
 }
@@ -65,24 +76,155 @@ class UsersDataSourceImpl implements UsersDataSource {
     try {
       final localUserRef = _firestore.collection('users').doc(localUserId);
       final userRef = _firestore.collection('users').doc(userId);
-      final connectionRef = _realtimeDatabase.ref().child('connections').push();
+      final connectionId = '${localUserId}_$userId';
+      final connectionRef =
+          _realtimeDatabase.ref().child('connections').child(connectionId);
 
       await _firestore.runTransaction((transaction) async {
+        // Realiza todas las lecturas primero
+        final userSnapshot = await transaction.get(userRef);
+        final localUserSnapshot = await transaction.get(localUserRef);
+
+        // Prepara los datos para las escrituras
+        final userPendingConnections = userSnapshot.exists
+            ? List<String>.from(
+                userSnapshot.data()!['pendingConnections'] ?? [])
+            : [];
+        userPendingConnections.add(connectionId);
+
+        final localUserPendingConnections = localUserSnapshot.exists
+            ? List<String>.from(
+                localUserSnapshot.data()!['pendingConnections'] ?? [])
+            : [];
+        localUserPendingConnections.add(connectionId);
+
+        // Realiza todas las escrituras después de las lecturas
         transaction.update(userRef, {
-          'connectionsCount': FieldValue.increment(1),
+          'pendingConnections': userPendingConnections,
         });
         transaction.update(localUserRef, {
-          'connectionsCount': FieldValue.increment(1),
+          'pendingConnections': localUserPendingConnections,
         });
       });
 
       await connectionRef.set({
-        'userId': localUserId,
-        'connectionUserId': userId,
+        'senderId': localUserId,
+        'receiverId': userId,
+        'status': 'pending',
         'connectedAt': DateTime.now().toIso8601String(),
       });
+
+      // TODO: Send notification to user
     } catch (e) {
       throw Exception('Failed to add connection: $e');
+    }
+  }
+
+  @override
+  Future<void> acceptConnection(String localUserId, String userId) async {
+    try {
+      final localUserRef = _firestore.collection('users').doc(localUserId);
+      final userRef = _firestore.collection('users').doc(userId);
+
+      // Consulta el array de pendingConnections del usuario local
+      final localUserSnapshot = await localUserRef.get();
+      if (localUserSnapshot.exists) {
+        final localUserData = localUserSnapshot.data() as Map<String, dynamic>;
+        final pendingConnections =
+            List<String>.from(localUserData['pendingConnections'] ?? []);
+
+        // Elimina la conexión pendiente
+        pendingConnections
+            .removeWhere((connectionId) => connectionId.contains(userId));
+
+        // Actualiza el array de pendingConnections del usuario local
+        await localUserRef.update({
+          'pendingConnections': pendingConnections,
+          'connectionsCount': FieldValue.increment(1),
+        });
+      }
+
+      // Consulta el array de pendingConnections del usuario receptor
+      final userSnapshot = await userRef.get();
+      if (userSnapshot.exists) {
+        final userData = userSnapshot.data() as Map<String, dynamic>;
+        final pendingConnections =
+            List<String>.from(userData['pendingConnections'] ?? []);
+
+        // Elimina la conexión pendiente
+        pendingConnections
+            .removeWhere((connectionId) => connectionId.contains(localUserId));
+
+        // Actualiza el array de pendingConnections del usuario receptor
+        await userRef.update({
+          'pendingConnections': pendingConnections,
+          'connectionsCount': FieldValue.increment(1),
+        });
+      }
+
+      // Actualiza la conexión a aceptada
+      final connectionRef = _realtimeDatabase
+          .ref()
+          .child('connections')
+          .child('${userId}_$localUserId');
+      await connectionRef.update({
+        'status': ConnectionStatus.connected.value,
+      });
+    } catch (e) {
+      throw Exception('Failed to accept connection: $e');
+    }
+  }
+
+  @override
+  Future<void> rejectConnection(String localUserId, String userId) async {
+    try {
+      final localUserRef = _firestore.collection('users').doc(localUserId);
+      final userRef = _firestore.collection('users').doc(userId);
+
+      // Consulta el array de pendingConnections del usuario local
+      final localUserSnapshot = await localUserRef.get();
+      if (localUserSnapshot.exists) {
+        final localUserData = localUserSnapshot.data() as Map<String, dynamic>;
+        final pendingConnections =
+            List<String>.from(localUserData['pendingConnections'] ?? []);
+
+        // Elimina la conexión pendiente
+        pendingConnections
+            .removeWhere((connectionId) => connectionId.contains(userId));
+
+        // Actualiza el array de pendingConnections del usuario local
+        await localUserRef.update({
+          'pendingConnections': pendingConnections,
+        });
+      }
+
+      // Consulta el array de pendingConnections del usuario receptor
+      final userSnapshot = await userRef.get();
+      if (userSnapshot.exists) {
+        final userData = userSnapshot.data() as Map<String, dynamic>;
+        final pendingConnections =
+            List<String>.from(userData['pendingConnections'] ?? []);
+
+        // Elimina la conexión pendiente
+        pendingConnections
+            .removeWhere((connectionId) => connectionId.contains(localUserId));
+
+        // Actualiza el array de pendingConnections del usuario receptor
+        await userRef.update({
+          'pendingConnections': pendingConnections,
+        });
+      }
+
+      // Elimina la conexión
+      final connectionRef = _realtimeDatabase
+          .ref()
+          .child('connections')
+          .child('${userId}_$localUserId');
+      await connectionRef.update({
+        'status': ConnectionStatus.rejected.value,
+      });
+    } catch (e) {
+      throw Exception('Failed to reject connection: $e');
     }
   }
 
@@ -96,14 +238,14 @@ class UsersDataSourceImpl implements UsersDataSource {
       final connectionQuery1 = _realtimeDatabase
           .ref()
           .child('connections')
-          .orderByChild('userId')
+          .orderByChild('senderId')
           .equalTo(localUserId)
           .once();
 
       final connectionQuery2 = _realtimeDatabase
           .ref()
           .child('connections')
-          .orderByChild('connectionUserId')
+          .orderByChild('receiverId')
           .equalTo(localUserId)
           .once();
 
@@ -115,7 +257,7 @@ class UsersDataSourceImpl implements UsersDataSource {
       // Procesa los resultados de la primera consulta
       if (results[0].snapshot.exists) {
         for (var connection in results[0].snapshot.children) {
-          if (connection.child('connectionUserId').value == userId) {
+          if (connection.child('senderId').value == localUserId) {
             connectionKey = connection.key;
             break;
           }
@@ -125,7 +267,7 @@ class UsersDataSourceImpl implements UsersDataSource {
       // Procesa los resultados de la segunda consulta si no se encontró en la primera
       if (connectionKey == null && results[1].snapshot.exists) {
         for (var connection in results[1].snapshot.children) {
-          if (connection.child('userId').value == userId) {
+          if (connection.child('receiverId').value == localUserId) {
             connectionKey = connection.key;
             break;
           }
@@ -158,18 +300,17 @@ class UsersDataSourceImpl implements UsersDataSource {
   }
 
   @override
-  Future<bool> checkConnection(String localUserId, String userId) async {
+  Future<ConnectionStatus> checkConnection(
+      String localUserId, String userId) async {
     try {
       final connectionRef = _realtimeDatabase.ref().child('connections');
 
       // Realiza ambas consultas en paralelo
       final connectionQuery1 =
-          connectionRef.orderByChild('userId').equalTo(localUserId).once();
+          connectionRef.orderByChild('senderId').equalTo(localUserId).once();
 
-      final connectionQuery2 = connectionRef
-          .orderByChild('connectionUserId')
-          .equalTo(localUserId)
-          .once();
+      final connectionQuery2 =
+          connectionRef.orderByChild('receiverId').equalTo(localUserId).once();
 
       // Espera a que ambas consultas se completen
       final results = await Future.wait([connectionQuery1, connectionQuery2]);
@@ -177,22 +318,47 @@ class UsersDataSourceImpl implements UsersDataSource {
       // Procesa los resultados de la primera consulta
       if (results[0].snapshot.exists) {
         for (var connection in results[0].snapshot.children) {
-          if (connection.child('connectionUserId').value == userId) {
-            return true;
+          if (connection.child('senderId').value == localUserId) {
+            if (connection.child('status').value ==
+                ConnectionStatus.connected.value) {
+              return ConnectionStatus.connected;
+            } else if (connection.child('status').value ==
+                ConnectionStatus.pending.value) {
+              return ConnectionStatus.waitingForAcceptance;
+            } else {
+              return ConnectionStatus.rejected;
+            }
           }
         }
       }
 
       // Procesa los resultados de la segunda consulta
+      // Procesa los resultados de la segunda consulta
       if (results[1].snapshot.exists) {
         for (var connection in results[1].snapshot.children) {
-          if (connection.child('userId').value == userId) {
-            return true;
+          final status = connection.child('status').value.toString();
+          final receiverId = connection.child('receiverId').value.toString();
+          final senderId = connection.child('senderId').value.toString();
+
+          print("status: $status");
+          print("receiverId: $receiverId");
+          print("senderId: $senderId");
+
+          if (receiverId == localUserId || senderId == localUserId) {
+            if (status == ConnectionStatus.connected.value) {
+              return ConnectionStatus.connected;
+            } else if (status == ConnectionStatus.pending.value) {
+              return ConnectionStatus.pending;
+            } else if (status == ConnectionStatus.waitingForAcceptance.value) {
+              return ConnectionStatus.waitingForAcceptance;
+            } else {
+              return ConnectionStatus.rejected;
+            }
           }
         }
       }
 
-      return false;
+      return ConnectionStatus.none;
     } catch (e) {
       throw Exception('Failed to check connection: $e');
     }
@@ -207,26 +373,26 @@ class UsersDataSourceImpl implements UsersDataSource {
       // Realiza ambas consultas en paralelo con paginación
       final connectionQuery1 = startAfter != null
           ? connectionRef
-              .orderByChild('userId')
+              .orderByChild('senderId')
               .equalTo(userId)
               .startAt(startAfter)
               .limitToFirst(limit)
               .once()
           : connectionRef
-              .orderByChild('userId')
+              .orderByChild('senderId')
               .equalTo(userId)
               .limitToFirst(limit)
               .once();
 
       final connectionQuery2 = startAfter != null
           ? connectionRef
-              .orderByChild('connectionUserId')
+              .orderByChild('receiverId')
               .equalTo(userId)
               .startAt(startAfter)
               .limitToFirst(limit)
               .once()
           : connectionRef
-              .orderByChild('connectionUserId')
+              .orderByChild('receiverId')
               .equalTo(userId)
               .limitToFirst(limit)
               .once();
@@ -242,9 +408,14 @@ class UsersDataSourceImpl implements UsersDataSource {
           final connectionData =
               Map<String, dynamic>.from(connection.value as Map);
           final connectionModel = ConnectionModel.fromJson(connectionData);
-          connections.add({
-            connectionModel.connectionUserId: connectionModel.connectedAt,
-          });
+
+          // Filtra las conexiones con estado 'connected'
+          if (connectionModel.connectionStatus ==
+              ConnectionStatus.connected.value) {
+            connections.add({
+              connectionModel.connectionUserId: connectionModel.connectedAt,
+            });
+          }
         }
       }
 
@@ -254,9 +425,14 @@ class UsersDataSourceImpl implements UsersDataSource {
           final connectionData =
               Map<String, dynamic>.from(connection.value as Map);
           final connectionModel = ConnectionModel.fromJson(connectionData);
-          connections.add({
-            connectionModel.userId: connectionModel.connectedAt,
-          });
+
+          // Filtra las conexiones con estado 'connected'
+          if (connectionModel.connectionStatus ==
+              ConnectionStatus.connected.value) {
+            connections.add({
+              connectionModel.connectionUserId: connectionModel.connectedAt,
+            });
+          }
         }
       }
 
