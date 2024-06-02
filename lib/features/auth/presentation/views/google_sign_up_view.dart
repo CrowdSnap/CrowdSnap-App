@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:crowd_snap/features/auth/presentation/notifier/google_sign_up_notifier.dart';
 import 'package:crowd_snap/features/auth/presentation/widgets/age/birth_date_input_google_sign_up.dart';
 import 'package:crowd_snap/features/auth/presentation/widgets/google_register_button_submit.dart';
+import 'package:crowd_snap/features/auth/presentation/widgets/google_user_name_input.dart';
 import 'package:crowd_snap/features/imgs/presentation/notifier/image_picker_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -260,13 +261,7 @@ class _GoogleSignUpScreenState extends ConsumerState<GoogleSignUpView>
                           decoration: const InputDecoration(labelText: 'Name'),
                           onChanged: (value) => formValues.updateNombre(value),
                         ),
-                        TextFormField(
-                          initialValue: formState.userName,
-                          decoration:
-                              const InputDecoration(labelText: 'Username'),
-                          onChanged: (value) =>
-                              formValues.updateUserName(value),
-                        ),
+                        const GoogleUserNameInput(),
                         // Widget personalizado para la entrada de fecha de nacimiento (se asume que existe un widget `BirthDateInputGoogleSignUp`).
                         const BirthDateInputGoogleSignUp(),
                         const SizedBox(height: 16),

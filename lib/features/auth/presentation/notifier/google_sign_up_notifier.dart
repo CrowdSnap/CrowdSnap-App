@@ -22,6 +22,8 @@ class GoogleSignUpState {
   final String email;
   final DateTime? birthDate;
   final String userName;
+  final bool isUserNameValid;
+  final bool userNamesExists;
   final bool isLoading;
   final String googleImage;
   final String userImage;
@@ -42,6 +44,8 @@ class GoogleSignUpState {
     this.email = '',
     this.birthDate,
     this.userName = '',
+    this.isUserNameValid = true,
+    this.userNamesExists = false,
     this.isLoading = false,
     this.googleImage = '',
     this.userImage = '',
@@ -63,6 +67,8 @@ class GoogleSignUpState {
     String? email,
     DateTime? birthDate,
     String? userName,
+    bool? isUserNameValid,
+    bool? userNamesExists,
     bool? isLoading,
     String? googleImage,
     String? userImage,
@@ -73,6 +79,8 @@ class GoogleSignUpState {
       email: email ?? this.email,
       birthDate: birthDate ?? this.birthDate,
       userName: userName ?? this.userName,
+      isUserNameValid: isUserNameValid ?? this.isUserNameValid,
+      userNamesExists: userNamesExists ?? this.userNamesExists,
       isLoading: isLoading ?? this.isLoading,
       googleImage: googleImage ?? this.googleImage,
       userImage: userImage ?? this.userImage,
@@ -129,6 +137,10 @@ class GoogleSignUpNotifier extends _$GoogleSignUpNotifier {
     state = state.copyWith(userName: userName);
   }
 
+  void setUserNamesExists(bool exists) {
+    state = state.copyWith(userNamesExists: exists);
+  }
+
   // Método para actualizar la URL de la imagen de perfil de Google del usuario en el estado.
   void updateGoogleImage(String googleImage) {
     state = state.copyWith(googleImage: googleImage);
@@ -151,10 +163,20 @@ class GoogleSignUpNotifier extends _$GoogleSignUpNotifier {
     if (state.birthDate!.month > now.month ||
         (state.birthDate!.month == now.month &&
             state.birthDate!.day > now.day)) {
-      state = state.copyWith(isBirthDateValid: age > 18);
+      state = state.copyWith(isBirthDateValid: age > 16);
     } else {
-      state = state.copyWith(isBirthDateValid: age >= 18);
+      state = state.copyWith(isBirthDateValid: age >= 16);
     }
+  }
+
+  void validateUserNameVisual() {
+    final userName = state.userName;
+    final isValid = userName.isNotEmpty &&
+        userName.length >= 3 &&
+        userName.length <= 15 &&
+        RegExp(r'^[a-z0-9_\-\.]*$').hasMatch(userName);
+    print('isUserNameValid: $isValid');
+    state = state.copyWith(isUserNameValid: isValid);
   }
 
   // Método para restablecer el estado a su valor inicial vacío.

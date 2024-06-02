@@ -13,6 +13,8 @@ class FormState {
   final bool showPassword;
   final bool isPasswordValid;
   final bool isBirthDateValid;
+  final bool isUserNameValid;
+  final bool userNamesExists;
   final bool isLoading;
   final bool isLoadingGoogle;
 
@@ -36,6 +38,8 @@ class FormState {
     this.birthDate,
     this.showPassword = false,
     this.isPasswordValid = false,
+    this.isUserNameValid = false,
+    this.userNamesExists = false,
     this.isLoading = false,
     this.isLoadingGoogle = false,
     this.isBirthDateValid = false,
@@ -62,6 +66,8 @@ class FormState {
     bool? showPassword,
     bool? isPasswordValid,
     bool? isBirthDateValid,
+    bool? isUserNameValid,
+    bool? userNamesExists,
     bool? isLoading,
     bool? isLoadingGoogle,
   }) {
@@ -74,6 +80,8 @@ class FormState {
       showPassword: showPassword ?? this.showPassword,
       isPasswordValid: isPasswordValid ?? this.isPasswordValid,
       isBirthDateValid: isBirthDateValid ?? this.isBirthDateValid,
+      isUserNameValid: isUserNameValid ?? this.isUserNameValid,
+      userNamesExists: userNamesExists ?? this.userNamesExists,
       isLoading: isLoading ?? this.isLoading,
       isLoadingGoogle: isLoadingGoogle ?? this.isLoadingGoogle,
     );
@@ -112,6 +120,11 @@ class FormNotifier extends _$FormNotifier {
   // Método para actualizar el estado del formulario con la fecha de nacimiento proporcionada.
   void updateBirthDate(DateTime birthDate) {
     state = state.copyWith(birthDate: birthDate);
+  }
+
+  // Método para establecer la bandera `userNamesExists` en el estado del formulario.
+  void setUserNamesExists(bool exists) {
+    state = state.copyWith(userNamesExists: exists);
   }
 
   // Método para restablecer el estado del formulario a su estado inicial.
@@ -167,9 +180,18 @@ class FormNotifier extends _$FormNotifier {
     if (state.birthDate!.month > now.month ||
         (state.birthDate!.month == now.month &&
             state.birthDate!.day > now.day)) {
-      state = state.copyWith(isBirthDateValid: age > 18);
+      state = state.copyWith(isBirthDateValid: age > 16);
     } else {
-      state = state.copyWith(isBirthDateValid: age >= 18);
+      state = state.copyWith(isBirthDateValid: age >= 16);
     }
+  }
+
+  void validateUserNameVisual() {
+    final userName = state.userName;
+    final isValid = userName.isNotEmpty &&
+        userName.length >= 3 &&
+        userName.length <= 15 &&
+        RegExp(r'^[a-z0-9_\-\.]*$').hasMatch(userName);
+    state = state.copyWith(isUserNameValid: isValid);
   }
 }

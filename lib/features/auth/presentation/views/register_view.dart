@@ -5,6 +5,7 @@ import 'package:crowd_snap/features/auth/presentation/widgets/google_sign_in_but
 import 'package:crowd_snap/features/auth/presentation/widgets/password/password_input.dart';
 import 'package:crowd_snap/core/constants.dart';
 import 'package:crowd_snap/features/auth/presentation/widgets/register_button_form_submit.dart';
+import 'package:crowd_snap/features/auth/presentation/widgets/user_name_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -62,15 +63,7 @@ class RegisterView extends ConsumerWidget {
                               keyboardType: TextInputType.name,
                             ),
                             // Campo de entrada de texto para el nombre de usuario.
-                            TextFormField(
-                              initialValue: formValues.name,
-                              decoration: const InputDecoration(
-                                labelText: userName,
-                              ),
-                              onChanged: (value) =>
-                                  formState.updateUserName(value),
-                              keyboardType: TextInputType.name,
-                            ),
+                            const UserNameInput(),
                             // Campo de entrada de texto para el correo electrónico.
                             TextFormField(
                               initialValue: formValues.email,

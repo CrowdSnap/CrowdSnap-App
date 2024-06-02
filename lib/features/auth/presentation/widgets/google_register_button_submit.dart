@@ -20,25 +20,32 @@ class GoogleRegisterButtonSubmit extends ConsumerWidget {
 
     // Botón elevado para el registro con Google.
     return ElevatedButton(
-      onPressed: () async {
-        // Indica que el botón está cargando (deshabilita interacción).
-        formState.updateIsLoading(true);
-        // Intento de registro con Google utilizando el proveedor de autenticación.
-        final signUpResult = await authNotifier.signUpWithGoogle(
-          formValues.name,
-          formValues.userName,
-          formValues.birthDate!,
-          formValues.userImage,
-        );
-        if (signUpResult == SignUpResult.success) {
-          print('Sign up success');
-          // Actualiza el estado de autenticación (indica que el usuario inició sesión).
-          authState.loggedIn();
-        }
-        print('Sign up result: $signUpResult');
-        // Habilita nuevamente la interacción con el botón.
-        formState.updateIsLoading(false);
-      },
+      onPressed: formValues.userName.isNotEmpty &&
+              formValues.name.isNotEmpty &&
+              formValues.isBirthDateValid &&
+              !formValues.isLoading &&
+              formValues.isUserNameValid &&
+              !formValues.userNamesExists
+          ? () async {
+              // Indica que el botón está cargando (deshabilita interacción).
+              formState.updateIsLoading(true);
+              // Intento de registro con Google utilizando el proveedor de autenticación.
+              final signUpResult = await authNotifier.signUpWithGoogle(
+                formValues.name,
+                formValues.userName,
+                formValues.birthDate!,
+                formValues.userImage,
+              );
+              if (signUpResult == SignUpResult.success) {
+                print('Sign up success');
+                // Actualiza el estado de autenticación (indica que el usuario inició sesión).
+                authState.loggedIn();
+              }
+              print('Sign up result: $signUpResult');
+              // Habilita nuevamente la interacción con el botón.
+              formState.updateIsLoading(false);
+            }
+          : null,
       // Estilo del botón dependiendo de si los campos del formulario están completos.
       style: ElevatedButton.styleFrom(
         backgroundColor: formValues.name.isNotEmpty &&

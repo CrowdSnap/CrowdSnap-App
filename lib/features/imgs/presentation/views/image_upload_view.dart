@@ -115,7 +115,7 @@ class ImageUploadView extends ConsumerWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Picture Upload'),
+          title: const Text('Publica una foto'),
         ),
         body: GestureDetector(
           onVerticalDragUpdate: (details) async {
@@ -149,38 +149,49 @@ class ImageUploadView extends ConsumerWidget {
                         ),
                       const SizedBox(height: 20),
                       if (imageState != null)
-                        ElevatedButton(
-                          onPressed: () {
-                            try {
-                              _saveImage(imageState, ref, context);
-                            } on Exception catch (e) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('Error uploading image: $e'),
-                                  duration: const Duration(seconds: 2),
-                                  behavior: SnackBarBehavior.floating,
-                                ),
-                              );
-                            }
-                          },
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              if (isLoading)
-                                const Padding(
-                                  padding: EdgeInsets.only(right: 8.0),
-                                  child: SizedBox(
-                                    width: 12,
-                                    height: 12,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
+                        Column(
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                try {
+                                  _saveImage(imageState, ref, context);
+                                } on Exception catch (e) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Error uploading image: $e'),
+                                      duration: const Duration(seconds: 2),
+                                      behavior: SnackBarBehavior.floating,
                                     ),
-                                  ),
-                                ),
-                              const Icon(Icons.upload),
-                              const Text('Upload Image'),
-                            ],
-                          ),
+                                  );
+                                }
+                              },
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  if (isLoading)
+                                    const Padding(
+                                      padding: EdgeInsets.only(right: 8.0),
+                                      child: SizedBox(
+                                        width: 12,
+                                        height: 12,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      ),
+                                    ),
+                                  const Icon(Icons.upload),
+                                  const Text('Subir Post'),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            ElevatedButton(
+                              onPressed: () {
+                                ref.watch(imageStateProvider.notifier).clearImage();
+                              },
+                              child: const Text('Cancelar'),
+                            ),
+                          ],
                         ),
                     ],
                   ),

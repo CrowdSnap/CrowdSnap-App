@@ -27,7 +27,9 @@ class RegisterButtonFormSubmit extends ConsumerWidget {
               formValues.email.isNotEmpty &&
               formValues.userName.isNotEmpty &&
               formValues.name.isNotEmpty &&
-              formValues.isBirthDateValid
+              formValues.isBirthDateValid &&
+              formValues.isUserNameValid &&
+              !formValues.userNamesExists
           ? () async {
               // Indica que el botón está cargando (deshabilita interacción).
               formState.startLoading();

@@ -13,6 +13,7 @@ abstract class FirestoreDataSource {
   Future<void> updateUser(UserModel user);
   Future<void> updateUserAvatar(String avatarUrl, String blurHash);
   Future<void> deleteUser(String userId);
+  Future<bool> userNamesExists(String userName);
 }
 
 final _logger = Logger('FirestoreDataSource');
@@ -109,6 +110,24 @@ class FirestoreDataSourceImpl implements FirestoreDataSource {
     } catch (e) {
       _logger.severe('Error deleting user from Firestore: $e');
       throw Exception('Failed to delete user from Firestore');
+    }
+  }
+
+  // Implementación del método `userNamesExists` de FirestoreDataSource.
+  // Comprueba si el nombre de usuario (`userName`) proporcionado ya existe en Firestore.
+  // Devuelve un `Future<bool>` que indica si el nombre de usuario ya existe o no.
+  // Devuelve `true` si el nombre de usuario ya existe, `false` si no existe.
+  @override
+  Future<bool> userNamesExists(String userName) async {
+    try {
+      final userQuery = await _firestore
+          .collection('users')
+          .where('username', isEqualTo: userName)
+          .get();
+      return userQuery.docs.isNotEmpty;
+    } catch (e) {
+      _logger.severe('Error checking user name in Firestore: $e');
+      throw Exception('Failed to check user name in Firestore');
     }
   }
 }

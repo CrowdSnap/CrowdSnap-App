@@ -1,9 +1,12 @@
+import 'package:crowd_snap/features/auth/data/data_sources/firestore_data_source.dart';
 import 'package:crowd_snap/features/auth/domain/use_cases/google_sign_in_use_case.dart';
 import 'package:crowd_snap/features/auth/domain/use_cases/google_sign_up_use_case.dart';
 import 'package:crowd_snap/features/auth/domain/use_cases/recover_password_use_case.dart';
 import 'package:crowd_snap/features/auth/domain/use_cases/sign_in_use_case.dart';
 import 'package:crowd_snap/features/auth/domain/use_cases/sign_out_use_case.dart';
 import 'package:crowd_snap/features/auth/domain/use_cases/sign_up_use_case.dart';
+import 'package:crowd_snap/features/auth/presentation/notifier/form_notifier.dart';
+import 'package:crowd_snap/features/auth/presentation/notifier/google_sign_up_notifier.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:logging/logging.dart';
@@ -79,6 +82,10 @@ class AuthNotifier extends _$AuthNotifier {
       // Si el registro es exitoso:
       // - Establece el estado de vuelta a 'data(null)'.
       // - Devuelve `SignUpResult.success`.
+      if (await ref.read(firestoreDataSourceProvider).userNamesExists(username)){
+        ref.read(formNotifierProvider.notifier).setUserNamesExists(true);
+        return SignUpResult.error;
+      }
       await ref
           .read(signUpUseCaseProvider)
           .execute(email, password, username, name, birthDate);
@@ -158,6 +165,10 @@ class AuthNotifier extends _$AuthNotifier {
     state = const AsyncValue.loading();
     try {
       // Intenta registrar al usuario utilizando el inicio de sesión con Google y la información proporcionada.
+      if (await ref.read(firestoreDataSourceProvider).userNamesExists(userName)){
+        ref.read(googleSignUpNotifierProvider.notifier).setUserNamesExists(true);
+        return SignUpResult.error;
+      }
       await ref
           .read(googleSignUpUseCaseProvider)
           .execute(name, userName, birthDate, userImage);

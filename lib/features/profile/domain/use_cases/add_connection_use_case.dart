@@ -19,7 +19,7 @@ class AddConnectionUseCase {
       PushNotificationModel(
         fcmToken: receiverFcmToken,
         title: '${user.name} quiere conectar contigo!',
-        body: '¡Conéctate con ${user.username} para ver sus publicaciones y ser amigos!',
+        body: '¡Conecta con ${user.username} para ver sus publicaciones y ser amigos!',
         imageUrl: user.avatarUrl,
       ),
     );

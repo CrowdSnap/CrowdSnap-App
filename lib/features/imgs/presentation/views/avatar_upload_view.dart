@@ -137,7 +137,7 @@ class AvatarUploadView extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Avatar Upload'),
+        title: const Text('Sube tu foto de perfil'),
       ),
       body: Builder(
         builder: (BuildContext context) {
@@ -214,7 +214,7 @@ class AvatarUploadView extends ConsumerWidget {
                                     ),
                                   ),
                                 const Icon(Icons.upload),
-                                const Text('Upload Image'),
+                                const Text('Subir foto de perfil'),
                               ],
                             ),
                           ),
@@ -227,7 +227,7 @@ class AvatarUploadView extends ConsumerWidget {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(Icons.delete),
-                                Text('Delete Image'),
+                                Text('Elegir otra foto'),
                               ],
                             ),
                           ),

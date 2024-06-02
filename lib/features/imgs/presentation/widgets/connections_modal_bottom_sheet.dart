@@ -14,12 +14,14 @@ class ConnectionsModalBottomSheet extends ConsumerStatefulWidget {
   final String userId;
   final ScrollController pageController;
   final UserModel user;
+  final String localUserId;
 
   const ConnectionsModalBottomSheet({
     super.key,
     required this.userId,
     required this.pageController,
     required this.user,
+    required this.localUserId,
   });
 
   @override
@@ -123,7 +125,9 @@ class _ConnectionsModalBottomSheetState
             child: widget.user.connectionsCount == 0
                 ? Center(
                     child: Text(
-                      'Se el primero en conectar con ${widget.user.name}',
+                      widget.user.userId == widget.localUserId
+                          ? 'Aún no tienes conexiones'
+                          : 'Se el primero en conectar con ${widget.user.name}',
                       style: const TextStyle(
                           fontSize: 24, fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center,

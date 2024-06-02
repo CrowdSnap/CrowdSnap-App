@@ -229,6 +229,7 @@ class _UsersViewState extends ConsumerState<UsersView> {
               userId: user.userId,
               pageController: scrollController,
               user: user,
+              localUserId: localUser.userId,
             );
           },
         );

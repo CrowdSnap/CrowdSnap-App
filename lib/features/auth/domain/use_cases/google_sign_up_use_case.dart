@@ -11,6 +11,7 @@ import 'package:crowd_snap/features/imgs/domain/use_case/avatar_get_use_case.dar
 import 'package:crowd_snap/features/imgs/domain/use_case/avatar_upload_use_case.dart';
 import 'package:crowd_snap/features/profile/presentation/notifier/profile_notifier.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:logging/logging.dart';
@@ -42,7 +43,6 @@ class GoogleSignUpUseCase {
       final String userAvatar;
       final String blurHash;
       if (userImage.isEmpty) {
-        print('Downloading google avatar ${googleUser.avatarUrl}');
         final avatar = googleUser.avatarUrl;
         final dio = Dio();
         final directory = await getApplicationDocumentsDirectory();
@@ -51,11 +51,11 @@ class GoogleSignUpUseCase {
         (userAvatar, blurHash) = await _avatarUploadUseCase.execute(avatarFile,
             userName: userName, googleAvatar: true);
       } else {
-        print('Uploading user selected avatar $userImage');
         (userAvatar, blurHash) = await _avatarUploadUseCase.execute(File(userImage),
             userName: userName);
       }
-      print('UserImage: $userAvatar');
+      final FirebaseMessaging messaging = FirebaseMessaging.instance;
+      final fcmToken = await messaging.getToken();
       UserModel user = UserModel(
         userId: googleUser.userId,
         username: userName,
@@ -64,15 +64,13 @@ class GoogleSignUpUseCase {
         birthDate: birthDate,
         joinedAt: DateTime.now(),
         firstTime: true,
+        fcmToken: fcmToken,
         avatarUrl: userAvatar,
         blurHashImage: blurHash,
         connectionsCount: 0,
       );
-      print('User Avatar: ${user.avatarUrl}');
-      print('Uploaded user selected avatar ${user.avatarUrl}');
       await _storeUserUseCase.execute(user);
       await _firestoreRepository.saveUser(user);
-      print('Signed up successfully with Google');
       _getUserUseCase.execute().then((user) {
         _profileNotifier.updateUserId(user.userId);
         _profileNotifier.updateName(user.name);
@@ -84,8 +82,7 @@ class GoogleSignUpUseCase {
           _profileNotifier.updateImage(avatar);
         });
       });
-    } on Exception catch (e) {
-      print('Error: $e');
+    } on Exception {
       rethrow;
     }
   }

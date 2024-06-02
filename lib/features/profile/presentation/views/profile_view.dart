@@ -89,6 +89,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
               userId: localUser.userId,
               pageController: scrollController,
               user: localUser,
+              localUserId: localUser.userId,
             );
           },
         );

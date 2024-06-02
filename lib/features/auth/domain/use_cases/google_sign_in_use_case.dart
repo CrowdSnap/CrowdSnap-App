@@ -11,6 +11,7 @@ import 'package:crowd_snap/features/imgs/data/repositories_impl/post_repository_
 import 'package:crowd_snap/features/imgs/domain/repository/post_repository.dart';
 import 'package:crowd_snap/features/imgs/domain/use_case/avatar_get_use_case.dart';
 import 'package:crowd_snap/features/profile/presentation/notifier/profile_notifier.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:logging/logging.dart';
 
@@ -42,19 +43,21 @@ class GoogleSignInUseCase {
     try {
       final UserModel userModel =
           await _firestoreRepository.getUser(googleUserModel.userId);
-      if (userModel.firstTime) {
-        final updatedUserModel = userModel.copyWith(firstTime: false);
-        await _firestoreRepository.saveUser(updatedUserModel);
-        print('User updated false fistTime: $updatedUserModel');
-      }
-      await _storeUserUseCase.execute(userModel);
-      try {
-        await _avatarGetUseCase.execute(userModel.avatarUrl!);
-      } on Exception catch (e) {
-        print('Avatar extraido de Firestore: $e');
-      }
 
-      // Añade este código dentro de la función execute
+      final FirebaseMessaging messaging = FirebaseMessaging.instance;
+      final fcmToken = await messaging.getToken();
+
+      final fcmTokenUserModel = userModel.copyWith(fcmToken: fcmToken);
+
+      final updatedUserModel = fcmTokenUserModel.copyWith(firstTime: false);
+      await _firestoreRepository.saveUser(updatedUserModel);
+
+      await _storeUserUseCase.execute(updatedUserModel);
+      try {
+        await _avatarGetUseCase.execute(updatedUserModel.avatarUrl!);
+      } on Exception catch (e) {
+        throw Exception('Error al obtener el avatar: $e');
+      }
       _getUserUseCase.execute().then((user) {
         _profileNotifier.updateUserId(user.userId);
         _profileNotifier.updateName(user.name);
@@ -67,8 +70,8 @@ class GoogleSignInUseCase {
         });
 
         _postRepository.getPostsByUser(user.userId).then((posts) {
-              _profileNotifier.updatePosts(posts);
-            });
+          _profileNotifier.updatePosts(posts);
+        });
       });
 
       return true;
