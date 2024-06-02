@@ -15,27 +15,33 @@ class HomeView extends ConsumerStatefulWidget {
   ConsumerState<HomeView> createState() => _HomeViewState();
 }
 
-class _HomeViewState extends ConsumerState<HomeView> with TickerProviderStateMixin {
+class _HomeViewState extends ConsumerState<HomeView>
+    with TickerProviderStateMixin {
   final ScrollController _scrollController = ScrollController();
   bool _isLoading = false;
   late final AnimationController _animationController;
+  late final TabController _tabController;
 
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
     _animationController = AnimationController(vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
     _animationController.dispose();
+    _tabController.dispose();
     super.dispose();
   }
 
   void _onScroll() {
-    if (!_isLoading && _scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+    if (!_isLoading &&
+        _scrollController.position.pixels ==
+            _scrollController.position.maxScrollExtent) {
       _loadMorePosts();
     }
   }
@@ -86,8 +92,13 @@ class _HomeViewState extends ConsumerState<HomeView> with TickerProviderStateMix
                 actions: const [
                   FilterButton(),
                 ],
-                bottom: const TabBar(
-                  tabs: [
+                bottom: TabBar(
+                  enableFeedback: true,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  onTap: (value) {
+                    _scrollToTop();
+                  },
+                  tabs: const [
                     Tab(text: "Random Posts"),
                     Tab(text: "Top Posts"),
                   ],
@@ -95,14 +106,18 @@ class _HomeViewState extends ConsumerState<HomeView> with TickerProviderStateMix
                 pinned: true,
                 floating: true,
                 snap: true,
+                centerTitle: true,
               ),
             ];
           },
           body: TabBarView(
-            physics: blockScroll ? const NeverScrollableScrollPhysics() : const ClampingScrollPhysics(),
+            physics: blockScroll
+                ? const NeverScrollableScrollPhysics()
+                : const ClampingScrollPhysics(),
             children: [
               _buildListView(postListAsyncValue, blockScroll),
-              _buildListView(postListAsyncValue, blockScroll), // Puedes cambiar esto para mostrar diferentes listados
+              _buildListView(postListAsyncValue,
+                  blockScroll), // Puedes cambiar esto para mostrar diferentes listados
             ],
           ),
         ),
@@ -110,13 +125,16 @@ class _HomeViewState extends ConsumerState<HomeView> with TickerProviderStateMix
     );
   }
 
-  Widget _buildListView(AsyncValue<List<PostModel>> postListAsyncValue, bool blockScroll) {
+  Widget _buildListView(
+      AsyncValue<List<PostModel>> postListAsyncValue, bool blockScroll) {
     return RefreshIndicator(
       onRefresh: () => ref.read(postListProvider.notifier).refreshPosts(),
       child: postListAsyncValue.when(
         data: (postList) {
           return CustomScrollView(
-            physics: blockScroll ? const NeverScrollableScrollPhysics() : const ClampingScrollPhysics(),
+            physics: blockScroll
+                ? const NeverScrollableScrollPhysics()
+                : const ClampingScrollPhysics(),
             slivers: [
               SliverList(
                 delegate: SliverChildBuilderDelegate(
@@ -139,8 +157,10 @@ class _HomeViewState extends ConsumerState<HomeView> with TickerProviderStateMix
             controller: _animationController,
             onLoaded: (composition) {
               _animationController
-                ..duration = composition.duration * (2 / 3) // Ajustar la duración para 1.5x velocidad
-                ..forward(from: 0.05); // Saltar los primeros 20% de la animación
+                ..duration = composition.duration *
+                    (2 / 3) // Ajustar la duración para 1.5x velocidad
+                ..forward(
+                    from: 0.05); // Saltar los primeros 20% de la animación
             },
             height: 400,
             width: 400,
@@ -159,7 +179,8 @@ class _HomeViewState extends ConsumerState<HomeView> with TickerProviderStateMix
             child: Lottie.asset(
               'assets/Secondary-Disco-Ball.json',
               onLoaded: (composition) {
-                _animationController.duration = composition.duration * (4 / 5); // Ajustar la duración para 1.5x velocidad
+                _animationController.duration = composition.duration *
+                    (4 / 5); // Ajustar la duración para 1.5x velocidad
               },
               height: 75,
               width: 75,

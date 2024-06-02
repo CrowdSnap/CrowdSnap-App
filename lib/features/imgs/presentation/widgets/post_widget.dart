@@ -141,7 +141,6 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
           LayoutBuilder(
             builder: (context, constraints) {
               final maxWidth = constraints.maxWidth;
-              print('maxWidth: $maxWidth');
               const maxHeight = 650.0;
               const minHeight = 200.0;
               final height = (maxWidth / widget.post.aspectRatio)
