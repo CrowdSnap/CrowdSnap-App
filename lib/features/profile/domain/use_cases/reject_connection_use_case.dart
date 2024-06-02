@@ -5,21 +5,21 @@ import 'package:crowd_snap/features/profile/data/repositories_impl/users_reposit
 import 'package:crowd_snap/features/profile/domain/repositories/users_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'remove_connection_use_case.g.dart';
+part 'reject_connection_use_case.g.dart';
 
-class RemoveConnectionUseCase {
+class RejectConnectionUseCase {
   final UsersRepository _repository;
   final PushNotificationDataSource _notificationDataSource;
 
-  RemoveConnectionUseCase(this._repository, this._notificationDataSource);
+  RejectConnectionUseCase(this._repository, this._notificationDataSource);
 
   Future<void> execute(UserModel user, String receiverId, String receiverFcmToken) async {
-    await _repository.removeConnection(user.userId, receiverId);
+    await _repository.rejectConnection(user.userId, receiverId);
     await _notificationDataSource.sendPushNotification(
       PushNotificationModel(
         fcmToken: receiverFcmToken,
-        title: '${user.name} ha eliminado la conexión contigo!',
-        body: '${user.username} es una persona menos en tu lista de conexiones',
+        title: '${user.name} ha rechazado tu solicitud de conexión!',
+        body: '${user.username} no desea ser tu amigo en este momento',
         imageUrl: user.avatarUrl,
       ),
     );
@@ -27,8 +27,8 @@ class RemoveConnectionUseCase {
 }
 
 @Riverpod(keepAlive: true)
-RemoveConnectionUseCase removeConnectionUseCase(RemoveConnectionUseCaseRef ref) {
+RejectConnectionUseCase rejectConnectionUseCase(RejectConnectionUseCaseRef ref) {
   final usersRepository = ref.watch(usersRepositoryProvider);
   final notificationDataSource = ref.watch(pushNotificationDataSourceProvider);
-  return RemoveConnectionUseCase(usersRepository, notificationDataSource);
+  return RejectConnectionUseCase(usersRepository, notificationDataSource);
 }

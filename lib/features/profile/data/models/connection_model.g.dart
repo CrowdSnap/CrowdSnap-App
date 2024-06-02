@@ -12,7 +12,8 @@ _$ConnectionModelImpl _$$ConnectionModelImplFromJson(
       connectedAt: DateTime.parse(json['connectedAt'] as String),
       userId: json['userId'] as String,
       connectionUserId: json['connectionUserId'] as String,
-      connectionStatus: json['connectionStatus'] as String,
+      connectionStatus:
+          $enumDecode(_$ConnectionStatusEnumMap, json['connectionStatus']),
       connectionPostId: json['connectionPostId'] as String?,
       connectionLocation: json['connectionLocation'] as String?,
     );
@@ -23,7 +24,15 @@ Map<String, dynamic> _$$ConnectionModelImplToJson(
       'connectedAt': instance.connectedAt.toIso8601String(),
       'userId': instance.userId,
       'connectionUserId': instance.connectionUserId,
-      'connectionStatus': instance.connectionStatus,
+      'connectionStatus': _$ConnectionStatusEnumMap[instance.connectionStatus]!,
       'connectionPostId': instance.connectionPostId,
       'connectionLocation': instance.connectionLocation,
     };
+
+const _$ConnectionStatusEnumMap = {
+  ConnectionStatus.connected: 'connected',
+  ConnectionStatus.pending: 'pending',
+  ConnectionStatus.waitingForAcceptance: 'waitingForAcceptance',
+  ConnectionStatus.rejected: 'rejected',
+  ConnectionStatus.none: 'none',
+};

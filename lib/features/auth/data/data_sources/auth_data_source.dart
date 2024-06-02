@@ -44,16 +44,12 @@ class AuthDataSourceImpl implements AuthDataSource {
       password: password,
     );
     final user = userCredential.user;
-    print(user);
     if (user != null) {
-      print('User: ${user.email} Firebase User signed in');
       final userModel = await _firestoreDataSource.getUser(user.uid);
-      print(userModel);
       // Verificar el valor de firstTime y actualizarlo si es necesario
       if (userModel.firstTime) {
         final updatedUserModel = userModel.copyWith(firstTime: false);
         await _firestoreDataSource.updateUser(updatedUserModel);
-        print('User updated: $updatedUserModel');
         return updatedUserModel;
       } else {
         return userModel;

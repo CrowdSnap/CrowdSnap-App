@@ -1,3 +1,4 @@
+import 'package:crowd_snap/features/profile/data/models/connection_status.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'connection_model.freezed.dart';
@@ -9,7 +10,7 @@ class ConnectionModel with _$ConnectionModel {
     required DateTime connectedAt,
     required String userId,
     required String connectionUserId,
-    required String connectionStatus,
+    required ConnectionStatus connectionStatus,
     String? connectionPostId,
     String? connectionLocation,
   }) = _ConnectionModel;

@@ -6,7 +6,9 @@ import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_loc
 import 'package:crowd_snap/features/imgs/presentation/widgets/connections_modal_bottom_sheet.dart';
 import 'package:crowd_snap/features/profile/data/repositories_impl/user_posts_repository_impl.dart';
 import 'package:crowd_snap/features/profile/data/repositories_impl/users_repository_impl.dart';
+import 'package:crowd_snap/features/profile/domain/use_cases/accept_connection_use_case.dart';
 import 'package:crowd_snap/features/profile/domain/use_cases/add_connection_use_case.dart';
+import 'package:crowd_snap/features/profile/domain/use_cases/reject_connection_use_case.dart';
 import 'package:crowd_snap/features/profile/domain/use_cases/remove_connection_use_case.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -76,7 +78,7 @@ class _UsersViewState extends ConsumerState<UsersView> {
       try {
         ref
             .read(removeConnectionUseCaseProvider)
-            .execute(localUser.userId, widget.userId);
+            .execute(localUser, widget.userId, user.fcmToken!);
 
         setState(() {
           connectionsCount--;
@@ -92,7 +94,7 @@ class _UsersViewState extends ConsumerState<UsersView> {
                 ElevatedButton(
                   onPressed: () => ref
                       .read(removeConnectionUseCaseProvider)
-                      .execute(localUser.userId, widget.userId),
+                      .execute(localUser, widget.userId, user.fcmToken!),
                   child: const Text('Reintentar'),
                 ),
               ],
@@ -104,7 +106,7 @@ class _UsersViewState extends ConsumerState<UsersView> {
       try {
         ref
             .read(addConnectionUseCaseProvider)
-            .execute(localUser.userId, widget.userId);
+            .execute(localUser, widget.userId, user.fcmToken!);
         setState(() {
           connectionStatus = ConnectionStatus.waitingForAcceptance;
         });
@@ -118,7 +120,7 @@ class _UsersViewState extends ConsumerState<UsersView> {
                 ElevatedButton(
                   onPressed: () => ref
                       .read(addConnectionUseCaseProvider)
-                      .execute(localUser.userId, widget.userId),
+                      .execute(localUser, widget.userId, user.fcmToken!),
                   child: const Text('Reintentar'),
                 ),
               ],
@@ -129,8 +131,8 @@ class _UsersViewState extends ConsumerState<UsersView> {
     } else if (connectionStatus == ConnectionStatus.pending) {
       try {
         ref
-            .read(usersRepositoryProvider)
-            .acceptConnection(localUser.userId, widget.userId);
+            .read(acceptConnectionUseCaseProvider)
+            .execute(localUser, widget.userId, user.fcmToken!);
         setState(() {
           connectionStatus = ConnectionStatus.connected;
           connectionsCount++;
@@ -140,12 +142,12 @@ class _UsersViewState extends ConsumerState<UsersView> {
           SnackBar(
             content: Column(
               children: [
-                Text('No se pudo conectar, inténtalo de nuevo: $e'),
+                Text('No se pudo aceptar, inténtalo de nuevo: $e'),
                 const SizedBox(height: 8),
                 ElevatedButton(
                   onPressed: () => ref
-                      .read(removeConnectionUseCaseProvider)
-                      .execute(localUser.userId, widget.userId),
+                      .read(acceptConnectionUseCaseProvider)
+                      .execute(localUser, widget.userId, user.fcmToken!),
                   child: const Text('Reintentar'),
                 ),
               ],
@@ -154,6 +156,59 @@ class _UsersViewState extends ConsumerState<UsersView> {
         );
       }
     }
+  }
+
+  void _rejectConnection() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Rechazar conexión'),
+          content: const Text(
+              '¿Estás seguro de que quieres rechazar esta conexión?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('No'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Sí'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                try {
+                  ref
+                      .read(rejectConnectionUseCaseProvider)
+                      .execute(localUser, widget.userId, user.fcmToken!);
+                  setState(() {
+                    connectionStatus = ConnectionStatus.rejected;
+                  });
+                } on Exception catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Column(
+                        children: [
+                          Text('No se pudo rechazar, inténtalo de nuevo: $e'),
+                          const SizedBox(height: 8),
+                          ElevatedButton(
+                            onPressed: () => ref
+                                .read(rejectConnectionUseCaseProvider)
+                                .execute(
+                                    localUser, widget.userId, user.fcmToken!),
+                            child: const Text('Reintentar'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _showConnectionSheet() {
@@ -171,7 +226,7 @@ class _UsersViewState extends ConsumerState<UsersView> {
           expand: false,
           builder: (BuildContext context, ScrollController scrollController) {
             return ConnectionsModalBottomSheet(
-              userId: widget.userId,
+              userId: user.userId,
               pageController: scrollController,
             );
           },
@@ -480,7 +535,7 @@ class _UsersViewState extends ConsumerState<UsersView> {
                     ),
                     const SizedBox(width: 8),
                     ElevatedButton(
-                        onPressed: _toggleConnection,
+                        onPressed: _rejectConnection,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Theme.of(context).colorScheme.error,
                           foregroundColor:

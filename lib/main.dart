@@ -1,5 +1,7 @@
 import 'package:crowd_snap/app/notifications/notification_service.dart';
+import 'package:crowd_snap/app/router/app_router.dart';
 import 'package:crowd_snap/core/constants.dart';
+import 'package:crowd_snap/core/data/data_source/push_notification_data_source.dart';
 import 'package:crowd_snap/core/data/repository_impl/shared_preferences/user_repository_impl.dart';
 import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_local_use_case.dart';
 import 'package:crowd_snap/features/imgs/data/data_source/comment_data_source.dart';
@@ -32,13 +34,14 @@ void main() async {
   await commentDataSource.loadEnvVariables();
   final UserPostsDataSourceImpl userPostsDataSource = UserPostsDataSourceImpl();
   await userPostsDataSource.loadEnvVariables();
+  final PushNotificationDataSourceImpl pushNotificationDataSource =
+      PushNotificationDataSourceImpl();
+  await pushNotificationDataSource.loadEnvVariables();
   // Inicializa Firebase antes de ejecutar la aplicación.
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
-  NotificationService();
 
   final FirebaseMessaging messaging = FirebaseMessaging.instance;
   final fcmToken = await messaging.getToken();
@@ -51,10 +54,13 @@ void main() async {
         postDataSourceProvider.overrideWithValue(postDataSource),
         commentDataSourceProvider.overrideWithValue(commentDataSource),
         userPostsDataSourceProvider.overrideWithValue(userPostsDataSource),
+        pushNotificationDataSourceProvider
+            .overrideWithValue(pushNotificationDataSource),
       ],
       child: Consumer(
         builder: (context, ref, child) {
           ref.watch(authRedirectProvider);
+          ref.watch(notificationServiceProvider);
 
           final User? user = FirebaseAuth.instance.currentUser;
 

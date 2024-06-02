@@ -23,7 +23,7 @@ mixin _$ConnectionModel {
   DateTime get connectedAt => throw _privateConstructorUsedError;
   String get userId => throw _privateConstructorUsedError;
   String get connectionUserId => throw _privateConstructorUsedError;
-  String get connectionStatus => throw _privateConstructorUsedError;
+  ConnectionStatus get connectionStatus => throw _privateConstructorUsedError;
   String? get connectionPostId => throw _privateConstructorUsedError;
   String? get connectionLocation => throw _privateConstructorUsedError;
 
@@ -43,7 +43,7 @@ abstract class $ConnectionModelCopyWith<$Res> {
       {DateTime connectedAt,
       String userId,
       String connectionUserId,
-      String connectionStatus,
+      ConnectionStatus connectionStatus,
       String? connectionPostId,
       String? connectionLocation});
 }
@@ -84,7 +84,7 @@ class _$ConnectionModelCopyWithImpl<$Res, $Val extends ConnectionModel>
       connectionStatus: null == connectionStatus
           ? _value.connectionStatus
           : connectionStatus // ignore: cast_nullable_to_non_nullable
-              as String,
+              as ConnectionStatus,
       connectionPostId: freezed == connectionPostId
           ? _value.connectionPostId
           : connectionPostId // ignore: cast_nullable_to_non_nullable
@@ -109,7 +109,7 @@ abstract class _$$ConnectionModelImplCopyWith<$Res>
       {DateTime connectedAt,
       String userId,
       String connectionUserId,
-      String connectionStatus,
+      ConnectionStatus connectionStatus,
       String? connectionPostId,
       String? connectionLocation});
 }
@@ -148,7 +148,7 @@ class __$$ConnectionModelImplCopyWithImpl<$Res>
       connectionStatus: null == connectionStatus
           ? _value.connectionStatus
           : connectionStatus // ignore: cast_nullable_to_non_nullable
-              as String,
+              as ConnectionStatus,
       connectionPostId: freezed == connectionPostId
           ? _value.connectionPostId
           : connectionPostId // ignore: cast_nullable_to_non_nullable
@@ -182,7 +182,7 @@ class _$ConnectionModelImpl implements _ConnectionModel {
   @override
   final String connectionUserId;
   @override
-  final String connectionStatus;
+  final ConnectionStatus connectionStatus;
   @override
   final String? connectionPostId;
   @override
@@ -236,7 +236,7 @@ abstract class _ConnectionModel implements ConnectionModel {
       {required final DateTime connectedAt,
       required final String userId,
       required final String connectionUserId,
-      required final String connectionStatus,
+      required final ConnectionStatus connectionStatus,
       final String? connectionPostId,
       final String? connectionLocation}) = _$ConnectionModelImpl;
 
@@ -250,7 +250,7 @@ abstract class _ConnectionModel implements ConnectionModel {
   @override
   String get connectionUserId;
   @override
-  String get connectionStatus;
+  ConnectionStatus get connectionStatus;
   @override
   String? get connectionPostId;
   @override

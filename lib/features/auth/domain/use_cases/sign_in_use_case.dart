@@ -5,7 +5,10 @@ import 'package:crowd_snap/features/auth/domain/repositories/auth_repository.dar
 import 'package:crowd_snap/features/imgs/data/repositories_impl/post_repository_impl.dart';
 import 'package:crowd_snap/features/imgs/domain/repository/post_repository.dart';
 import 'package:crowd_snap/features/imgs/domain/use_case/avatar_get_use_case.dart';
+import 'package:crowd_snap/features/profile/data/repositories_impl/users_repository_impl.dart';
+import 'package:crowd_snap/features/profile/domain/repositories/users_repository.dart';
 import 'package:crowd_snap/features/profile/presentation/notifier/profile_notifier.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:logging/logging.dart';
 
@@ -18,16 +21,30 @@ class SignInUseCase {
   final ProfileNotifier _profileNotifier;
   final GetUserLocalUseCase _getUserUseCase;
   final PostRepository _postRepository;
+  final UsersRepository _usersRepository;
 
-  SignInUseCase(this._authRepository, this._storeUserUseCase,
-      this._avatarGetUseCase, this._profileNotifier, this._getUserUseCase, this._postRepository);
+  SignInUseCase(
+      this._authRepository,
+      this._storeUserUseCase,
+      this._avatarGetUseCase,
+      this._profileNotifier,
+      this._getUserUseCase,
+      this._postRepository,
+      this._usersRepository);
 
   Future<void> execute(String email, String password) async {
     try {
       final userModel =
           await _authRepository.signInWithEmailAndPassword(email, password);
       final avatarUrl = userModel.avatarUrl;
-      await _storeUserUseCase.execute(userModel);
+
+      final FirebaseMessaging messaging = FirebaseMessaging.instance;
+      final fcmToken = await messaging.getToken();
+
+      final fcmTokenUserModel = userModel.copyWith(fcmToken: fcmToken);
+
+      await _storeUserUseCase.execute(fcmTokenUserModel);
+      await _usersRepository.updateUserFCMToken(userModel, fcmToken!);
       await _avatarGetUseCase.execute(avatarUrl!);
 
       _getUserUseCase.execute().then((user) {
@@ -43,8 +60,8 @@ class SignInUseCase {
         });
 
         _postRepository.getPostsByUser(user.userId).then((posts) {
-              _profileNotifier.updatePosts(posts);
-            });
+          _profileNotifier.updatePosts(posts);
+        });
       });
     } catch (e) {
       _logger.severe('Error al iniciar sesión: $e');
@@ -63,7 +80,8 @@ SignInUseCase signInUseCase(SignInUseCaseRef ref) {
   final profileNotifier = ref.read(profileNotifierProvider.notifier);
   final getUserUseCase = ref.read(getUserLocalUseCaseProvider);
   final postRepository = ref.read(postRepositoryProvider);
+  final usersRepository = ref.read(usersRepositoryProvider);
   _logger.info('SignInUseCase');
   return SignInUseCase(authRepository, storeUserUseCase, avatarGetUseCase,
-      profileNotifier, getUserUseCase, postRepository);
+      profileNotifier, getUserUseCase, postRepository, usersRepository);
 }

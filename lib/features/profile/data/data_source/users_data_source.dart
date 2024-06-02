@@ -113,8 +113,6 @@ class UsersDataSourceImpl implements UsersDataSource {
         'status': 'pending',
         'connectedAt': DateTime.now().toIso8601String(),
       });
-
-      // TODO: Send notification to user
     } catch (e) {
       throw Exception('Failed to add connection: $e');
     }
@@ -300,69 +298,52 @@ class UsersDataSourceImpl implements UsersDataSource {
   }
 
   @override
-  Future<ConnectionStatus> checkConnection(
-      String localUserId, String userId) async {
-    try {
-      final connectionRef = _realtimeDatabase.ref().child('connections');
+Future<ConnectionStatus> checkConnection(String localUserId, String userId) async {
+  try {
+    final connectionRef = _realtimeDatabase.ref().child('connections');
 
-      // Realiza ambas consultas en paralelo
-      final connectionQuery1 =
-          connectionRef.orderByChild('senderId').equalTo(localUserId).once();
+    // Realiza ambas consultas en paralelo
+    final connectionQuery1 = connectionRef.orderByChild('senderId').equalTo(localUserId).once();
+    final connectionQuery2 = connectionRef.orderByChild('receiverId').equalTo(localUserId).once();
 
-      final connectionQuery2 =
-          connectionRef.orderByChild('receiverId').equalTo(localUserId).once();
+    // Espera a que ambas consultas se completen
+    final results = await Future.wait([connectionQuery1, connectionQuery2]);
 
-      // Espera a que ambas consultas se completen
-      final results = await Future.wait([connectionQuery1, connectionQuery2]);
-
-      // Procesa los resultados de la primera consulta
-      if (results[0].snapshot.exists) {
-        for (var connection in results[0].snapshot.children) {
-          if (connection.child('senderId').value == localUserId) {
-            if (connection.child('status').value ==
-                ConnectionStatus.connected.value) {
-              return ConnectionStatus.connected;
-            } else if (connection.child('status').value ==
-                ConnectionStatus.pending.value) {
-              return ConnectionStatus.waitingForAcceptance;
-            } else {
-              return ConnectionStatus.rejected;
-            }
+    // Procesa los resultados de la primera consulta
+    if (results[0].snapshot.exists) {
+      for (var connection in results[0].snapshot.children) {
+        if (connection.child('receiverId').value == userId) {
+          if (connection.child('status').value == ConnectionStatus.connected.value) {
+            return ConnectionStatus.connected;
+          } else if (connection.child('status').value == ConnectionStatus.pending.value) {
+            return ConnectionStatus.waitingForAcceptance;
+          } else {
+            return ConnectionStatus.rejected;
           }
         }
       }
-
-      // Procesa los resultados de la segunda consulta
-      // Procesa los resultados de la segunda consulta
-      if (results[1].snapshot.exists) {
-        for (var connection in results[1].snapshot.children) {
-          final status = connection.child('status').value.toString();
-          final receiverId = connection.child('receiverId').value.toString();
-          final senderId = connection.child('senderId').value.toString();
-
-          print("status: $status");
-          print("receiverId: $receiverId");
-          print("senderId: $senderId");
-
-          if (receiverId == localUserId || senderId == localUserId) {
-            if (status == ConnectionStatus.connected.value) {
-              return ConnectionStatus.connected;
-            } else if (status == ConnectionStatus.pending.value) {
-              return ConnectionStatus.pending;
-            } else if (status == ConnectionStatus.waitingForAcceptance.value) {
-              return ConnectionStatus.waitingForAcceptance;
-            } else {
-              return ConnectionStatus.rejected;
-            }
-          }
-        }
-      }
-
-      return ConnectionStatus.none;
-    } catch (e) {
-      throw Exception('Failed to check connection: $e');
     }
+
+    // Procesa los resultados de la segunda consulta
+    if (results[1].snapshot.exists) {
+      for (var connection in results[1].snapshot.children) {
+        if (connection.child('senderId').value == userId) {
+          if (connection.child('status').value == ConnectionStatus.connected.value) {
+            return ConnectionStatus.connected;
+          } else if (connection.child('status').value == ConnectionStatus.pending.value) {
+            return ConnectionStatus.pending;
+          } else {
+            return ConnectionStatus.rejected;
+          }
+        }
+      }
+    }
+
+    return ConnectionStatus.none;
+  } catch (e) {
+    throw Exception('Failed to check connection: $e');
   }
+}
 
   @override
   Future<List<Map<String, DateTime>>> getUserConnections(String userId,

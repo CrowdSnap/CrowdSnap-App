@@ -124,11 +124,12 @@ class _ConnectionsModalBottomSheetState
             padding: const EdgeInsets.all(8.0),
             child: profileValues.connectionsCount == 0
                 ? Center(
-                    child: Text(
-                      'Se el primero en conectar con ${profileValues.name}',
-                      style: const TextStyle(
-                          fontSize: 24, fontWeight: FontWeight.bold),
-                    ),
+                  child: Text(
+                    'Se el primero en conectar con ${profileValues.name}',
+                    style: const TextStyle(
+                      fontSize: 24, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
                   )
                 : ListView.builder(
                     itemCount: connections.length,

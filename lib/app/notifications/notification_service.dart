@@ -1,12 +1,23 @@
-import 'package:firebase_core/firebase_core.dart';
+import 'package:crowd_snap/app/router/app_router.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-class NotificationService {
+part 'notification_service.g.dart';
+
+@riverpod
+class NotificationService extends _$NotificationService {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
   NotificationService() {
+    _initialize();
+  }
+
+  @override
+  void build() {
+    // Este método se llama cuando el proveedor se inicializa.
+    // Puedes realizar cualquier configuración inicial aquí.
     _initialize();
   }
 
@@ -18,20 +29,13 @@ class NotificationService {
     );
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('Received a message while in the foreground!');
-      print('Message data: ${message.data}');
-
       if (message.notification != null) {
-        print('Message also contained a notification: ${message.notification}');
         _showNotification(message.notification!, message.data);
       }
     });
 
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print('A new onMessageOpenedApp event was published!');
-      // Maneja la interacción con la notificación aquí
+      _handleNotificationClick(message);
     });
 
     _initializeLocalNotifications();
@@ -39,13 +43,15 @@ class NotificationService {
 
   void _initializeLocalNotifications() {
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('@drawable/ic_crowdsnap_notification');
 
     const InitializationSettings initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid,
     );
 
-    _flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    _flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+    );
   }
 
   void _showNotification(RemoteNotification notification, Map<String, dynamic> data) async {
@@ -57,7 +63,7 @@ class NotificationService {
         AndroidNotificationDetails(
       channelId,
       channelName,
-      channelDescription:  channelDescription,
+      channelDescription: channelDescription,
       importance: Importance.max,
       priority: Priority.high,
       showWhen: false,
@@ -72,12 +78,17 @@ class NotificationService {
       notification.title,
       notification.body,
       platformChannelSpecifics,
-      payload: 'item x',
+      payload: data['userId'], // Pass the userId as payload
     );
   }
-}
 
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
-  print('Handling a background message: ${message.messageId}');
+  void _handleNotificationClick(RemoteMessage message) {
+    final userId = message.data['userId'];
+    final extra = {
+      'username': message.data['username'],
+      'avatarUrl': message.data['avatarUrl'],
+      'blurHashImage': message.data['blurHashImage'],
+    };
+    ref.read(appRouterProvider).go('/users/$userId', extra: extra);
+  }
 }

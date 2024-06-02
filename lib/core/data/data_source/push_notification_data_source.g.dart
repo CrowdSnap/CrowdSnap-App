@@ -1,26 +1,27 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'add_connection_use_case.dart';
+part of 'push_notification_data_source.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$addConnectionUseCaseHash() =>
-    r'c65c13b4dde9c3709c042e11dbab88df190250dd';
+String _$pushNotificationDataSourceHash() =>
+    r'13969455a0be3084eae97f1ce5fee23ff70d5bb8';
 
-/// See also [addConnectionUseCase].
-@ProviderFor(addConnectionUseCase)
-final addConnectionUseCaseProvider = Provider<AddConnectionUseCase>.internal(
-  addConnectionUseCase,
-  name: r'addConnectionUseCaseProvider',
+/// See also [pushNotificationDataSource].
+@ProviderFor(pushNotificationDataSource)
+final pushNotificationDataSourceProvider =
+    Provider<PushNotificationDataSource>.internal(
+  pushNotificationDataSource,
+  name: r'pushNotificationDataSourceProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$addConnectionUseCaseHash,
+      : _$pushNotificationDataSourceHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef AddConnectionUseCaseRef = ProviderRef<AddConnectionUseCase>;
+typedef PushNotificationDataSourceRef = ProviderRef<PushNotificationDataSource>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

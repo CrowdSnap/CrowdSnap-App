@@ -1,26 +1,27 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'add_connection_use_case.dart';
+part of 'reject_connection_use_case.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$addConnectionUseCaseHash() =>
-    r'c65c13b4dde9c3709c042e11dbab88df190250dd';
+String _$rejectConnectionUseCaseHash() =>
+    r'9ae99888e27874f8c9fcf85a0d80cc5de591434d';
 
-/// See also [addConnectionUseCase].
-@ProviderFor(addConnectionUseCase)
-final addConnectionUseCaseProvider = Provider<AddConnectionUseCase>.internal(
-  addConnectionUseCase,
-  name: r'addConnectionUseCaseProvider',
+/// See also [rejectConnectionUseCase].
+@ProviderFor(rejectConnectionUseCase)
+final rejectConnectionUseCaseProvider =
+    Provider<RejectConnectionUseCase>.internal(
+  rejectConnectionUseCase,
+  name: r'rejectConnectionUseCaseProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$addConnectionUseCaseHash,
+      : _$rejectConnectionUseCaseHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef AddConnectionUseCaseRef = ProviderRef<AddConnectionUseCase>;
+typedef RejectConnectionUseCaseRef = ProviderRef<RejectConnectionUseCase>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
