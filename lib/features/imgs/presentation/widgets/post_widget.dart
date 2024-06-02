@@ -416,7 +416,10 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
                                 ),
                                 const SizedBox(width: 8.0),
                                 GestureDetector(
-                                  onTap: widget.showLikedUserSheet,
+                                  onTap: () {
+                                    HapticFeedback.selectionClick();
+                                    widget.showLikedUserSheet();
+                                  },
                                   child: Text(
                                     widget.likeCount == 1
                                         ? '${widget.likeCount} Like'
@@ -430,7 +433,10 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
                             ),
                             const SizedBox(width: 16.0),
                             GestureDetector(
-                              onTap: widget.showCommentSheet,
+                              onTap: () {
+                                HapticFeedback.selectionClick();
+                                widget.showCommentSheet();
+                              },
                               child: Row(
                                 children: [
                                   const Icon(Icons.comment,

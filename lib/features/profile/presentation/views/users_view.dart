@@ -519,12 +519,18 @@ class _UsersViewState extends ConsumerState<UsersView> {
             if (localUser.userId != user.userId)
               if (connectionStatus == ConnectionStatus.connected)
                 ElevatedButton(
-                  onPressed: _toggleConnection,
+                  onPressed: () {
+                    HapticFeedback.selectionClick();
+                    _toggleConnection();
+                  },
                   child: const Text('Desconectar'),
                 )
               else if (connectionStatus == ConnectionStatus.none)
                 ElevatedButton(
-                  onPressed: _toggleConnection,
+                  onPressed: () {
+                    HapticFeedback.selectionClick();
+                    _toggleConnection();
+                  },
                   child: const Text('Conectar'),
                 )
               else if (connectionStatus == ConnectionStatus.pending)
@@ -532,12 +538,18 @@ class _UsersViewState extends ConsumerState<UsersView> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ElevatedButton(
-                      onPressed: _toggleConnection,
+                      onPressed: () {
+                        HapticFeedback.selectionClick();
+                        _toggleConnection();
+                      },
                       child: const Text('Aceptar conexión'),
                     ),
                     const SizedBox(width: 8),
                     ElevatedButton(
-                        onPressed: _rejectConnection,
+                        onPressed: () {
+                          HapticFeedback.selectionClick();
+                          _rejectConnection();
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Theme.of(context).colorScheme.error,
                           foregroundColor:

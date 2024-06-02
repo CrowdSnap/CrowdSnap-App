@@ -3,6 +3,7 @@ import 'package:crowd_snap/features/home/presentation/provider/post_state_notifi
 import 'package:crowd_snap/features/home/presentation/widgets/filter_button.dart';
 import 'package:crowd_snap/features/imgs/presentation/widgets/post_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
 
@@ -77,8 +78,10 @@ class _HomeViewState extends ConsumerState<HomeView>
               slivers: [
                 SliverAppBar(
                   title: GestureDetector(
-                    onTap: () =>
-                        ref.read(postListProvider.notifier).refreshPosts(),
+                    onTap: () {
+                      HapticFeedback.vibrate();
+                      ref.read(postListProvider.notifier).refreshPosts();
+                    },
                     child: Image.asset(
                       'assets/icons/crowd_snap_logo.png',
                       height: 165,
