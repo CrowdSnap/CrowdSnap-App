@@ -64,7 +64,7 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
                 const SizedBox(width: 4.0),
                 GestureDetector(
                   onTap: () {
-                    HapticFeedback.selectionClick();
+                    HapticFeedback.mediumImpact();
                     context.push(
                       '/users/${widget.post.userId}',
                       extra: {

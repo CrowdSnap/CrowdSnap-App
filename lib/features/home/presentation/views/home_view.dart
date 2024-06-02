@@ -7,6 +7,7 @@ import 'package:crowd_snap/features/imgs/presentation/widgets/post_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 
 class HomeView extends ConsumerStatefulWidget {
@@ -122,7 +123,7 @@ class _HomeViewState extends ConsumerState<HomeView>
                     icon: const Icon(Icons.notifications_rounded),
                     onPressed: () {
                       HapticFeedback.selectionClick();
-                      
+                      context.push('/notifications');
                     },
                   ),],
                 bottom: TabBar(

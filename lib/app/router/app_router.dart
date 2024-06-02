@@ -5,6 +5,7 @@ import 'package:crowd_snap/features/chats/presentation/chats_view.dart';
 import 'package:crowd_snap/features/imgs/presentation/views/avatar_upload_view.dart';
 import 'package:crowd_snap/features/imgs/presentation/views/image_upload_view.dart';
 import 'package:crowd_snap/features/imgs/presentation/views/posts_list_view.dart';
+import 'package:crowd_snap/features/profile/presentation/views/notifications_screen.dart';
 import 'package:crowd_snap/features/profile/presentation/views/settings_view.dart';
 import 'package:crowd_snap/features/profile/presentation/views/users_view.dart';
 import 'package:flutter/material.dart';
@@ -84,6 +85,9 @@ class AppRouter extends _$AppRouter {
                 );
               },
             ),
+            GoRoute(
+                path: '/notifications',
+                builder: (context, state) => const NotificationsScreen()),
             GoRoute(
               path: '/profile',
               builder: (context, state) => const ProfileView(),

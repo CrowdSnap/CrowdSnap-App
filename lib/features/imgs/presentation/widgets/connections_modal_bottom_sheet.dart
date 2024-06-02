@@ -32,6 +32,9 @@ class ConnectionsModalBottomSheet extends ConsumerStatefulWidget {
 class _ConnectionsModalBottomSheetState
     extends ConsumerState<ConnectionsModalBottomSheet>
     with SingleTickerProviderStateMixin {
+  late List<Map<String, DateTime>> acceptedConnections = [];
+  late List<Map<String, DateTime>> rejectedConnections = [];
+  late List<Map<String, DateTime>> pendingConnections = [];
   late List<Map<String, DateTime>> connections = [];
   bool _isLoading = false;
   String? _lastConnectionId;
