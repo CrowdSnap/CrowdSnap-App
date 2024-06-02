@@ -1,4 +1,3 @@
-import 'package:crowd_snap/app/notifications/notification_service.dart';
 import 'package:crowd_snap/core/constants.dart';
 import 'package:crowd_snap/core/data/data_source/push_notification_data_source.dart';
 import 'package:crowd_snap/core/data/repository_impl/shared_preferences/user_repository_impl.dart';
@@ -59,7 +58,6 @@ void main() async {
       child: Consumer(
         builder: (context, ref, child) {
           ref.watch(authRedirectProvider);
-          ref.watch(notificationServiceProvider);
 
           final User? user = FirebaseAuth.instance.currentUser;
 

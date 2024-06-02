@@ -14,6 +14,8 @@ abstract class UsersDataSource {
 
   Future<void> updateUserFCMToken(UserModel user, String fcmToken);
 
+  Future<List<ConnectionModel>> getPendingConnections(String localUserId);
+
   Future<void> addConnection(String localUserId, String userId);
 
   Future<void> acceptConnection(String localUserId, String userId);
@@ -68,6 +70,41 @@ class UsersDataSourceImpl implements UsersDataSource {
       });
     } catch (e) {
       throw Exception('Failed to update user FCM token: $e');
+    }
+  }
+
+  @override
+  Future<List<ConnectionModel>> getPendingConnections(
+      String localUserId) async {
+    try {
+      final userDoc = await _firestore.collection('users').doc(localUserId).get();
+      if (userDoc.exists) {
+        final userData = userDoc.data();
+        final pendingConnections =
+            List<String>.from(userData!['pendingConnections'] ?? []);
+        final connections = <ConnectionModel>[];
+
+        for (var connectionId in pendingConnections) {
+          final connectionDoc = await _realtimeDatabase
+              .ref()
+              .child('connections')
+              .child(connectionId)
+              .get();
+          if (connectionDoc.exists) {
+            final connectionData = connectionDoc.value as Map<String, dynamic>;
+            final connectionModel = createConnectionModel(connectionData);
+            connections.add(connectionModel);
+          }
+        }
+
+        print('Connections: $connections');
+
+        return connections;
+      } else {
+        throw Exception('User not found in Firestore');
+      }
+    } catch (e) {
+      throw Exception('Failed to get pending connections: $e');
     }
   }
 
@@ -142,23 +179,9 @@ class UsersDataSourceImpl implements UsersDataSource {
         });
       }
 
-      // Consulta el array de pendingConnections del usuario receptor
-      final userSnapshot = await userRef.get();
-      if (userSnapshot.exists) {
-        final userData = userSnapshot.data() as Map<String, dynamic>;
-        final pendingConnections =
-            List<String>.from(userData['pendingConnections'] ?? []);
-
-        // Elimina la conexión pendiente
-        pendingConnections
-            .removeWhere((connectionId) => connectionId.contains(localUserId));
-
-        // Actualiza el array de pendingConnections del usuario receptor
-        await userRef.update({
-          'pendingConnections': pendingConnections,
-          'connectionsCount': FieldValue.increment(1),
-        });
-      }
+      await userRef.update({
+        'connectionsCount': FieldValue.increment(1),
+      });
 
       // Actualiza la conexión a aceptada
       final connectionRef = _realtimeDatabase

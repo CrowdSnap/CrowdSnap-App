@@ -1,5 +1,6 @@
 import 'package:crowd_snap/app/router/app_router.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -16,29 +17,25 @@ class NotificationService extends _$NotificationService {
 
   @override
   void build() {
-    // Este método se llama cuando el proveedor se inicializa.
-    // Puedes realizar cualquier configuración inicial aquí.
     _initialize();
   }
 
   void _initialize() {
-    _firebaseMessaging.requestPermission(
+    _requestPermission();
+    _initializeLocalNotifications();
+    _setupForegroundNotificationListener();
+    _setupBackgroundNotificationHandler();
+    _setupNotificationClickHandler();
+  }
+
+  void _requestPermission() async {
+    NotificationSettings settings = await _firebaseMessaging.requestPermission(
       alert: true,
       badge: true,
       sound: true,
     );
 
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      if (message.notification != null) {
-        _showNotification(message.notification!, message.data);
-      }
-    });
-
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      _handleNotificationClick(message);
-    });
-
-    _initializeLocalNotifications();
+    debugPrint('User granted notifications permission: ${settings.authorizationStatus}');
   }
 
   void _initializeLocalNotifications() {
@@ -52,6 +49,34 @@ class NotificationService extends _$NotificationService {
     _flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
     );
+  }
+
+  void _setupForegroundNotificationListener() {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      debugPrint('Got a message whilst in the foreground!');
+      debugPrint('Message data: ${message.notification?.title ?? 'No Title'}');
+
+      if (message.notification != null) {
+        _showNotification(message.notification!, message.data);
+      }
+    });
+  }
+
+  void _setupBackgroundNotificationHandler() {
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  }
+
+  void _setupNotificationClickHandler() {
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      debugPrint('onMessageOpenedApp: ${message.notification?.title ?? 'No Title'}');
+      _handleNotificationClick(message);
+    });
+
+    FirebaseMessaging.instance.getInitialMessage().then((RemoteMessage? message) {
+      if (message != null) {
+        _handleNotificationClick(message);
+      }
+    });
   }
 
   void _showNotification(RemoteNotification notification, Map<String, dynamic> data) async {
@@ -89,6 +114,13 @@ class NotificationService extends _$NotificationService {
       'avatarUrl': message.data['avatarUrl'],
       'blurHashImage': message.data['blurHashImage'],
     };
-    ref.read(appRouterProvider).go('/users/$userId', extra: extra);
+    print('User ID: $userId');
+    print('Extra: $extra');
+    ref.read(appRouterProvider).push('/users/$userId');
   }
+}
+
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  debugPrint('Handling a background message: ${message.notification?.title ?? 'No Title'}');
 }
