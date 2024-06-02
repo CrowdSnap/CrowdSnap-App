@@ -1,24 +1,37 @@
 import 'package:crowd_snap/core/data/models/post_model.dart';
 import 'package:crowd_snap/features/home/presentation/provider/filter_providers.dart';
-import 'package:crowd_snap/features/imgs/domain/use_case/post_get_use_case.dart';
+import 'package:crowd_snap/features/imgs/domain/use_case/post_ranking_use_case.dart';
 import 'package:crowd_snap/features/imgs/presentation/notifier/comments_provider.dart';
 import 'package:crowd_snap/features/imgs/presentation/notifier/likes_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'post_state_notifier.g.dart';
+part 'ordered_bylikes_post_state_notifier.g.dart';
 
 @riverpod
-class PostList extends _$PostList {
-  Set<String> _loadedPostIds = {};
+class OrderedByLikesPostList extends _$OrderedByLikesPostList {
+  final Set<String> _loadedPostIds = {};
 
   @override
   FutureOr<List<PostModel>> build() async {
-    return _fetchPosts();
+    // Escuchar cambios en los filtros
+    ref.listen<DateTime?>(startDateProvider, (previous, next) {
+      _onFilterChanged();
+    });
+    ref.listen<DateTime?>(endDateProvider, (previous, next) {
+      _onFilterChanged();
+    });
+    ref.listen<String?>(cityProvider, (previous, next) {
+      _onFilterChanged();
+    });
+    ref.listen<int>(numberOfPostsProvider, (previous, next) {
+      _onFilterChanged();
+    });
+
+    return _fetchPostsOrderedByLikes();
   }
 
-  Future<List<PostModel>> _fetchPosts() async {
-    final getPostsRandomByDateRangeUseCase =
-        ref.watch(getPostsRandomByDateRangeUseCaseProvider);
+  Future<List<PostModel>> _fetchPostsOrderedByLikes() async {
+    final getPostsOrderedByLikesUseCase = ref.watch(postRankingUseCaseProvider);
     final startDate = ref.watch(startDateProvider);
     final endDate = ref.watch(endDateProvider);
     final city = ref.watch(cityProvider);
@@ -41,7 +54,7 @@ class PostList extends _$PostList {
     final endDateOnly =
         DateTime(defaultEndDate.year, defaultEndDate.month, defaultEndDate.day);
 
-    final query = await getPostsRandomByDateRangeUseCase.execute(
+    final query = await getPostsOrderedByLikesUseCase.execute(
       city ?? 'Madrid',
       startDateOnly,
       endDateOnly,
@@ -55,24 +68,30 @@ class PostList extends _$PostList {
 
     // Actualizar la lista de IDs cargados
     _loadedPostIds.addAll(newPosts.map((post) => post.mongoId!));
-    print('Query: $city, $startDateOnly, $endDateOnly, $numberOfPosts');
-    print('Postslist: $_loadedPostIds');
+    print('Query ordered: $city, $startDateOnly, $endDateOnly, $numberOfPosts');
+    print('Postslist ordered: $_loadedPostIds');
     return query;
   }
 
-  Future<void> loadMorePosts() async {
+  Future<void> loadMorePostsOrderedByLikes() async {
     state = await AsyncValue.guard(() async {
       final currentPosts = state.value ?? [];
-      final newPosts = await _fetchPosts();
+      final newPosts = await _fetchPostsOrderedByLikes();
       return [...currentPosts, ...newPosts];
     });
   }
 
-  Future<void> refreshPosts() async {
+  Future<void> refreshPostsOrderedByLikes() async {
     ref.invalidate(likesNotifierProvider);
     ref.invalidate(commentsNotifierProvider);
     _loadedPostIds.clear();
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(_fetchPosts);
+    state = await AsyncValue.guard(_fetchPostsOrderedByLikes);
+  }
+
+  Future<void> _onFilterChanged() async {
+    _loadedPostIds.clear();
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(_fetchPostsOrderedByLikes);
   }
 }

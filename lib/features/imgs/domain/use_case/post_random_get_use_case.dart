@@ -3,7 +3,7 @@ import 'package:crowd_snap/features/imgs/data/repositories_impl/post_repository_
 import 'package:crowd_snap/features/imgs/domain/repository/post_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'post_get_use_case.g.dart';
+part 'post_random_get_use_case.g.dart';
 
 class GetPostsRandomByDateRangeUseCase {
   final PostRepository _postRepository;

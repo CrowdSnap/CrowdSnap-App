@@ -8,6 +8,8 @@ part 'post_data_source.g.dart';
 abstract class PostDataSource {
   Future<List<PostModel>> getPostsRandomByDateRange(
       String location, DateTime startDate, DateTime endDate, int limit, List<String> excludeIds);
+  Future<List<PostModel>> getPostsOrderedByLikes(
+      String location, DateTime startDate, DateTime endDate, int limit, List<String> excludeIds);
   Future<List<PostModel>> getPostsByUser(String userId);
   Future<void> createPost(PostModel post);
   Future<void> loadEnvVariables();
@@ -83,6 +85,44 @@ class PostDataSourceImpl implements PostDataSource {
     }).toList();
   }
 
+  @override
+Future<List<PostModel>> getPostsOrderedByLikes(
+    String location, DateTime startDate, DateTime endDate, int limit, List<String> excludeIds) async {
+  final Db db = await Db.create(_mongoUrl!);
+  await db.open();
+  final postsCollection = db.collection('posts');
+
+  final pipeline = [
+    {
+      '\$match': {
+        'location': location,
+        'createdAt': {
+          '\$gte': startDate.toString(),
+          '\$lte': endDate.toString()
+        },
+        '_id': { '\$nin': excludeIds.map((id) => ObjectId.fromHexString(id)).toList() } // Excluir IDs
+      }
+    },
+    {
+      '\$sort': {'likeCount': -1} // Ordenar por likeCount en orden descendente
+    },
+    {
+      '\$limit': limit // Limitar el número de resultados
+    }
+  ];
+
+  final postsData = await postsCollection.aggregateToStream(pipeline).toList();
+  await db.close();
+
+  return postsData.map((json) {
+    final id = json['_id'].toString().split('"')[1]; // Extraer el valor de ObjectId
+    final postJson = {
+      ...json,
+      'mongoId': id,
+    };
+    return PostModel.fromJson(postJson);
+  }).toList();
+}
   @override
   Future<void> createPost(PostModel post) async {
     final Db db = await Db.create(_mongoUrl!);

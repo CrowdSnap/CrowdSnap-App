@@ -23,6 +23,12 @@ class PostRepositoryImpl implements PostRepository {
   }
 
   @override
+  Future<List<PostModel>> getPostsOrderedByLikes(
+      String location, DateTime startDate, DateTime endDate, int limit, List<String> excludeIds) {
+    return _postDataSource.getPostsOrderedByLikes(location, startDate, endDate, limit, excludeIds);
+  }
+
+  @override
   Future<void> createPost(PostModel post) {
     return _postDataSource.createPost(post);
   }

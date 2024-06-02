@@ -1,7 +1,8 @@
 import 'package:crowd_snap/core/data/models/post_model.dart';
 import 'package:crowd_snap/features/home/presentation/provider/block_scroll.dart';
-import 'package:crowd_snap/features/home/presentation/provider/post_state_notifier.dart';
-import 'package:crowd_snap/features/home/presentation/widgets/filter_button.dart';
+import 'package:crowd_snap/features/home/presentation/provider/ordered_bylikes_post_state_notifier.dart';
+import 'package:crowd_snap/features/home/presentation/provider/random_post_state_notifier.dart';
+import 'package:crowd_snap/features/home/presentation/widgets/filter_badges.dart';
 import 'package:crowd_snap/features/imgs/presentation/widgets/post_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -17,7 +18,8 @@ class HomeView extends ConsumerStatefulWidget {
 
 class _HomeViewState extends ConsumerState<HomeView>
     with TickerProviderStateMixin {
-  final ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollControllerRandom = ScrollController();
+  final ScrollController _scrollControllerTopLikes = ScrollController();
   bool _isLoading = false;
   late final AnimationController _animationController;
   late final TabController _tabController;
@@ -25,39 +27,61 @@ class _HomeViewState extends ConsumerState<HomeView>
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(_onScroll);
+    _scrollControllerRandom.addListener(_onScrollRandom);
+    _scrollControllerTopLikes.addListener(_onScrollTopLikes);
     _animationController = AnimationController(vsync: this);
     _tabController = TabController(length: 2, vsync: this);
   }
 
   @override
   void dispose() {
-    _scrollController.dispose();
+    _scrollControllerRandom.dispose();
+    _scrollControllerTopLikes.dispose();
     _animationController.dispose();
     _tabController.dispose();
     super.dispose();
   }
 
-  void _onScroll() {
+  void _onScrollTopLikes() {
     if (!_isLoading &&
-        _scrollController.position.pixels ==
-            _scrollController.position.maxScrollExtent) {
-      _loadMorePosts();
+        _scrollControllerTopLikes.position.pixels ==
+            _scrollControllerTopLikes.position.maxScrollExtent) {
+      _loadMoreTopLikesPosts();
     }
   }
 
-  Future<void> _loadMorePosts() async {
+  void _onScrollRandom() {
+    if (!_isLoading &&
+        _scrollControllerRandom.position.pixels ==
+            _scrollControllerRandom.position.maxScrollExtent) {
+      _loadMoreRandomPosts();
+    }
+  }
+
+  Future<void> _loadMoreTopLikesPosts() async {
     setState(() {
       _isLoading = true;
     });
-    await ref.read(postListProvider.notifier).loadMorePosts();
+    await ref
+        .read(orderedByLikesPostListProvider.notifier)
+        .loadMorePostsOrderedByLikes();
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  Future<void> _loadMoreRandomPosts() async {
+    setState(() {
+      _isLoading = true;
+    });
+    await ref.read(randomPostListProvider.notifier).loadMorePostsRandom();
     setState(() {
       _isLoading = false;
     });
   }
 
   void _scrollToTop() {
-    _scrollController.animateTo(
+    _scrollControllerRandom.animateTo(
       0,
       duration: const Duration(milliseconds: 500),
       curve: Curves.easeInOut,
@@ -66,21 +90,25 @@ class _HomeViewState extends ConsumerState<HomeView>
 
   @override
   Widget build(BuildContext context) {
-    final postListAsyncValue = ref.watch(postListProvider);
+    final randomPostListAsyncValue = ref.watch(randomPostListProvider);
+    final orderedByLikesPostListAsyncValue =
+        ref.watch(orderedByLikesPostListProvider);
     final blockScroll = ref.watch(blockScrollProvider);
 
     return DefaultTabController(
       length: 2, // Número de pestañas
       child: Scaffold(
         body: NestedScrollView(
-          controller: _scrollController,
+          controller: _scrollControllerRandom,
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return <Widget>[
               SliverAppBar(
                 title: GestureDetector(
                   onTap: () {
                     HapticFeedback.vibrate();
-                    ref.read(postListProvider.notifier).refreshPosts();
+                    ref
+                        .read(randomPostListProvider.notifier)
+                        .refreshPostsRandom();
                   },
                   child: Image.asset(
                     'assets/icons/crowd_snap_logo.png',
@@ -89,13 +117,11 @@ class _HomeViewState extends ConsumerState<HomeView>
                     fit: BoxFit.cover,
                   ),
                 ),
-                actions: const [
-                  FilterButton(),
-                ],
                 bottom: TabBar(
                   enableFeedback: true,
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   onTap: (value) {
+                    HapticFeedback.vibrate();
                     _scrollToTop();
                   },
                   tabs: const [
@@ -115,9 +141,8 @@ class _HomeViewState extends ConsumerState<HomeView>
                 ? const NeverScrollableScrollPhysics()
                 : const ClampingScrollPhysics(),
             children: [
-              _buildListView(postListAsyncValue, blockScroll),
-              _buildListView(postListAsyncValue,
-                  blockScroll), // Puedes cambiar esto para mostrar diferentes listados
+              _buildListView(randomPostListAsyncValue, blockScroll),
+              _buildListView(orderedByLikesPostListAsyncValue, blockScroll),
             ],
           ),
         ),
@@ -128,7 +153,8 @@ class _HomeViewState extends ConsumerState<HomeView>
   Widget _buildListView(
       AsyncValue<List<PostModel>> postListAsyncValue, bool blockScroll) {
     return RefreshIndicator(
-      onRefresh: () => ref.read(postListProvider.notifier).refreshPosts(),
+      onRefresh: () =>
+          ref.read(randomPostListProvider.notifier).refreshPostsRandom(),
       child: postListAsyncValue.when(
         data: (postList) {
           return CustomScrollView(
@@ -136,6 +162,12 @@ class _HomeViewState extends ConsumerState<HomeView>
                 ? const NeverScrollableScrollPhysics()
                 : const ClampingScrollPhysics(),
             slivers: [
+              const SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: FilterBadges(),
+                ),
+              ),
               SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
