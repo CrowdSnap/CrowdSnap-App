@@ -1,3 +1,4 @@
+import 'package:crowd_snap/core/data/models/post_model.dart';
 import 'package:crowd_snap/features/home/presentation/provider/block_scroll.dart';
 import 'package:crowd_snap/features/home/presentation/provider/post_state_notifier.dart';
 import 'package:crowd_snap/features/home/presentation/widgets/filter_button.dart';
@@ -14,8 +15,7 @@ class HomeView extends ConsumerStatefulWidget {
   ConsumerState<HomeView> createState() => _HomeViewState();
 }
 
-class _HomeViewState extends ConsumerState<HomeView>
-    with TickerProviderStateMixin {
+class _HomeViewState extends ConsumerState<HomeView> with TickerProviderStateMixin {
   final ScrollController _scrollController = ScrollController();
   bool _isLoading = false;
   late final AnimationController _animationController;
@@ -35,9 +35,7 @@ class _HomeViewState extends ConsumerState<HomeView>
   }
 
   void _onScroll() {
-    if (!_isLoading &&
-        _scrollController.position.pixels ==
-            _scrollController.position.maxScrollExtent) {
+    if (!_isLoading && _scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
       _loadMorePosts();
     }
   }
@@ -65,83 +63,91 @@ class _HomeViewState extends ConsumerState<HomeView>
     final postListAsyncValue = ref.watch(postListProvider);
     final blockScroll = ref.watch(blockScrollProvider);
 
-    return Scaffold(
-      body: RefreshIndicator(
-        onRefresh: () => ref.read(postListProvider.notifier).refreshPosts(),
-        child: postListAsyncValue.when(
-          data: (postList) {
-            return CustomScrollView(
-              physics: blockScroll
-                  ? const NeverScrollableScrollPhysics()
-                  : const ClampingScrollPhysics(),
-              controller: _scrollController,
-              slivers: [
-                SliverAppBar(
-                  title: GestureDetector(
-                    onTap: () {
-                      HapticFeedback.vibrate();
-                      ref.read(postListProvider.notifier).refreshPosts();
-                    },
-                    child: Image.asset(
-                      'assets/icons/crowd_snap_logo.png',
-                      height: 165,
-                      width: 85,
-                      fit: BoxFit.cover,
-                    ),
+    return DefaultTabController(
+      length: 2, // Número de pestañas
+      child: Scaffold(
+        body: NestedScrollView(
+          controller: _scrollController,
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return <Widget>[
+              SliverAppBar(
+                title: GestureDetector(
+                  onTap: () {
+                    HapticFeedback.vibrate();
+                    ref.read(postListProvider.notifier).refreshPosts();
+                  },
+                  child: Image.asset(
+                    'assets/icons/crowd_snap_logo.png',
+                    height: 165,
+                    width: 85,
+                    fit: BoxFit.cover,
                   ),
-                  actions: const [
-                    FilterButton(),
+                ),
+                actions: const [
+                  FilterButton(),
+                ],
+                bottom: const TabBar(
+                  tabs: [
+                    Tab(text: "Random Posts"),
+                    Tab(text: "Top Posts"),
                   ],
-                  pinned: false,
-                  floating: true,
-                  snap: true,
                 ),
-                SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      if (index == postList.length) {
-                        return _buildLoadingIndicator();
-                      }
-                      final post = postList[index];
-                      return PostCard(post: post);
-                    },
-                    childCount: postList.length + 1,
-                  ),
-                ),
-              ],
-            );
+                pinned: true,
+                floating: true,
+                snap: true,
+              ),
+            ];
           },
-          loading: () => Scaffold(
-            appBar: AppBar(
-              title: Image.asset(
-                'assets/icons/crowd_snap_logo.png',
-                height: 165,
-                width: 85,
-                fit: BoxFit.cover,
-              ),
-              actions: const [
-                FilterButton(),
-              ],
-            ),
-            body: Center(
-              child: Lottie.asset(
-                'assets/Principal-Disco-Ball.json',
-                controller: _animationController,
-                onLoaded: (composition) {
-                  _animationController
-                    ..duration = composition.duration *
-                        (2 / 3) // Ajustar la duración para 1.5x velocidad
-                    ..forward(
-                        from: 0.05); // Saltar los primeros 20% de la animación
-                },
-                height: 400,
-                width: 400,
-                repeat: true,
-              ),
-            ),
+          body: TabBarView(
+            physics: blockScroll ? const NeverScrollableScrollPhysics() : const ClampingScrollPhysics(),
+            children: [
+              _buildListView(postListAsyncValue, blockScroll),
+              _buildListView(postListAsyncValue, blockScroll), // Puedes cambiar esto para mostrar diferentes listados
+            ],
           ),
-          error: (error, stackTrace) => Center(child: Text('Error: $error')),
         ),
+      ),
+    );
+  }
+
+  Widget _buildListView(AsyncValue<List<PostModel>> postListAsyncValue, bool blockScroll) {
+    return RefreshIndicator(
+      onRefresh: () => ref.read(postListProvider.notifier).refreshPosts(),
+      child: postListAsyncValue.when(
+        data: (postList) {
+          return CustomScrollView(
+            physics: blockScroll ? const NeverScrollableScrollPhysics() : const ClampingScrollPhysics(),
+            slivers: [
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    if (index == postList.length) {
+                      return _buildLoadingIndicator();
+                    }
+                    final post = postList[index];
+                    return PostCard(post: post);
+                  },
+                  childCount: postList.length + 1,
+                ),
+              ),
+            ],
+          );
+        },
+        loading: () => Center(
+          child: Lottie.asset(
+            'assets/Principal-Disco-Ball.json',
+            controller: _animationController,
+            onLoaded: (composition) {
+              _animationController
+                ..duration = composition.duration * (2 / 3) // Ajustar la duración para 1.5x velocidad
+                ..forward(from: 0.05); // Saltar los primeros 20% de la animación
+            },
+            height: 400,
+            width: 400,
+            repeat: true,
+          ),
+        ),
+        error: (error, stackTrace) => Center(child: Text('Error: $error')),
       ),
     );
   }
@@ -153,8 +159,7 @@ class _HomeViewState extends ConsumerState<HomeView>
             child: Lottie.asset(
               'assets/Secondary-Disco-Ball.json',
               onLoaded: (composition) {
-                _animationController.duration = composition.duration *
-                    (4 / 5); // Ajustar la duración para 1.5x velocidad
+                _animationController.duration = composition.duration * (4 / 5); // Ajustar la duración para 1.5x velocidad
               },
               height: 75,
               width: 75,
