@@ -117,6 +117,14 @@ class _HomeViewState extends ConsumerState<HomeView>
                     fit: BoxFit.cover,
                   ),
                 ),
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.notifications_rounded),
+                    onPressed: () {
+                      HapticFeedback.selectionClick();
+                      
+                    },
+                  ),],
                 bottom: TabBar(
                   enableFeedback: true,
                   padding: const EdgeInsets.symmetric(horizontal: 8),
