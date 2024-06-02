@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crowd_snap/core/data/models/user_model.dart';
 import 'package:crowd_snap/features/auth/data/repositories_impl/firestore_repository_impl.dart';
 import 'package:crowd_snap/features/profile/data/repositories_impl/users_repository_impl.dart';
-import 'package:crowd_snap/features/profile/presentation/notifier/profile_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blurhash/flutter_blurhash.dart';
@@ -14,11 +13,13 @@ import 'package:skeletonizer/skeletonizer.dart';
 class ConnectionsModalBottomSheet extends ConsumerStatefulWidget {
   final String userId;
   final ScrollController pageController;
+  final UserModel user;
 
   const ConnectionsModalBottomSheet({
     super.key,
     required this.userId,
     required this.pageController,
+    required this.user,
   });
 
   @override
@@ -47,8 +48,7 @@ class _ConnectionsModalBottomSheetState
       _isLoading = true;
     });
 
-    final profileValues = ref.read(profileNotifierProvider);
-    if (connections.length >= profileValues.connectionsCount) {
+    if (connections.length >= widget.user.connectionsCount) {
       setState(() {
         _isLoading = false;
       });
@@ -115,21 +115,19 @@ class _ConnectionsModalBottomSheetState
 
   @override
   Widget build(BuildContext context) {
-    final profileValues = ref.watch(profileNotifierProvider);
-
     return Column(
       children: [
         Expanded(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: profileValues.connectionsCount == 0
+            child: widget.user.connectionsCount == 0
                 ? Center(
-                  child: Text(
-                    'Se el primero en conectar con ${profileValues.name}',
-                    style: const TextStyle(
-                      fontSize: 24, fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
-                  ),
+                    child: Text(
+                      'Se el primero en conectar con ${widget.user.name}',
+                      style: const TextStyle(
+                          fontSize: 24, fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                    ),
                   )
                 : ListView.builder(
                     itemCount: connections.length,

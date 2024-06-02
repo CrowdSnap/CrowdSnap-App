@@ -88,6 +88,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
             return ConnectionsModalBottomSheet(
               userId: localUser.userId,
               pageController: scrollController,
+              user: localUser,
             );
           },
         );

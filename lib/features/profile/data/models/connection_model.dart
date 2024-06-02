@@ -8,8 +8,8 @@ part 'connection_model.g.dart';
 class ConnectionModel with _$ConnectionModel {
   const factory ConnectionModel({
     required DateTime connectedAt,
-    required String userId,
-    required String connectionUserId,
+    required String senderId,
+    required String receiverId,
     required ConnectionStatus connectionStatus,
     String? connectionPostId,
     String? connectionLocation,
@@ -17,4 +17,18 @@ class ConnectionModel with _$ConnectionModel {
 
   factory ConnectionModel.fromJson(Map<String, dynamic> json) =>
       _$ConnectionModelFromJson(json);
+}
+
+ConnectionModel createConnectionModel(Map<String, dynamic> json) {
+  return ConnectionModel(
+    connectedAt: DateTime.parse(json['connectedAt'] as String),
+    senderId:
+        json['senderId'] as String, // Asegúrate de que este campo esté presente
+    receiverId: json['receiverId']
+        as String, // Asegúrate de que este campo esté presente
+    connectionStatus:
+        ConnectionStatusExtension.fromValue(json['status'] as String),
+    connectionPostId: json['connectionPostId'] as String?,
+    connectionLocation: json['connectionLocation'] as String?,
+  );
 }

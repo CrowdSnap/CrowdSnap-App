@@ -21,8 +21,8 @@ ConnectionModel _$ConnectionModelFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$ConnectionModel {
   DateTime get connectedAt => throw _privateConstructorUsedError;
-  String get userId => throw _privateConstructorUsedError;
-  String get connectionUserId => throw _privateConstructorUsedError;
+  String get senderId => throw _privateConstructorUsedError;
+  String get receiverId => throw _privateConstructorUsedError;
   ConnectionStatus get connectionStatus => throw _privateConstructorUsedError;
   String? get connectionPostId => throw _privateConstructorUsedError;
   String? get connectionLocation => throw _privateConstructorUsedError;
@@ -41,8 +41,8 @@ abstract class $ConnectionModelCopyWith<$Res> {
   @useResult
   $Res call(
       {DateTime connectedAt,
-      String userId,
-      String connectionUserId,
+      String senderId,
+      String receiverId,
       ConnectionStatus connectionStatus,
       String? connectionPostId,
       String? connectionLocation});
@@ -62,8 +62,8 @@ class _$ConnectionModelCopyWithImpl<$Res, $Val extends ConnectionModel>
   @override
   $Res call({
     Object? connectedAt = null,
-    Object? userId = null,
-    Object? connectionUserId = null,
+    Object? senderId = null,
+    Object? receiverId = null,
     Object? connectionStatus = null,
     Object? connectionPostId = freezed,
     Object? connectionLocation = freezed,
@@ -73,13 +73,13 @@ class _$ConnectionModelCopyWithImpl<$Res, $Val extends ConnectionModel>
           ? _value.connectedAt
           : connectedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      userId: null == userId
-          ? _value.userId
-          : userId // ignore: cast_nullable_to_non_nullable
+      senderId: null == senderId
+          ? _value.senderId
+          : senderId // ignore: cast_nullable_to_non_nullable
               as String,
-      connectionUserId: null == connectionUserId
-          ? _value.connectionUserId
-          : connectionUserId // ignore: cast_nullable_to_non_nullable
+      receiverId: null == receiverId
+          ? _value.receiverId
+          : receiverId // ignore: cast_nullable_to_non_nullable
               as String,
       connectionStatus: null == connectionStatus
           ? _value.connectionStatus
@@ -107,8 +107,8 @@ abstract class _$$ConnectionModelImplCopyWith<$Res>
   @useResult
   $Res call(
       {DateTime connectedAt,
-      String userId,
-      String connectionUserId,
+      String senderId,
+      String receiverId,
       ConnectionStatus connectionStatus,
       String? connectionPostId,
       String? connectionLocation});
@@ -126,8 +126,8 @@ class __$$ConnectionModelImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? connectedAt = null,
-    Object? userId = null,
-    Object? connectionUserId = null,
+    Object? senderId = null,
+    Object? receiverId = null,
     Object? connectionStatus = null,
     Object? connectionPostId = freezed,
     Object? connectionLocation = freezed,
@@ -137,13 +137,13 @@ class __$$ConnectionModelImplCopyWithImpl<$Res>
           ? _value.connectedAt
           : connectedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      userId: null == userId
-          ? _value.userId
-          : userId // ignore: cast_nullable_to_non_nullable
+      senderId: null == senderId
+          ? _value.senderId
+          : senderId // ignore: cast_nullable_to_non_nullable
               as String,
-      connectionUserId: null == connectionUserId
-          ? _value.connectionUserId
-          : connectionUserId // ignore: cast_nullable_to_non_nullable
+      receiverId: null == receiverId
+          ? _value.receiverId
+          : receiverId // ignore: cast_nullable_to_non_nullable
               as String,
       connectionStatus: null == connectionStatus
           ? _value.connectionStatus
@@ -166,8 +166,8 @@ class __$$ConnectionModelImplCopyWithImpl<$Res>
 class _$ConnectionModelImpl implements _ConnectionModel {
   const _$ConnectionModelImpl(
       {required this.connectedAt,
-      required this.userId,
-      required this.connectionUserId,
+      required this.senderId,
+      required this.receiverId,
       required this.connectionStatus,
       this.connectionPostId,
       this.connectionLocation});
@@ -178,9 +178,9 @@ class _$ConnectionModelImpl implements _ConnectionModel {
   @override
   final DateTime connectedAt;
   @override
-  final String userId;
+  final String senderId;
   @override
-  final String connectionUserId;
+  final String receiverId;
   @override
   final ConnectionStatus connectionStatus;
   @override
@@ -190,7 +190,7 @@ class _$ConnectionModelImpl implements _ConnectionModel {
 
   @override
   String toString() {
-    return 'ConnectionModel(connectedAt: $connectedAt, userId: $userId, connectionUserId: $connectionUserId, connectionStatus: $connectionStatus, connectionPostId: $connectionPostId, connectionLocation: $connectionLocation)';
+    return 'ConnectionModel(connectedAt: $connectedAt, senderId: $senderId, receiverId: $receiverId, connectionStatus: $connectionStatus, connectionPostId: $connectionPostId, connectionLocation: $connectionLocation)';
   }
 
   @override
@@ -200,9 +200,10 @@ class _$ConnectionModelImpl implements _ConnectionModel {
             other is _$ConnectionModelImpl &&
             (identical(other.connectedAt, connectedAt) ||
                 other.connectedAt == connectedAt) &&
-            (identical(other.userId, userId) || other.userId == userId) &&
-            (identical(other.connectionUserId, connectionUserId) ||
-                other.connectionUserId == connectionUserId) &&
+            (identical(other.senderId, senderId) ||
+                other.senderId == senderId) &&
+            (identical(other.receiverId, receiverId) ||
+                other.receiverId == receiverId) &&
             (identical(other.connectionStatus, connectionStatus) ||
                 other.connectionStatus == connectionStatus) &&
             (identical(other.connectionPostId, connectionPostId) ||
@@ -213,8 +214,8 @@ class _$ConnectionModelImpl implements _ConnectionModel {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, connectedAt, userId,
-      connectionUserId, connectionStatus, connectionPostId, connectionLocation);
+  int get hashCode => Object.hash(runtimeType, connectedAt, senderId,
+      receiverId, connectionStatus, connectionPostId, connectionLocation);
 
   @JsonKey(ignore: true)
   @override
@@ -234,8 +235,8 @@ class _$ConnectionModelImpl implements _ConnectionModel {
 abstract class _ConnectionModel implements ConnectionModel {
   const factory _ConnectionModel(
       {required final DateTime connectedAt,
-      required final String userId,
-      required final String connectionUserId,
+      required final String senderId,
+      required final String receiverId,
       required final ConnectionStatus connectionStatus,
       final String? connectionPostId,
       final String? connectionLocation}) = _$ConnectionModelImpl;
@@ -246,9 +247,9 @@ abstract class _ConnectionModel implements ConnectionModel {
   @override
   DateTime get connectedAt;
   @override
-  String get userId;
+  String get senderId;
   @override
-  String get connectionUserId;
+  String get receiverId;
   @override
   ConnectionStatus get connectionStatus;
   @override

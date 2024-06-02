@@ -228,6 +228,7 @@ class _UsersViewState extends ConsumerState<UsersView> {
             return ConnectionsModalBottomSheet(
               userId: user.userId,
               pageController: scrollController,
+              user: user,
             );
           },
         );
