@@ -4,6 +4,7 @@ import 'package:crowd_snap/features/auth/data/repositories_impl/firestore_reposi
 import 'package:crowd_snap/features/auth/domain/use_cases/sign_out_use_case.dart';
 import 'package:crowd_snap/features/auth/presentation/notifier/auth_notifier.dart';
 import 'package:crowd_snap/features/imgs/data/repositories_impl/avatar_bucket_repository_impl.dart';
+import 'package:crowd_snap/features/profile/data/data_source/users_data_source.dart';
 import 'package:crowd_snap/features/profile/presentation/notifier/profile_notifier.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,7 @@ class SettingsView extends ConsumerWidget {
 
     try {
       // Elimina el avatar del usuario del bucket de almacenamiento (opcional, dependiendo de la implementación).
+      await ref.read(usersDataSourceProvider).removeAllUserConnections(userModel.userId);
       await ref
           .read(avatarBucketRepositoryProvider)
           .deleteUserAvatar(userModel.avatarUrl!);

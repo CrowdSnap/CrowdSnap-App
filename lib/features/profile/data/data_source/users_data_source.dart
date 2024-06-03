@@ -16,6 +16,8 @@ abstract class UsersDataSource {
 
   Future<List<ConnectionModel>> getPendingConnections(String localUserId);
 
+  Future<void> removeAllUserConnections(String userId);
+
   Future<void> addConnection(String localUserId, String userId);
 
   Future<void> acceptConnection(String localUserId, String userId);
@@ -74,10 +76,56 @@ class UsersDataSourceImpl implements UsersDataSource {
   }
 
   @override
+  Future<void> removeAllUserConnections(String userId) async {
+    try {
+      final connectionRef = _realtimeDatabase.ref().child('connections');
+      // Realiza ambas consultas en paralelo
+      final connectionQuery1 =
+          connectionRef.orderByChild('senderId').equalTo(userId).once();
+
+      final connectionQuery2 =
+          connectionRef.orderByChild('receiverId').equalTo(userId).once();
+
+      // Espera a que ambas consultas se completen
+      final results = await Future.wait([connectionQuery1, connectionQuery2]);
+
+      final connectedUserIds = <String>[];
+
+      // Procesa los resultados de la primera consulta
+      if (results[0].snapshot.exists) {
+        for (var connection in results[0].snapshot.children) {
+          connectedUserIds.add(connection.child('receiverId').value.toString());
+          await connection.ref.remove();
+        }
+      }
+
+      // Procesa los resultados de la segunda consulta
+      if (results[1].snapshot.exists) {
+        for (var connection in results[1].snapshot.children) {
+          connectedUserIds.add(connection.child('senderId').value.toString());
+          await connection.ref.remove();
+        }
+      }
+
+      // Actualiza el contador de conexiones en Firestore para cada usuario conectado
+      for (var connectedUserId in connectedUserIds) {
+        final connectedUserRef =
+            _firestore.collection('users').doc(connectedUserId);
+        await connectedUserRef.update({
+          'connectionsCount': FieldValue.increment(-1),
+        });
+      }
+    } catch (e) {
+      throw Exception('Failed to remove all user connections: $e');
+    }
+  }
+
+  @override
   Future<List<ConnectionModel>> getPendingConnections(
       String localUserId) async {
     try {
-      final userDoc = await _firestore.collection('users').doc(localUserId).get();
+      final userDoc =
+          await _firestore.collection('users').doc(localUserId).get();
       if (userDoc.exists) {
         final userData = userDoc.data();
         final pendingConnections =

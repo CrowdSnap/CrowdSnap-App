@@ -28,3 +28,20 @@ A new Flutter project.
     ```
     Este comando lo usaremos para poder trabajar con el código autogenerado de riverpod con las anotaciones.
     Una vez ejecutado el comando no se puede usar la terminal ni cerrarla. Se tendrá que abrir otra para poder usarla.
+
+
+5. Añadir al .env las variables de entorno
+    ```
+    R2_ACCESS_KEY=
+    R2_SECRET_ACCESS_KEY=
+    R2_URL=
+    R2_PUBLIC_URL=
+    MONGO_URL=
+    PUSH_NOTIFICATION_URL=
+    ```
+
+
+6. Añadir esta linea al local.properties de android
+    ```
+    flutter.minSdkVersion=21
+    ```
