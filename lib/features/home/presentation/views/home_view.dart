@@ -19,70 +19,51 @@ class HomeView extends ConsumerStatefulWidget {
 
 class _HomeViewState extends ConsumerState<HomeView>
     with TickerProviderStateMixin {
-  final ScrollController _scrollControllerRandom = ScrollController();
-  final ScrollController _scrollControllerTopLikes = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   bool _isLoading = false;
+  bool _showRandomPosts = true; // Variable para controlar el tipo de posts
   late final AnimationController _animationController;
-  late final TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    _scrollControllerRandom.addListener(_onScrollRandom);
-    _scrollControllerTopLikes.addListener(_onScrollTopLikes);
+    _scrollController.addListener(_onScroll);
     _animationController = AnimationController(vsync: this);
-    _tabController = TabController(length: 2, vsync: this);
   }
 
   @override
   void dispose() {
-    _scrollControllerRandom.dispose();
-    _scrollControllerTopLikes.dispose();
+    _scrollController.dispose();
     _animationController.dispose();
-    _tabController.dispose();
     super.dispose();
   }
 
-  void _onScrollTopLikes() {
+  void _onScroll() {
     if (!_isLoading &&
-        _scrollControllerTopLikes.position.pixels ==
-            _scrollControllerTopLikes.position.maxScrollExtent) {
-      _loadMoreTopLikesPosts();
+        _scrollController.position.pixels ==
+            _scrollController.position.maxScrollExtent) {
+      _loadMorePosts();
     }
   }
 
-  void _onScrollRandom() {
-    if (!_isLoading &&
-        _scrollControllerRandom.position.pixels ==
-            _scrollControllerRandom.position.maxScrollExtent) {
-      _loadMoreRandomPosts();
+  Future<void> _loadMorePosts() async {
+    setState(() {
+      _isLoading = true;
+    });
+    if (_showRandomPosts) {
+      await ref.read(randomPostListProvider.notifier).loadMorePostsRandom();
+    } else {
+      await ref
+          .read(orderedByLikesPostListProvider.notifier)
+          .loadMorePostsOrderedByLikes();
     }
-  }
-
-  Future<void> _loadMoreTopLikesPosts() async {
-    setState(() {
-      _isLoading = true;
-    });
-    await ref
-        .read(orderedByLikesPostListProvider.notifier)
-        .loadMorePostsOrderedByLikes();
-    setState(() {
-      _isLoading = false;
-    });
-  }
-
-  Future<void> _loadMoreRandomPosts() async {
-    setState(() {
-      _isLoading = true;
-    });
-    await ref.read(randomPostListProvider.notifier).loadMorePostsRandom();
     setState(() {
       _isLoading = false;
     });
   }
 
   void _scrollToTop() {
-    _scrollControllerRandom.animateTo(
+    _scrollController.animateTo(
       0,
       duration: const Duration(milliseconds: 500),
       curve: Curves.easeInOut,
@@ -96,64 +77,64 @@ class _HomeViewState extends ConsumerState<HomeView>
         ref.watch(orderedByLikesPostListProvider);
     final blockScroll = ref.watch(blockScrollProvider);
 
-    return DefaultTabController(
-      length: 2, // Número de pestañas
-      child: Scaffold(
-        body: NestedScrollView(
-          controller: _scrollControllerRandom,
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return <Widget>[
-              SliverAppBar(
-                title: GestureDetector(
-                  onTap: () {
-                    HapticFeedback.vibrate();
+    return Scaffold(
+      body: NestedScrollView(
+        controller: _scrollController,
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return <Widget>[
+            SliverAppBar(
+              title: GestureDetector(
+                onTap: () {
+                  HapticFeedback.vibrate();
+                  if (_showRandomPosts) {
+                    ref
+                        .read(orderedByLikesPostListProvider.notifier)
+                        .refreshPostsOrderedByLikes();
+                  } else {
                     ref
                         .read(randomPostListProvider.notifier)
                         .refreshPostsRandom();
-                  },
-                  child: Image.asset(
-                    'assets/icons/crowd_snap_logo.png',
-                    height: 165,
-                    width: 85,
-                    fit: BoxFit.cover,
-                  ),
+                  }
+                },
+                child: Image.asset(
+                  'assets/icons/crowd_snap_logo.png',
+                  height: 165,
+                  width: 85,
+                  fit: BoxFit.cover,
                 ),
-                actions: [
-                  IconButton(
-                    icon: const Icon(Icons.notifications_rounded),
-                    onPressed: () {
-                      HapticFeedback.selectionClick();
-                      context.push('/notifications');
-                    },
-                  ),],
-                bottom: TabBar(
-                  enableFeedback: true,
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  onTap: (value) {
-                    HapticFeedback.vibrate();
-                    _scrollToTop();
-                  },
-                  tabs: const [
-                    Tab(text: "Random Posts"),
-                    Tab(text: "Top Posts"),
-                  ],
-                ),
-                pinned: true,
-                floating: true,
-                snap: true,
-                centerTitle: true,
               ),
-            ];
-          },
-          body: TabBarView(
-            physics: blockScroll
-                ? const NeverScrollableScrollPhysics()
-                : const ClampingScrollPhysics(),
-            children: [
-              _buildListView(randomPostListAsyncValue, blockScroll),
-              _buildListView(orderedByLikesPostListAsyncValue, blockScroll),
-            ],
-          ),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.notifications_rounded),
+                  onPressed: () {
+                    HapticFeedback.selectionClick();
+                    context.push('/notifications');
+                  },
+                ),
+              ],
+              pinned: true,
+              floating: true,
+              snap: true,
+              centerTitle: true,
+            ),
+          ];
+        },
+        body: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: FilterBadges(
+                onTogglePosts: _togglePosts, // Pasar la función de toggle
+                showRandomPosts: _showRandomPosts, // Pasar el estado actual
+              ),
+            ),
+            Expanded(
+              child: _showRandomPosts
+                  ? _buildListView(randomPostListAsyncValue, blockScroll)
+                  : _buildListView(
+                      orderedByLikesPostListAsyncValue, blockScroll),
+            ),
+          ],
         ),
       ),
     );
@@ -162,8 +143,11 @@ class _HomeViewState extends ConsumerState<HomeView>
   Widget _buildListView(
       AsyncValue<List<PostModel>> postListAsyncValue, bool blockScroll) {
     return RefreshIndicator(
-      onRefresh: () =>
-          ref.read(randomPostListProvider.notifier).refreshPostsRandom(),
+      onRefresh: () => _showRandomPosts
+          ? ref.read(randomPostListProvider.notifier).refreshPostsRandom()
+          : ref
+              .read(orderedByLikesPostListProvider.notifier)
+              .refreshPostsOrderedByLikes(),
       child: postListAsyncValue.when(
         data: (postList) {
           return CustomScrollView(
@@ -171,12 +155,6 @@ class _HomeViewState extends ConsumerState<HomeView>
                 ? const NeverScrollableScrollPhysics()
                 : const ClampingScrollPhysics(),
             slivers: [
-              const SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: FilterBadges(),
-                ),
-              ),
               SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
@@ -228,5 +206,12 @@ class _HomeViewState extends ConsumerState<HomeView>
             ),
           )
         : const SizedBox.shrink();
+  }
+
+  void _togglePosts() {
+    setState(() {
+      _showRandomPosts = !_showRandomPosts;
+    });
+    _scrollToTop();
   }
 }
