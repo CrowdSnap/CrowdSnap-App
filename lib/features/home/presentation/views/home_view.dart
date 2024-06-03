@@ -46,6 +46,20 @@ class _HomeViewState extends ConsumerState<HomeView>
     }
   }
 
+  void _togglePosts() {
+    setState(() {
+      _showRandomPosts = !_showRandomPosts;
+    });
+    _scrollToTop();
+    if (_showRandomPosts) {
+      ref.read(randomPostListProvider.notifier).refreshPostsRandom();
+    } else {
+      ref
+          .read(orderedByLikesPostListProvider.notifier)
+          .refreshPostsOrderedByLikes();
+    }
+  }
+
   Future<void> _loadMorePosts() async {
     setState(() {
       _isLoading = true;
@@ -112,17 +126,9 @@ class _HomeViewState extends ConsumerState<HomeView>
                   },
                 ),
               ],
-              pinned: true,
+              pinned: false,
               floating: true,
               snap: true,
-              centerTitle: true,
-              bottom: PreferredSize(
-                preferredSize: const Size.fromHeight(50),
-                child: FilterBadges(
-                  onTogglePosts: _togglePosts, // Pasar la función de toggle
-                  showRandomPosts: _showRandomPosts, // Pasar el estado actual
-                ),
-              ),
             ),
           ];
         },
@@ -155,6 +161,15 @@ class _HomeViewState extends ConsumerState<HomeView>
                 ? const NeverScrollableScrollPhysics()
                 : const ClampingScrollPhysics(),
             slivers: [
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: FilterBadges(
+                    onTogglePosts: _togglePosts, // Pasar la función de toggle
+                    showRandomPosts: _showRandomPosts, // Pasar el estado actual
+                  ),
+                ),
+              ),
               SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
@@ -170,21 +185,19 @@ class _HomeViewState extends ConsumerState<HomeView>
             ],
           );
         },
-        loading: () => Center(
-          child: Lottie.asset(
-            'assets/Principal-Disco-Ball.json',
-            controller: _animationController,
-            onLoaded: (composition) {
-              _animationController
-                ..duration = composition.duration *
-                    (2 / 3) // Ajustar la duración para 1.5x velocidad
-                ..forward(
-                    from: 0.05); // Saltar los primeros 20% de la animación
-            },
-            height: 400,
-            width: 400,
-            repeat: true,
-          ),
+        loading: () => Lottie.asset(
+          'assets/Principal-Disco-Ball.json',
+          controller: _animationController,
+          onLoaded: (composition) {
+            _animationController
+              ..duration = composition.duration *
+                  (2 / 3) // Ajustar la duración para 1.5x velocidad
+              ..forward(
+                  from: 0.05); // Saltar los primeros 20% de la animación
+          },
+          height: 400,
+          width: 400,
+          repeat: true,
         ),
         error: (error, stackTrace) => Center(child: Text('Error: $error')),
       ),
@@ -206,19 +219,5 @@ class _HomeViewState extends ConsumerState<HomeView>
             ),
           )
         : const SizedBox.shrink();
-  }
-
-  void _togglePosts() {
-    setState(() {
-      _showRandomPosts = !_showRandomPosts;
-    });
-    _scrollToTop();
-    if (_showRandomPosts) {
-      ref.read(randomPostListProvider.notifier).refreshPostsRandom();
-    } else {
-      ref
-          .read(orderedByLikesPostListProvider.notifier)
-          .refreshPostsOrderedByLikes();
-    }
   }
 }
