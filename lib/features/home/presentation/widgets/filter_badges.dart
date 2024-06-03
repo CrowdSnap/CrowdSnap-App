@@ -37,7 +37,10 @@ class FilterBadges extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4.0),
             child: ElevatedButton(
-              onPressed: onTogglePosts,
+              onPressed: () {
+                HapticFeedback.mediumImpact();
+                onTogglePosts();
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.primary, // Color primario
                 foregroundColor: Theme.of(context).colorScheme.onPrimary, // Color del texto
@@ -156,7 +159,7 @@ class FilterBadges extends ConsumerWidget {
                 },
               ),
             );
-          }).toList(),
+          }),
         ],
       ),
     );

@@ -116,18 +116,18 @@ class _HomeViewState extends ConsumerState<HomeView>
               floating: true,
               snap: true,
               centerTitle: true,
+              bottom: PreferredSize(
+                preferredSize: const Size.fromHeight(50),
+                child: FilterBadges(
+                  onTogglePosts: _togglePosts, // Pasar la función de toggle
+                  showRandomPosts: _showRandomPosts, // Pasar el estado actual
+                ),
+              ),
             ),
           ];
         },
         body: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: FilterBadges(
-                onTogglePosts: _togglePosts, // Pasar la función de toggle
-                showRandomPosts: _showRandomPosts, // Pasar el estado actual
-              ),
-            ),
             Expanded(
               child: _showRandomPosts
                   ? _buildListView(randomPostListAsyncValue, blockScroll)
@@ -213,5 +213,12 @@ class _HomeViewState extends ConsumerState<HomeView>
       _showRandomPosts = !_showRandomPosts;
     });
     _scrollToTop();
+    if (_showRandomPosts) {
+      ref.read(randomPostListProvider.notifier).refreshPostsRandom();
+    } else {
+      ref
+          .read(orderedByLikesPostListProvider.notifier)
+          .refreshPostsOrderedByLikes();
+    }
   }
 }
