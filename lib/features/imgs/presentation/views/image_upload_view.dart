@@ -13,6 +13,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_editor_plus/image_editor_plus.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter_portal/flutter_portal.dart';
 
 class ImageUploadView extends ConsumerWidget {
   const ImageUploadView({super.key});
@@ -70,13 +71,12 @@ class ImageUploadView extends ConsumerWidget {
   }
 
   Future<void> _saveImage(
-      File? imageState, WidgetRef ref, BuildContext context) async {
+      File? imageState, WidgetRef ref, BuildContext context, List<String> taggedUserIds) async {
     ref.watch(imageUploadNotifierProvider.notifier).updateIsLoading(true);
     try {
-      await ref.read(createPostUseCaseProvider).execute(imageState!);
+      await ref.read(createPostUseCaseProvider).execute(imageState!, taggedUserIds);
       ref.watch(imageStateProvider.notifier).clearImage();
       ref.watch(imageUploadNotifierProvider.notifier).updateIsLoading(false);
-      // ignore: use_build_context_synchronously
       _goHome(context, ref);
     } catch (e) {
       ref.watch(imageUploadNotifierProvider.notifier).updateIsLoading(false);
@@ -89,58 +89,60 @@ class ImageUploadView extends ConsumerWidget {
     ref.read(navBarIndexNotifierProvider.notifier).updateIndex(0);
   }
 
-   @override
+  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final imageState = ref.watch(imageStateProvider);
     final isLoading = ref.watch(imageUploadNotifierProvider).isLoading;
     bool isSelecting = false;
 
-    return PopScope(
-      canPop: false,
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          return;
-        }
-        _goHome(context, ref);
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Publica una foto'),
-        ),
-        body: GestureDetector(
-          onVerticalDragUpdate: (details) async {
-            if (details.primaryDelta! < -5 && !isSelecting) {
-              isSelecting = true;
-              await _getGallery(ref, context);
-              isSelecting = false;
-            }
-          },
-          behavior: HitTestBehavior.translucent,
-          child: imageState == null
-              ? BeforeImageLoaded(
-                  onCameraPressed: () => _getCamera(ref, context),
-                  onGallerySwipe: () => _getGallery(ref, context),
-                )
-              : AfterImageLoaded(
-                  image: imageState,
-                  onSavePressed: () {
-                    try {
-                      _saveImage(imageState, ref, context);
-                    } on Exception catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Error uploading image: $e'),
-                          duration: const Duration(seconds: 2),
-                          behavior: SnackBarBehavior.floating,
-                        ),
-                      );
-                    }
-                  },
-                  onCancelPressed: () {
-                    ref.watch(imageStateProvider.notifier).clearImage();
-                  },
-                  isLoading: isLoading,
-                ),
+    return Portal(
+      child: PopScope(
+        canPop: false,
+        onPopInvoked: (didPop) async {
+          if (didPop) {
+            return;
+          }
+          _goHome(context, ref);
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text('Publica una foto'),
+          ),
+          body: GestureDetector(
+            onVerticalDragUpdate: (details) async {
+              if (details.primaryDelta! < -5 && !isSelecting) {
+                isSelecting = true;
+                await _getGallery(ref, context);
+                isSelecting = false;
+              }
+            },
+            behavior: HitTestBehavior.translucent,
+            child: imageState == null
+                ? BeforeImageLoaded(
+                    onCameraPressed: () => _getCamera(ref, context),
+                    onGallerySwipe: () => _getGallery(ref, context),
+                  )
+                : AfterImageLoaded(
+                    image: imageState,
+                    onSavePressed: (taggedUserIds) {
+                      try {
+                        _saveImage(imageState, ref, context, taggedUserIds);
+                      } on Exception catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Error uploading image: $e'),
+                            duration: const Duration(seconds: 2),
+                            behavior: SnackBarBehavior.floating,
+                          ),
+                        );
+                      }
+                    },
+                    onCancelPressed: () {
+                      ref.watch(imageStateProvider.notifier).clearImage();
+                    },
+                    isLoading: isLoading,
+                  ),
+          ),
         ),
       ),
     );

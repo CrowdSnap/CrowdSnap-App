@@ -17,7 +17,7 @@ class CreatePostUseCase {
   CreatePostUseCase(
       this._postRepository, this._getUserUseCase, this._imageUploadUseCase);
 
-  Future<void> execute(File image) async {
+  Future<void> execute(File image, List<String> taggedUserIds) async {
     final userModel = await _getUserUseCase.execute();
     final userName = userModel.username;
     final avatarBlurHash = userModel.blurHashImage;
@@ -29,7 +29,7 @@ class CreatePostUseCase {
       userName: userName,
       userAvatarUrl: userModel.avatarUrl!,
       location: 'Madrid', //TODO: get location method
-      taggedUserIds: [],
+      taggedUserIds: taggedUserIds, // Add tagged user IDs here
       imageUrl: imageUrl,
       createdAt: DateTime.now(),
       likeCount: 0,

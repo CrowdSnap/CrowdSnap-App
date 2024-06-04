@@ -764,7 +764,7 @@ packages:
     source: hosted
     version: "2.0.20"
   flutter_portal:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: flutter_portal
       sha256: "4601b3dc24f385b3761721bd852a3f6c09cddd4e943dd184ed58ee1f43006257"
