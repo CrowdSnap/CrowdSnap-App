@@ -29,22 +29,22 @@ class PushNotificationDataSourceImpl implements PushNotificationDataSource {
     _pushNotificationsUrl = dotenv.env['PUSH_NOTIFICATION_URL'];
   }
 
-
   @override
   Future<void> sendPushNotification(
       PushNotificationModel pushNotification) async {
-
-    // Definir los headers
     final headers = {
       'Content-Type': 'application/json',
     };
 
-    // Definir el cuerpo de la petición
     final data = {
       'token': pushNotification.fcmToken,
       'title': pushNotification.title,
       'body': pushNotification.body,
       'img': pushNotification.imageUrl,
+      'userId': pushNotification.userId,
+      'username': pushNotification.username,
+      'avatarUrl': pushNotification.avatarUrl,
+      'blurHashImage': pushNotification.blurHashImage,
     };
 
     final response = await dio.post(

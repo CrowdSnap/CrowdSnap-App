@@ -13,21 +13,27 @@ class RemoveConnectionUseCase {
 
   RemoveConnectionUseCase(this._repository, this._notificationDataSource);
 
-  Future<void> execute(UserModel user, String receiverId, String receiverFcmToken) async {
+  Future<void> execute(
+      UserModel user, String receiverId, String receiverFcmToken) async {
     await _repository.removeConnection(user.userId, receiverId);
     await _notificationDataSource.sendPushNotification(
       PushNotificationModel(
         fcmToken: receiverFcmToken,
         title: '${user.name} ha eliminado la conexión contigo!',
         body: '${user.username} es una persona menos en tu lista de conexiones',
-        imageUrl: user.avatarUrl,
+        imageUrl: user.avatarUrl!,
+        userId: user.userId,
+        username: user.username,
+        avatarUrl: user.avatarUrl!,
+        blurHashImage: user.blurHashImage!,
       ),
     );
   }
 }
 
 @Riverpod(keepAlive: true)
-RemoveConnectionUseCase removeConnectionUseCase(RemoveConnectionUseCaseRef ref) {
+RemoveConnectionUseCase removeConnectionUseCase(
+    RemoveConnectionUseCaseRef ref) {
   final usersRepository = ref.watch(usersRepositoryProvider);
   final notificationDataSource = ref.watch(pushNotificationDataSourceProvider);
   return RemoveConnectionUseCase(usersRepository, notificationDataSource);

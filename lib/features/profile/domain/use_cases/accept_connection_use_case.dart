@@ -20,7 +20,11 @@ class AcceptConnectionUseCase {
         fcmToken: receiverFcmToken,
         title: '${user.name} ha aceptado tu solicitud de conexión!',
         body: '${user.username} ahora es una persona más en tu lista de conexiones',
-        imageUrl: user.avatarUrl,
+        imageUrl: user.avatarUrl!,
+        userId: user.userId,
+        username: user.username,
+        avatarUrl: user.avatarUrl!,
+        blurHashImage: user.blurHashImage!,
       ),
     );
   }

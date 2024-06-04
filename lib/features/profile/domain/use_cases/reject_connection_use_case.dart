@@ -13,21 +13,27 @@ class RejectConnectionUseCase {
 
   RejectConnectionUseCase(this._repository, this._notificationDataSource);
 
-  Future<void> execute(UserModel user, String receiverId, String receiverFcmToken) async {
+  Future<void> execute(
+      UserModel user, String receiverId, String receiverFcmToken) async {
     await _repository.rejectConnection(user.userId, receiverId);
     await _notificationDataSource.sendPushNotification(
       PushNotificationModel(
         fcmToken: receiverFcmToken,
         title: '${user.name} ha rechazado tu solicitud de conexión!',
         body: '${user.username} no desea ser tu amigo en este momento',
-        imageUrl: user.avatarUrl,
+        imageUrl: user.avatarUrl!,
+        userId: user.userId,
+        username: user.username,
+        avatarUrl: user.avatarUrl!,
+        blurHashImage: user.blurHashImage!,
       ),
     );
   }
 }
 
 @Riverpod(keepAlive: true)
-RejectConnectionUseCase rejectConnectionUseCase(RejectConnectionUseCaseRef ref) {
+RejectConnectionUseCase rejectConnectionUseCase(
+    RejectConnectionUseCaseRef ref) {
   final usersRepository = ref.watch(usersRepositoryProvider);
   final notificationDataSource = ref.watch(pushNotificationDataSourceProvider);
   return RejectConnectionUseCase(usersRepository, notificationDataSource);

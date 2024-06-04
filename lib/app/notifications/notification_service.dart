@@ -9,7 +9,8 @@ part 'notification_service.g.dart';
 @riverpod
 class NotificationService extends _$NotificationService {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
-  final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
   NotificationService() {
     _initialize();
@@ -35,14 +36,16 @@ class NotificationService extends _$NotificationService {
       sound: true,
     );
 
-    debugPrint('User granted notifications permission: ${settings.authorizationStatus}');
+    debugPrint(
+        'User granted notifications permission: ${settings.authorizationStatus}');
   }
 
   void _initializeLocalNotifications() {
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@drawable/ic_crowdsnap_notification');
 
-    const InitializationSettings initializationSettings = InitializationSettings(
+    const InitializationSettings initializationSettings =
+        InitializationSettings(
       android: initializationSettingsAndroid,
     );
 
@@ -68,21 +71,26 @@ class NotificationService extends _$NotificationService {
 
   void _setupNotificationClickHandler() {
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      debugPrint('onMessageOpenedApp: ${message.notification?.title ?? 'No Title'}');
+      debugPrint(
+          'onMessageOpenedApp: ${message.notification?.title ?? 'No Title'}');
       _handleNotificationClick(message);
     });
 
-    FirebaseMessaging.instance.getInitialMessage().then((RemoteMessage? message) {
+    FirebaseMessaging.instance
+        .getInitialMessage()
+        .then((RemoteMessage? message) {
       if (message != null) {
         _handleNotificationClick(message);
       }
     });
   }
 
-  void _showNotification(RemoteNotification notification, Map<String, dynamic> data) async {
+  void _showNotification(
+      RemoteNotification notification, Map<String, dynamic> data) async {
     final String channelId = data['channel_id'] ?? 'default_channel_id';
     final String channelName = data['channel_name'] ?? 'Default Channel';
-    final String channelDescription = data['channel_description'] ?? 'Default Description';
+    final String channelDescription =
+        data['channel_description'] ?? 'Default Description';
 
     final AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
@@ -110,17 +118,23 @@ class NotificationService extends _$NotificationService {
   void _handleNotificationClick(RemoteMessage message) {
     final userId = message.data['userId'];
     final extra = {
-      'username': message.data['username'],
-      'avatarUrl': message.data['avatarUrl'],
-      'blurHashImage': message.data['blurHashImage'],
+      'username': message.data['username'] ?? '',
+      'avatarUrl': message.data['avatarUrl'] ?? '',
+      'blurHashImage': message.data['blurHashImage'] ?? '',
     };
+
+    // Asegúrate de que todos los valores en 'extra' sean Strings
+    final extraString =
+        extra.map((key, value) => MapEntry(key, value.toString()));
+
     print('User ID: $userId');
-    print('Extra: $extra');
-    ref.read(appRouterProvider).push('/users/$userId');
+    print('Extra: $extraString');
+    ref.read(appRouterProvider).go('/users/$userId', extra: extraString);
   }
 }
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  debugPrint('Handling a background message: ${message.notification?.title ?? 'No Title'}');
+  debugPrint(
+      'Handling a background message: ${message.notification?.title ?? 'No Title'}');
 }

@@ -13,14 +13,20 @@ class AddConnectionUseCase {
 
   AddConnectionUseCase(this._repository, this._notificationDataSource);
 
-  Future<void> execute(UserModel user, String receiverId, String receiverFcmToken) async {
+  Future<void> execute(
+      UserModel user, String receiverId, String receiverFcmToken) async {
     await _repository.addConnection(user.userId, receiverId);
     await _notificationDataSource.sendPushNotification(
       PushNotificationModel(
         fcmToken: receiverFcmToken,
         title: '${user.name} quiere conectar contigo!',
-        body: '¡Conecta con ${user.username} para ver sus publicaciones y ser amigos!',
-        imageUrl: user.avatarUrl,
+        body:
+            '¡Conecta con ${user.username} para ver sus publicaciones y ser amigos!',
+        imageUrl: user.avatarUrl!,
+        userId: user.userId,
+        username: user.username,
+        avatarUrl: user.avatarUrl!,
+        blurHashImage: user.blurHashImage!,
       ),
     );
   }

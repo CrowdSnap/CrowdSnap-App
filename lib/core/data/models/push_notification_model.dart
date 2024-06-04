@@ -9,11 +9,11 @@ class PushNotificationModel with _$PushNotificationModel {
     required String title,
     required String body,
     required String fcmToken,
-    String? imageUrl,
-    String? userId, 
-    String? username,
-    String? avatarUrl,
-    String? blurHashImage,
+    required String imageUrl,
+    required String userId, 
+    required String username,
+    required String avatarUrl,
+    required String blurHashImage,
   }) = _PushNotificationModel;
 
   factory PushNotificationModel.fromJson(Map<String, dynamic> json) =>
