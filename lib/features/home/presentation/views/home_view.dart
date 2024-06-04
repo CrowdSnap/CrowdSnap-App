@@ -109,6 +109,8 @@ class _HomeViewState extends ConsumerState<HomeView>
                         .read(randomPostListProvider.notifier)
                         .refreshPostsRandom();
                   }
+
+                  _refreshIndicatorKey.currentState?.show();
                 },
                 child: Image.asset(
                   'assets/icons/crowd_snap_logo.png',
@@ -146,9 +148,13 @@ class _HomeViewState extends ConsumerState<HomeView>
     );
   }
 
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
+
   Widget _buildListView(
       AsyncValue<List<PostModel>> postListAsyncValue, bool blockScroll) {
     return RefreshIndicator(
+      key: _refreshIndicatorKey,
       onRefresh: () => _showRandomPosts
           ? ref.read(randomPostListProvider.notifier).refreshPostsRandom()
           : ref
@@ -192,8 +198,7 @@ class _HomeViewState extends ConsumerState<HomeView>
             _animationController
               ..duration = composition.duration *
                   (2 / 3) // Ajustar la duración para 1.5x velocidad
-              ..forward(
-                  from: 0.05); // Saltar los primeros 20% de la animación
+              ..forward(from: 0.05); // Saltar los primeros 20% de la animación
           },
           height: 400,
           width: 400,
