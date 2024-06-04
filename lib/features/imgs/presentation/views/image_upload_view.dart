@@ -5,6 +5,8 @@ import 'package:crowd_snap/core/navbar/providers/navbar_provider.dart';
 import 'package:crowd_snap/features/imgs/domain/use_case/post_create_use_case.dart';
 import 'package:crowd_snap/features/imgs/presentation/notifier/image_picker_state.dart';
 import 'package:crowd_snap/features/imgs/presentation/notifier/image_upload_notifier.dart';
+import 'package:crowd_snap/features/imgs/presentation/widgets/after_image_loaded.dart';
+import 'package:crowd_snap/features/imgs/presentation/widgets/before_image_loaded.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -87,23 +89,11 @@ class ImageUploadView extends ConsumerWidget {
     ref.read(navBarIndexNotifierProvider.notifier).updateIndex(0);
   }
 
-  @override
+   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final imageState = ref.watch(imageStateProvider);
     final isLoading = ref.watch(imageUploadNotifierProvider).isLoading;
     bool isSelecting = false;
-
-    final animationController = AnimationController(
-      vsync: Scaffold.of(context),
-      duration: const Duration(milliseconds: 1500),
-    )..repeat(reverse: true);
-
-    final animation = Tween<double>(begin: 0, end: -20).animate(
-      CurvedAnimation(
-        parent: animationController,
-        curve: Curves.easeInOut,
-      ),
-    );
 
     return PopScope(
       canPop: false,
@@ -126,113 +116,31 @@ class ImageUploadView extends ConsumerWidget {
             }
           },
           behavior: HitTestBehavior.translucent,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      if (imageState != null)
-                        Expanded(
-                          child: Image.file(
-                            imageState,
-                            width: double.infinity,
-                            fit: BoxFit.contain,
-                          ),
-                        )
-                      else
-                        const Icon(
-                          Icons.people_alt_sharp,
-                          size: 200,
+          child: imageState == null
+              ? BeforeImageLoaded(
+                  onCameraPressed: () => _getCamera(ref, context),
+                  onGallerySwipe: () => _getGallery(ref, context),
+                )
+              : AfterImageLoaded(
+                  image: imageState,
+                  onSavePressed: () {
+                    try {
+                      _saveImage(imageState, ref, context);
+                    } on Exception catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Error uploading image: $e'),
+                          duration: const Duration(seconds: 2),
+                          behavior: SnackBarBehavior.floating,
                         ),
-                      const SizedBox(height: 20),
-                      if (imageState != null)
-                        Column(
-                          children: [
-                            ElevatedButton(
-                              onPressed: () {
-                                try {
-                                  _saveImage(imageState, ref, context);
-                                } on Exception catch (e) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text('Error uploading image: $e'),
-                                      duration: const Duration(seconds: 2),
-                                      behavior: SnackBarBehavior.floating,
-                                    ),
-                                  );
-                                }
-                              },
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  if (isLoading)
-                                    const Padding(
-                                      padding: EdgeInsets.only(right: 8.0),
-                                      child: SizedBox(
-                                        width: 12,
-                                        height: 12,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                        ),
-                                      ),
-                                    ),
-                                  const Icon(Icons.upload),
-                                  const Text('Subir Post'),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            ElevatedButton(
-                              onPressed: () {
-                                ref.watch(imageStateProvider.notifier).clearImage();
-                              },
-                              child: const Text('Cancelar'),
-                            ),
-                          ],
-                        ),
-                    ],
-                  ),
+                      );
+                    }
+                  },
+                  onCancelPressed: () {
+                    ref.watch(imageStateProvider.notifier).clearImage();
+                  },
+                  isLoading: isLoading,
                 ),
-              ),
-              if (imageState == null)
-                Column(
-                  children: [
-                    ElevatedButton(
-                      onPressed: () => _getCamera(ref, context),
-                      style: ElevatedButton.styleFrom(
-                        shape: const CircleBorder(),
-                        padding:
-                            const EdgeInsets.all(10), // Text and icon color
-                      ),
-                      child: const Icon(Icons.camera_outlined,
-                          color: Colors.red, size: 50),
-                    ),
-                    const SizedBox(height: 50),
-                    AnimatedBuilder(
-                      animation: animation,
-                      builder: (context, child) {
-                        return Transform.translate(
-                          offset: Offset(0, animation.value),
-                          child: Transform.rotate(
-                            angle: 1.5708,
-                            child: const Icon(
-                              Icons.arrow_back_ios_new,
-                              size: 40,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 10),
-                    const Text('Desliza hacia arriba para abrir la galería'),
-                    const SizedBox(height: 20),
-                  ],
-                ),
-            ],
-          ),
         ),
       ),
     );

@@ -763,6 +763,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.20"
+  flutter_portal:
+    dependency: transitive
+    description:
+      name: flutter_portal
+      sha256: "4601b3dc24f385b3761721bd852a3f6c09cddd4e943dd184ed58ee1f43006257"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.4"
   flutter_riverpod:
     dependency: "direct main"
     description:
@@ -1021,6 +1029,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.0"
+  instagram_mention:
+    dependency: "direct main"
+    description:
+      name: instagram_mention
+      sha256: e7fb0d00563eea17a85a29d23229f7cef6d653866f1de92c73fc192d47c5a597
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   intl:
     dependency: "direct main"
     description:
@@ -1165,6 +1181,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.0.0"
+  multi_trigger_autocomplete:
+    dependency: "direct main"
+    description:
+      name: multi_trigger_autocomplete
+      sha256: a38b1f0f68eaa34fe81847844167e60c6e793d7b620c5f818457ac6f9f8c31ab
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   numberpicker:
     dependency: "direct main"
     description:
