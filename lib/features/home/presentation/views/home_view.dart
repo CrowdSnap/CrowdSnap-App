@@ -100,17 +100,20 @@ class _HomeViewState extends ConsumerState<HomeView>
               title: GestureDetector(
                 onTap: () {
                   HapticFeedback.vibrate();
-                  if (_showRandomPosts) {
-                    ref
-                        .read(orderedByLikesPostListProvider.notifier)
-                        .refreshPostsOrderedByLikes();
+                  if (_scrollController.offset == 0) {
+                    if (_showRandomPosts) {
+                      ref
+                          .read(randomPostListProvider.notifier)
+                          .refreshPostsRandom();
+                    } else {
+                      ref
+                          .read(orderedByLikesPostListProvider.notifier)
+                          .refreshPostsOrderedByLikes();
+                    }
+                    _refreshIndicatorKey.currentState?.show();
                   } else {
-                    ref
-                        .read(randomPostListProvider.notifier)
-                        .refreshPostsRandom();
+                    _scrollToTop();
                   }
-
-                  _refreshIndicatorKey.currentState?.show();
                 },
                 child: Image.asset(
                   'assets/icons/crowd_snap_logo.png',
