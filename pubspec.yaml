@@ -54,10 +54,12 @@ dependencies:
   google_sign_in: ^6.2.1
   image_editor_plus: ^1.0.6
   image_picker: ^1.1.0
+  instagram_mention: ^1.0.1
   intl: any
   logging: ^1.2.0
   lottie: ^3.1.2
   mongo_dart: ^0.10.2
+  multi_trigger_autocomplete: ^1.0.0
   numberpicker: ^2.1.2
   octo_image: ^2.0.0
   path_provider: ^2.1.3
