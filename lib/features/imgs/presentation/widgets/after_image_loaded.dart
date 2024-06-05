@@ -1,8 +1,6 @@
 import 'dart:io';
-import 'package:crowd_snap/features/imgs/presentation/notifier/tagged_user_ids_provider.dart';
+import 'package:crowd_snap/features/imgs/presentation/widgets/user_search_modal.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AfterImageLoaded extends StatefulWidget {
   final File image;
@@ -60,7 +58,7 @@ class _AfterImageLoadedState extends State<AfterImageLoaded>
           maxChildSize: 0.7,
           expand: false,
           builder: (BuildContext context, ScrollController scrollController) {
-            return UserSearchModal(scrollController: scrollController);
+            return UserSearchModal(scrollController: scrollController, image: widget.image);
           },
         );
       },
@@ -151,133 +149,6 @@ class _AfterImageLoadedState extends State<AfterImageLoaded>
                 ],
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class UserSearchModal extends ConsumerStatefulWidget {
-  final ScrollController scrollController;
-
-  const UserSearchModal({super.key, required this.scrollController});
-
-  @override
-  _UserSearchModalState createState() => _UserSearchModalState();
-}
-
-class _UserSearchModalState extends ConsumerState<UserSearchModal> {
-  final TextEditingController _searchController = TextEditingController();
-  String _searchText = '';
-
-  @override
-  void initState() {
-    super.initState();
-    _searchController.addListener(() {
-      setState(() {
-        _searchText = _searchController.text;
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final selectedUserIds = ref.read(taggedUserIdsProviderProvider.notifier);
-
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                labelText: 'Buscar Usuarios',
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 10),
-          Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: (_searchText.isEmpty)
-                  ? FirebaseFirestore.instance
-                      .collection('users')
-                      .limit(6)
-                      .snapshots()
-                  : FirebaseFirestore.instance
-                      .collection('users')
-                      .where('username',
-                          isGreaterThanOrEqualTo: _searchText)
-                      .where('username',
-                          isLessThanOrEqualTo:
-                              '$_searchText\uf8ff')
-                      .limit(6)
-                      .snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return const Center(child: Text('No users found'));
-                }
-                final users = snapshot.data!.docs;
-                return ListView.builder(
-                  controller: widget.scrollController,
-                  itemCount: users.length,
-                  itemBuilder: (context, index) {
-                    final user = users[index];
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 2),
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            selectedUserIds.addUserId(user.id);
-                          });
-                        },
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(40.0),
-                          ),
-                          color: Theme.of(context).hoverColor,
-                          margin: const EdgeInsets.symmetric(vertical: 4.0),
-                          child: ListTile(
-                            leading: CircleAvatar(
-                              backgroundImage: NetworkImage(user['avatarUrl']),
-                            ),
-                            title: Text(user['username']),
-                            subtitle: Text(user['name']),
-                            trailing: const Icon(
-                              Icons.add,
-                              size: 16.0,
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text('Guardar Etiquetas'),
           ),
         ],
       ),

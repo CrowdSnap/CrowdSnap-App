@@ -5,6 +5,8 @@ enum ConnectionStatus {
   connected,
   @JsonValue('pending')
   pending,
+  @JsonValue('taggingRequest')
+  taggingRequest,
   @JsonValue('waitingForAcceptance')
   waitingForAcceptance,
   @JsonValue('rejected')
@@ -20,6 +22,8 @@ extension ConnectionStatusExtension on ConnectionStatus {
         return 'connected';
       case ConnectionStatus.pending:
         return 'pending';
+      case ConnectionStatus.taggingRequest:
+        return 'taggingRequest';
       case ConnectionStatus.waitingForAcceptance:
         return 'waitingForAcceptance';
       case ConnectionStatus.rejected:

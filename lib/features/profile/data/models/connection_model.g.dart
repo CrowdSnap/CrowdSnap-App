@@ -32,6 +32,7 @@ Map<String, dynamic> _$$ConnectionModelImplToJson(
 const _$ConnectionStatusEnumMap = {
   ConnectionStatus.connected: 'connected',
   ConnectionStatus.pending: 'pending',
+  ConnectionStatus.taggingRequest: 'taggingRequest',
   ConnectionStatus.waitingForAcceptance: 'waitingForAcceptance',
   ConnectionStatus.rejected: 'rejected',
   ConnectionStatus.none: 'none',
