@@ -51,6 +51,11 @@ class NotificationService extends _$NotificationService {
 
     _flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
+      onSelectNotification: (String? payload) async {
+        if (payload != null) {
+          _handleNotificationClickFromPayload(payload);
+        }
+      },
     );
   }
 
@@ -130,6 +135,12 @@ class NotificationService extends _$NotificationService {
     print('User ID: $userId');
     print('Extra: $extraString');
     ref.read(appRouterProvider).go('/users/$userId', extra: extraString);
+  }
+
+  void _handleNotificationClickFromPayload(String payload) {
+    final userId = payload;
+    // Aquí puedes agregar lógica adicional si es necesario
+    ref.read(appRouterProvider).go('/users/$userId');
   }
 }
 

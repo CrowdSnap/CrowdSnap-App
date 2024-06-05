@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crowd_snap/core/data/models/user_model.dart';
 import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_local_use_case.dart';
 import 'package:crowd_snap/features/imgs/presentation/notifier/tagged_user_ids_provider.dart';
-import 'package:crowd_snap/features/profile/data/repositories_impl/users_repository_impl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -54,7 +53,6 @@ class _UserSearchModalState extends ConsumerState<UserSearchModal> {
     final selectedUserIds = ref.watch(taggedUserIdsProviderProvider);
     final selectedUserIdsNotifier =
         ref.read(taggedUserIdsProviderProvider.notifier);
-    final usersRepository = ref.read(usersRepositoryProvider);
 
     return Padding(
       padding: const EdgeInsets.all(16.0),

@@ -208,7 +208,8 @@ class UsersDataSourceImpl implements UsersDataSource {
   }
 
   @override
-  Future<void> removeTaggingConnection(String localUserId, String userId) async {
+  Future<void> removeTaggingConnection(
+      String localUserId, String userId) async {
     try {
       final localUserRef = _firestore.collection('users').doc(localUserId);
       final userRef = _firestore.collection('users').doc(userId);
@@ -277,13 +278,13 @@ class UsersDataSourceImpl implements UsersDataSource {
             ? List<String>.from(
                 userSnapshot.data()!['pendingConnections'] ?? [])
             : [];
-        userPendingConnections.add(connectionId);
+        userPendingConnections.add(localUserId);
 
         final localUserPendingConnections = localUserSnapshot.exists
             ? List<String>.from(
                 localUserSnapshot.data()!['pendingConnections'] ?? [])
             : [];
-        localUserPendingConnections.add(connectionId);
+        localUserPendingConnections.add(userId);
 
         // Realiza todas las escrituras después de las lecturas
         transaction.update(userRef, {
@@ -318,6 +319,8 @@ class UsersDataSourceImpl implements UsersDataSource {
         final pendingConnections =
             List<String>.from(localUserData['pendingConnections'] ?? []);
 
+        print('Pending Connections: $pendingConnections');
+
         // Elimina la conexión pendiente
         pendingConnections
             .removeWhere((connectionId) => connectionId.contains(userId));
@@ -329,9 +332,25 @@ class UsersDataSourceImpl implements UsersDataSource {
         });
       }
 
-      await userRef.update({
-        'connectionsCount': FieldValue.increment(1),
-      });
+      // Consulta el array de pendingConnections del usuario receptor
+      final userSnapshot = await userRef.get();
+      if (userSnapshot.exists) {
+        final userData = userSnapshot.data() as Map<String, dynamic>;
+        final pendingConnections =
+            List<String>.from(userData['pendingConnections'] ?? []);
+
+        print('Pending Connections: $pendingConnections');
+
+        // Elimina la conexión pendiente
+        pendingConnections
+            .removeWhere((connectionId) => connectionId.contains(localUserId));
+
+        // Actualiza el array de pendingConnections del usuario receptor
+        await userRef.update({
+          'pendingConnections': pendingConnections,
+          'connectionsCount': FieldValue.increment(1),
+        });
+      }
 
       // Actualiza la conexión a aceptada
       final connectionRef = _realtimeDatabase
@@ -495,6 +514,9 @@ class UsersDataSourceImpl implements UsersDataSource {
             } else if (connection.child('status').value ==
                 ConnectionStatus.pending.value) {
               return ConnectionStatus.waitingForAcceptance;
+            } else if (connection.child('status').value ==
+                ConnectionStatus.taggingRequest.value) {
+              return ConnectionStatus.taggingRequest;
             } else {
               return ConnectionStatus.rejected;
             }
@@ -512,6 +534,9 @@ class UsersDataSourceImpl implements UsersDataSource {
             } else if (connection.child('status').value ==
                 ConnectionStatus.pending.value) {
               return ConnectionStatus.pending;
+            } else if (connection.child('status').value ==
+                ConnectionStatus.taggingRequest.value) {
+              return ConnectionStatus.taggingRequest;
             } else {
               return ConnectionStatus.rejected;
             }

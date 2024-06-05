@@ -68,6 +68,7 @@ class _UsersViewState extends ConsumerState<UsersView> {
         this.user = user;
         this.userPosts = userPosts;
         this.connectionStatus = connectionStatus;
+        print('Connection status: $connectionStatus');
         connectionsCount = user.connectionsCount;
       });
     }
@@ -128,7 +129,8 @@ class _UsersViewState extends ConsumerState<UsersView> {
           ),
         );
       }
-    } else if (connectionStatus == ConnectionStatus.pending) {
+    } else if (connectionStatus == ConnectionStatus.pending ||
+        connectionStatus == ConnectionStatus.taggingRequest) {
       try {
         ref
             .read(acceptConnectionUseCaseProvider)
@@ -588,6 +590,31 @@ class _UsersViewState extends ConsumerState<UsersView> {
                         .withOpacity(0.38),
                   ),
                   child: const Text('Rechazado'),
+                )
+              else if (connectionStatus == ConnectionStatus.taggingRequest)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        HapticFeedback.selectionClick();
+                        _toggleConnection();
+                      },
+                      child: const Text('Conexion y etiqueta'),
+                    ),
+                    const SizedBox(width: 8),
+                    ElevatedButton(
+                        onPressed: () {
+                          HapticFeedback.selectionClick();
+                          _rejectConnection();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context).colorScheme.error,
+                          foregroundColor:
+                              Theme.of(context).colorScheme.onError,
+                        ),
+                        child: const Text('Rechazar')),
+                  ],
                 ),
             const SizedBox(height: 16),
           ],

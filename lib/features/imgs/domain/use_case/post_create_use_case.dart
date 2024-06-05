@@ -7,6 +7,9 @@ import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_loc
 import 'package:crowd_snap/features/imgs/data/repositories_impl/post_repository_impl.dart';
 import 'package:crowd_snap/features/imgs/domain/repository/post_repository.dart';
 import 'package:crowd_snap/features/imgs/domain/use_case/image_upload_use_case.dart';
+import 'package:crowd_snap/features/profile/data/models/connection_status.dart';
+import 'package:crowd_snap/features/profile/data/repositories_impl/users_repository_impl.dart';
+import 'package:crowd_snap/features/profile/domain/repositories/users_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'post_create_use_case.g.dart';
@@ -16,9 +19,14 @@ class CreatePostUseCase {
   final GetUserLocalUseCase _getUserUseCase;
   final ImageUploadUseCase _imageUploadUseCase;
   final PushNotificationDataSource _notificationDataSource;
+  final UsersRepository _usersRepository;
 
-  CreatePostUseCase(this._postRepository, this._getUserUseCase,
-      this._imageUploadUseCase, this._notificationDataSource);
+  CreatePostUseCase(
+      this._postRepository,
+      this._getUserUseCase,
+      this._imageUploadUseCase,
+      this._notificationDataSource,
+      this._usersRepository);
 
   Future<void> execute(File image, List<String> taggedUserIds) async {
     final userModel = await _getUserUseCase.execute();
@@ -57,6 +65,15 @@ class CreatePostUseCase {
       blurHashImage: userModel.blurHashImage!,
     );
 
+    for (final receiverId in taggedUserIds) {
+      if (await _usersRepository.checkConnection(
+              userModel.userId, receiverId) ==
+          ConnectionStatus.connected) {
+        await _usersRepository.addTaggingConnection(
+            userModel.userId, receiverId);
+      }
+    }
+
     // Send push notification to tagged users
     await _notificationDataSource.sendPushNotifications(
       taggedUserIds,
@@ -71,7 +88,8 @@ CreatePostUseCase createPostUseCase(CreatePostUseCaseRef ref) {
   final imageUploadUseCase = ref.watch(imageUploadUseCaseProvider);
   final getUserUseCase = ref.watch(getUserLocalUseCaseProvider);
   final notificationDataSource = ref.watch(pushNotificationDataSourceProvider);
+  final usersRepository = ref.watch(usersRepositoryProvider);
 
   return CreatePostUseCase(postRepository, getUserUseCase, imageUploadUseCase,
-      notificationDataSource);
+      notificationDataSource, usersRepository);
 }
