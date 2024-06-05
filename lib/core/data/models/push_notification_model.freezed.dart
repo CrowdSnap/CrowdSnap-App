@@ -23,7 +23,7 @@ PushNotificationModel _$PushNotificationModelFromJson(
 mixin _$PushNotificationModel {
   String get title => throw _privateConstructorUsedError;
   String get body => throw _privateConstructorUsedError;
-  String get fcmToken => throw _privateConstructorUsedError;
+  String? get fcmToken => throw _privateConstructorUsedError;
   String get imageUrl => throw _privateConstructorUsedError;
   String get userId => throw _privateConstructorUsedError;
   String get username => throw _privateConstructorUsedError;
@@ -45,7 +45,7 @@ abstract class $PushNotificationModelCopyWith<$Res> {
   $Res call(
       {String title,
       String body,
-      String fcmToken,
+      String? fcmToken,
       String imageUrl,
       String userId,
       String username,
@@ -69,7 +69,7 @@ class _$PushNotificationModelCopyWithImpl<$Res,
   $Res call({
     Object? title = null,
     Object? body = null,
-    Object? fcmToken = null,
+    Object? fcmToken = freezed,
     Object? imageUrl = null,
     Object? userId = null,
     Object? username = null,
@@ -85,10 +85,10 @@ class _$PushNotificationModelCopyWithImpl<$Res,
           ? _value.body
           : body // ignore: cast_nullable_to_non_nullable
               as String,
-      fcmToken: null == fcmToken
+      fcmToken: freezed == fcmToken
           ? _value.fcmToken
           : fcmToken // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       imageUrl: null == imageUrl
           ? _value.imageUrl
           : imageUrl // ignore: cast_nullable_to_non_nullable
@@ -125,7 +125,7 @@ abstract class _$$PushNotificationModelImplCopyWith<$Res>
   $Res call(
       {String title,
       String body,
-      String fcmToken,
+      String? fcmToken,
       String imageUrl,
       String userId,
       String username,
@@ -147,7 +147,7 @@ class __$$PushNotificationModelImplCopyWithImpl<$Res>
   $Res call({
     Object? title = null,
     Object? body = null,
-    Object? fcmToken = null,
+    Object? fcmToken = freezed,
     Object? imageUrl = null,
     Object? userId = null,
     Object? username = null,
@@ -163,10 +163,10 @@ class __$$PushNotificationModelImplCopyWithImpl<$Res>
           ? _value.body
           : body // ignore: cast_nullable_to_non_nullable
               as String,
-      fcmToken: null == fcmToken
+      fcmToken: freezed == fcmToken
           ? _value.fcmToken
           : fcmToken // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       imageUrl: null == imageUrl
           ? _value.imageUrl
           : imageUrl // ignore: cast_nullable_to_non_nullable
@@ -197,7 +197,7 @@ class _$PushNotificationModelImpl implements _PushNotificationModel {
   const _$PushNotificationModelImpl(
       {required this.title,
       required this.body,
-      required this.fcmToken,
+      this.fcmToken,
       required this.imageUrl,
       required this.userId,
       required this.username,
@@ -212,7 +212,7 @@ class _$PushNotificationModelImpl implements _PushNotificationModel {
   @override
   final String body;
   @override
-  final String fcmToken;
+  final String? fcmToken;
   @override
   final String imageUrl;
   @override
@@ -273,7 +273,7 @@ abstract class _PushNotificationModel implements PushNotificationModel {
   const factory _PushNotificationModel(
       {required final String title,
       required final String body,
-      required final String fcmToken,
+      final String? fcmToken,
       required final String imageUrl,
       required final String userId,
       required final String username,
@@ -288,7 +288,7 @@ abstract class _PushNotificationModel implements PushNotificationModel {
   @override
   String get body;
   @override
-  String get fcmToken;
+  String? get fcmToken;
   @override
   String get imageUrl;
   @override

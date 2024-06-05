@@ -51,6 +51,16 @@ class UsersRepositoryImpl implements UsersRepository {
   }
 
   @override
+  Future<void> addTaggingConnection(String localUserId, String userId) async {
+    await _usersModelDataSource.addTaggingConnection(localUserId, userId);
+  }
+
+  @override
+  Future<void> removeTaggingConnection(String localUserId, String userId) async {
+    await _usersModelDataSource.removeTaggingConnection(localUserId, userId);
+  }
+
+  @override
   Future<void> addConnection(String localUserId, String userId) async {
     await _usersModelDataSource.addConnection(localUserId, userId);
   }

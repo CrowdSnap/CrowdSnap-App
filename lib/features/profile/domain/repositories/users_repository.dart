@@ -6,6 +6,8 @@ import '../../data/models/connection_status.dart';
 abstract class UsersRepository {
   Future<UserModel> getUser(String userId);
   Future<List<ConnectionModel>> getPendingConnections(String localUserId);
+  Future<void> addTaggingConnection(String localUserId, String userId);
+  Future<void> removeTaggingConnection(String localUserId, String userId);
   Future<void> addConnection(String localUserId, String userId);
   Future<void> acceptConnection(String localUserId, String userId);
   Future<void> rejectConnection(String localUserId, String userId);

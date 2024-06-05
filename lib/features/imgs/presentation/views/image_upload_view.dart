@@ -143,6 +143,7 @@ class ImageUploadView extends ConsumerWidget {
                     }
                   },
                   onCancelPressed: () {
+                    ref.invalidate(taggedUserIdsProviderProvider);
                     ref.watch(imageStateProvider.notifier).clearImage();
                   },
                   isLoading: isLoading,

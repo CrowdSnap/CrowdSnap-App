@@ -22,6 +22,8 @@ abstract class UsersDataSource {
 
   Future<void> addTaggingConnection(String localUserId, String userId);
 
+  Future<void> removeTaggingConnection(String localUserId, String userId);
+
   Future<void> acceptConnection(String localUserId, String userId);
 
   Future<void> rejectConnection(String localUserId, String userId);
@@ -202,6 +204,57 @@ class UsersDataSourceImpl implements UsersDataSource {
       });
     } catch (e) {
       throw Exception('Failed to add tagging connection: $e');
+    }
+  }
+
+  @override
+  Future<void> removeTaggingConnection(String localUserId, String userId) async {
+    try {
+      final localUserRef = _firestore.collection('users').doc(localUserId);
+      final userRef = _firestore.collection('users').doc(userId);
+
+      // Consulta el array de pendingConnections del usuario local
+      final localUserSnapshot = await localUserRef.get();
+      if (localUserSnapshot.exists) {
+        final localUserData = localUserSnapshot.data() as Map<String, dynamic>;
+        final pendingConnections =
+            List<String>.from(localUserData['pendingConnections'] ?? []);
+
+        // Elimina la conexión pendiente
+        pendingConnections
+            .removeWhere((connectionId) => connectionId.contains(userId));
+
+        // Actualiza el array de pendingConnections del usuario local
+        await localUserRef.update({
+          'pendingConnections': pendingConnections,
+        });
+      }
+
+      // Consulta el array de pendingConnections del usuario receptor
+      final userSnapshot = await userRef.get();
+      if (userSnapshot.exists) {
+        final userData = userSnapshot.data() as Map<String, dynamic>;
+        final pendingConnections =
+            List<String>.from(userData['pendingConnections'] ?? []);
+
+        // Elimina la conexión pendiente
+        pendingConnections
+            .removeWhere((connectionId) => connectionId.contains(localUserId));
+
+        // Actualiza el array de pendingConnections del usuario receptor
+        await userRef.update({
+          'pendingConnections': pendingConnections,
+        });
+      }
+
+      // Elimina la conexión
+      final connectionRef = _realtimeDatabase
+          .ref()
+          .child('connections')
+          .child('${userId}_$localUserId');
+      await connectionRef.remove();
+    } catch (e) {
+      throw Exception('Failed to remove tagging connection: $e');
     }
   }
 

@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crowd_snap/core/data/models/user_model.dart';
 import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_local_use_case.dart';
 import 'package:crowd_snap/features/imgs/presentation/notifier/tagged_user_ids_provider.dart';
-import 'package:crowd_snap/features/profile/domain/use_cases/add_connection_tagged_use_case.dart';
+import 'package:crowd_snap/features/profile/data/repositories_impl/users_repository_impl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -51,8 +51,10 @@ class _UserSearchModalState extends ConsumerState<UserSearchModal> {
 
   @override
   Widget build(BuildContext context) {
-    final selectedUserIds = ref.read(taggedUserIdsProviderProvider.notifier);
-    final addConnectionTagged = ref.read(addConnectionTaggedUseCaseProvider);
+    final selectedUserIds = ref.watch(taggedUserIdsProviderProvider);
+    final selectedUserIdsNotifier =
+        ref.read(taggedUserIdsProviderProvider.notifier);
+    final usersRepository = ref.read(usersRepositoryProvider);
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -78,6 +80,8 @@ class _UserSearchModalState extends ConsumerState<UserSearchModal> {
               stream: (_searchText.isEmpty)
                   ? FirebaseFirestore.instance
                       .collection('users')
+                      .where(FieldPath.documentId,
+                          isNotEqualTo: localUser.userId)
                       .limit(6)
                       .snapshots()
                   : FirebaseFirestore.instance
@@ -85,6 +89,8 @@ class _UserSearchModalState extends ConsumerState<UserSearchModal> {
                       .where('username', isGreaterThanOrEqualTo: _searchText)
                       .where('username',
                           isLessThanOrEqualTo: '$_searchText\uf8ff')
+                      .where(FieldPath.documentId,
+                          isNotEqualTo: localUser.userId)
                       .limit(6)
                       .snapshots(),
               builder: (context, snapshot) {
@@ -100,25 +106,17 @@ class _UserSearchModalState extends ConsumerState<UserSearchModal> {
                   itemCount: users.length,
                   itemBuilder: (context, index) {
                     final user = users[index];
+                    final isSelected = selectedUserIds.contains(user.id);
                     return Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 2),
                       child: GestureDetector(
                         onTap: () {
-                          if (!added) {
-                            addConnectionTagged.execute(
-                                localUser, user.id, widget.image);
-                            selectedUserIds.addUserId(user.id);
+                          if (!isSelected) {
+                            selectedUserIdsNotifier.addUserId(user.id);
                           } else {
-                            selectedUserIds.removeUserId(user.id);
+                            selectedUserIdsNotifier.removeUserId(user.id);
                           }
-                          setState(() {
-                            if (!added) {
-                              added = true;
-                            } else {
-                              added = false;
-                            }
-                          });
                         },
                         child: Card(
                           shape: RoundedRectangleBorder(
@@ -133,7 +131,7 @@ class _UserSearchModalState extends ConsumerState<UserSearchModal> {
                             title: Text(user['username']),
                             subtitle: Text(user['name']),
                             trailing: Icon(
-                              added ? Icons.remove : Icons.add,
+                              isSelected ? Icons.remove : Icons.add,
                               size: 16.0,
                             ),
                           ),
@@ -144,12 +142,6 @@ class _UserSearchModalState extends ConsumerState<UserSearchModal> {
                 );
               },
             ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text('Guardar Etiquetas'),
           ),
         ],
       ),

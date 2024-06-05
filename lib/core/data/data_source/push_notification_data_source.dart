@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:crowd_snap/core/data/models/push_notification_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -7,6 +9,8 @@ part 'push_notification_data_source.g.dart';
 
 abstract class PushNotificationDataSource {
   Future<void> sendPushNotification(PushNotificationModel pushNotification);
+  Future<void> sendPushNotifications(
+      List<String> usersIds, PushNotificationModel pushNotification);
   Future<void> loadEnvVariables();
 }
 
@@ -55,6 +59,40 @@ class PushNotificationDataSourceImpl implements PushNotificationDataSource {
 
     if (response.statusCode != 200) {
       throw Exception('Failed to send push notification');
+    }
+  }
+
+  @override
+  Future<void> sendPushNotifications(
+      List<String> usersIds, PushNotificationModel pushNotification) async {
+    var headers = {'Content-Type': 'application/json'};
+
+    for (String userId in usersIds) {
+      var data = json.encode({
+        'userIds': [userId],
+        'title': pushNotification.title,
+        'body': pushNotification.body,
+        'img': pushNotification.imageUrl,
+        'userId': pushNotification.userId,
+        'username': pushNotification.username,
+        'avatarUrl': pushNotification.avatarUrl,
+        'blurHashImage': pushNotification.blurHashImage,
+      });
+
+      var response = await dio.request(
+        'https://push-notifications.crowdsnap.app/send-notifications?Content-Type=application/json',
+        options: Options(
+          method: 'POST',
+          headers: headers,
+        ),
+        data: data,
+      );
+
+      if (response.statusCode == 200) {
+        print(json.encode(response.data));
+      } else {
+        print(response.statusMessage);
+      }
     }
   }
 }
