@@ -45,6 +45,8 @@ extension ConnectionStatusExtension on ConnectionStatus {
         return ConnectionStatus.rejected;
       case 'none':
         return ConnectionStatus.none;
+      case 'taggingRequest':
+        return ConnectionStatus.taggingRequest;
       default:
         throw Exception('Unknown ConnectionStatus value: $value');
     }

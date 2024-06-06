@@ -266,7 +266,8 @@ class UsersDataSourceImpl implements UsersDataSource {
   }
 
   @override
-  Future<void> acceptTaggingConnection(String localUserId, String userId) async {
+  Future<void> acceptTaggingConnection(
+      String localUserId, String userId) async {
     try {
       final localUserRef = _firestore.collection('users').doc(localUserId);
       final userRef = _firestore.collection('users').doc(userId);
@@ -571,7 +572,9 @@ class UsersDataSourceImpl implements UsersDataSource {
       if (results[0].snapshot.exists) {
         for (var connection in results[0].snapshot.children) {
           if (connection.child('receiverId').value == userId) {
-            return createConnectionModel(connection.value as Map<String, dynamic>);
+            final connectionMap =
+                Map<String, dynamic>.from(connection.value as Map);
+            return createConnectionModel(connectionMap);
           }
         }
       }
@@ -580,7 +583,9 @@ class UsersDataSourceImpl implements UsersDataSource {
       if (results[1].snapshot.exists) {
         for (var connection in results[1].snapshot.children) {
           if (connection.child('senderId').value == userId) {
-            return createConnectionModel(connection.value as Map<String, dynamic>);
+            final connectionMap =
+                Map<String, dynamic>.from(connection.value as Map);
+            return createConnectionModel(connectionMap);
           }
         }
       }
@@ -591,7 +596,6 @@ class UsersDataSourceImpl implements UsersDataSource {
         receiverId: '',
         connectionStatus: ConnectionStatus.none,
       );
-
     } catch (e) {
       throw Exception('Failed to check connection: $e');
     }
