@@ -370,7 +370,7 @@ class _UsersViewState extends ConsumerState<UsersView> {
             body: Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(10.0),
                   child: Center(
                     child: SizedBox(
                       width: 150,
@@ -690,17 +690,18 @@ class _UsersViewState extends ConsumerState<UsersView> {
                   ),
                   child: const Text('Rechazado'),
                 )
-              else if (connectionStatus == ConnectionStatus.taggingRequest)
+              else if (connectionStatus == ConnectionStatus.taggingRequest && localUser.userId != connectionModel.senderId)
                 Column(children: [
-                  SizedBox(
-                    width: 200,
+                    SizedBox(
+                    width: 400,
+                    height: 175,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(12.0),
                       child: CachedNetworkImage(
-                        imageUrl: connectionModel.imageUrl!,
+                      imageUrl: connectionModel.imageUrl!,
                       ),
                     ),
-                  ),
+                    ),
                   const SizedBox(height: 16),
                   Text(
                     'Te ha etiquetado en esta publicación, ¿Aceptas?',
@@ -739,7 +740,7 @@ class _UsersViewState extends ConsumerState<UsersView> {
             const SizedBox(height: 16),
           ],
         ),
-        if (connectionStatus != ConnectionStatus.taggingRequest)
+        if (connectionStatus != ConnectionStatus.taggingRequest || localUser.userId == connectionModel.senderId)
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -759,7 +760,7 @@ class _UsersViewState extends ConsumerState<UsersView> {
               ),
             ],
           ),
-        if (connectionStatus == ConnectionStatus.taggingRequest)
+        if (connectionStatus == ConnectionStatus.taggingRequest && localUser.userId != connectionModel.senderId)
           // ver las publicaciones en listado
           ElevatedButton(
             onPressed: () {
@@ -775,7 +776,7 @@ class _UsersViewState extends ConsumerState<UsersView> {
             child: const Text('Ver publicaciones'),
           ),
         const SizedBox(height: 16),
-        if (connectionStatus != ConnectionStatus.taggingRequest)
+        if (connectionStatus != ConnectionStatus.taggingRequest || localUser.userId == connectionModel.senderId)
           Expanded(
             child: PageView(
               controller: pageController,
