@@ -51,13 +51,18 @@ class UsersRepositoryImpl implements UsersRepository {
   }
 
   @override
-  Future<void> addTaggingConnection(String localUserId, String userId) async {
-    await _usersModelDataSource.addTaggingConnection(localUserId, userId);
+  Future<void> addTaggingConnection(String localUserId, String userId, String imageUrl, String postId) async {
+    await _usersModelDataSource.addTaggingConnection(localUserId, userId, imageUrl, postId);
   }
 
   @override
   Future<void> removeTaggingConnection(String localUserId, String userId) async {
     await _usersModelDataSource.removeTaggingConnection(localUserId, userId);
+  }
+
+  @override
+  Future<void> acceptTaggingConnection(String localUserId, String userId) async {
+    await _usersModelDataSource.acceptTaggingConnection(localUserId, userId);
   }
 
   @override
@@ -81,7 +86,7 @@ class UsersRepositoryImpl implements UsersRepository {
   }
 
   @override
-  Future<ConnectionStatus> checkConnection(
+  Future<ConnectionModel> checkConnection(
       String localUserId, String userId) async {
     final result =
         await _usersModelDataSource.checkConnection(localUserId, userId);

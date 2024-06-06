@@ -25,6 +25,7 @@ mixin _$ConnectionModel {
   String get receiverId => throw _privateConstructorUsedError;
   ConnectionStatus get connectionStatus => throw _privateConstructorUsedError;
   String? get connectionPostId => throw _privateConstructorUsedError;
+  String? get imageUrl => throw _privateConstructorUsedError;
   String? get connectionLocation => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -45,6 +46,7 @@ abstract class $ConnectionModelCopyWith<$Res> {
       String receiverId,
       ConnectionStatus connectionStatus,
       String? connectionPostId,
+      String? imageUrl,
       String? connectionLocation});
 }
 
@@ -66,6 +68,7 @@ class _$ConnectionModelCopyWithImpl<$Res, $Val extends ConnectionModel>
     Object? receiverId = null,
     Object? connectionStatus = null,
     Object? connectionPostId = freezed,
+    Object? imageUrl = freezed,
     Object? connectionLocation = freezed,
   }) {
     return _then(_value.copyWith(
@@ -89,6 +92,10 @@ class _$ConnectionModelCopyWithImpl<$Res, $Val extends ConnectionModel>
           ? _value.connectionPostId
           : connectionPostId // ignore: cast_nullable_to_non_nullable
               as String?,
+      imageUrl: freezed == imageUrl
+          ? _value.imageUrl
+          : imageUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
       connectionLocation: freezed == connectionLocation
           ? _value.connectionLocation
           : connectionLocation // ignore: cast_nullable_to_non_nullable
@@ -111,6 +118,7 @@ abstract class _$$ConnectionModelImplCopyWith<$Res>
       String receiverId,
       ConnectionStatus connectionStatus,
       String? connectionPostId,
+      String? imageUrl,
       String? connectionLocation});
 }
 
@@ -130,6 +138,7 @@ class __$$ConnectionModelImplCopyWithImpl<$Res>
     Object? receiverId = null,
     Object? connectionStatus = null,
     Object? connectionPostId = freezed,
+    Object? imageUrl = freezed,
     Object? connectionLocation = freezed,
   }) {
     return _then(_$ConnectionModelImpl(
@@ -153,6 +162,10 @@ class __$$ConnectionModelImplCopyWithImpl<$Res>
           ? _value.connectionPostId
           : connectionPostId // ignore: cast_nullable_to_non_nullable
               as String?,
+      imageUrl: freezed == imageUrl
+          ? _value.imageUrl
+          : imageUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
       connectionLocation: freezed == connectionLocation
           ? _value.connectionLocation
           : connectionLocation // ignore: cast_nullable_to_non_nullable
@@ -170,6 +183,7 @@ class _$ConnectionModelImpl implements _ConnectionModel {
       required this.receiverId,
       required this.connectionStatus,
       this.connectionPostId,
+      this.imageUrl,
       this.connectionLocation});
 
   factory _$ConnectionModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -186,11 +200,13 @@ class _$ConnectionModelImpl implements _ConnectionModel {
   @override
   final String? connectionPostId;
   @override
+  final String? imageUrl;
+  @override
   final String? connectionLocation;
 
   @override
   String toString() {
-    return 'ConnectionModel(connectedAt: $connectedAt, senderId: $senderId, receiverId: $receiverId, connectionStatus: $connectionStatus, connectionPostId: $connectionPostId, connectionLocation: $connectionLocation)';
+    return 'ConnectionModel(connectedAt: $connectedAt, senderId: $senderId, receiverId: $receiverId, connectionStatus: $connectionStatus, connectionPostId: $connectionPostId, imageUrl: $imageUrl, connectionLocation: $connectionLocation)';
   }
 
   @override
@@ -208,14 +224,23 @@ class _$ConnectionModelImpl implements _ConnectionModel {
                 other.connectionStatus == connectionStatus) &&
             (identical(other.connectionPostId, connectionPostId) ||
                 other.connectionPostId == connectionPostId) &&
+            (identical(other.imageUrl, imageUrl) ||
+                other.imageUrl == imageUrl) &&
             (identical(other.connectionLocation, connectionLocation) ||
                 other.connectionLocation == connectionLocation));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, connectedAt, senderId,
-      receiverId, connectionStatus, connectionPostId, connectionLocation);
+  int get hashCode => Object.hash(
+      runtimeType,
+      connectedAt,
+      senderId,
+      receiverId,
+      connectionStatus,
+      connectionPostId,
+      imageUrl,
+      connectionLocation);
 
   @JsonKey(ignore: true)
   @override
@@ -239,6 +264,7 @@ abstract class _ConnectionModel implements ConnectionModel {
       required final String receiverId,
       required final ConnectionStatus connectionStatus,
       final String? connectionPostId,
+      final String? imageUrl,
       final String? connectionLocation}) = _$ConnectionModelImpl;
 
   factory _ConnectionModel.fromJson(Map<String, dynamic> json) =
@@ -254,6 +280,8 @@ abstract class _ConnectionModel implements ConnectionModel {
   ConnectionStatus get connectionStatus;
   @override
   String? get connectionPostId;
+  @override
+  String? get imageUrl;
   @override
   String? get connectionLocation;
   @override

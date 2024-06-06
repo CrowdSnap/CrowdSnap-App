@@ -51,11 +51,6 @@ class NotificationService extends _$NotificationService {
 
     _flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
-      onSelectNotification: (String? payload) async {
-        if (payload != null) {
-          _handleNotificationClickFromPayload(payload);
-        }
-      },
     );
   }
 

@@ -13,6 +13,7 @@ class PostModel with _$PostModel {
     required String userName,
     required String userAvatarUrl,
     required String imageUrl,
+    required List<String> taggedPendingUserIds,
     required List<String> taggedUserIds,
     required String location,
     required DateTime createdAt,

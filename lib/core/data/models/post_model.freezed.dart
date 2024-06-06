@@ -25,6 +25,7 @@ mixin _$PostModel {
   String get userName => throw _privateConstructorUsedError;
   String get userAvatarUrl => throw _privateConstructorUsedError;
   String get imageUrl => throw _privateConstructorUsedError;
+  List<String> get taggedPendingUserIds => throw _privateConstructorUsedError;
   List<String> get taggedUserIds => throw _privateConstructorUsedError;
   String get location => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
@@ -54,6 +55,7 @@ abstract class $PostModelCopyWith<$Res> {
       String userName,
       String userAvatarUrl,
       String imageUrl,
+      List<String> taggedPendingUserIds,
       List<String> taggedUserIds,
       String location,
       DateTime createdAt,
@@ -85,6 +87,7 @@ class _$PostModelCopyWithImpl<$Res, $Val extends PostModel>
     Object? userName = null,
     Object? userAvatarUrl = null,
     Object? imageUrl = null,
+    Object? taggedPendingUserIds = null,
     Object? taggedUserIds = null,
     Object? location = null,
     Object? createdAt = null,
@@ -118,6 +121,10 @@ class _$PostModelCopyWithImpl<$Res, $Val extends PostModel>
           ? _value.imageUrl
           : imageUrl // ignore: cast_nullable_to_non_nullable
               as String,
+      taggedPendingUserIds: null == taggedPendingUserIds
+          ? _value.taggedPendingUserIds
+          : taggedPendingUserIds // ignore: cast_nullable_to_non_nullable
+              as List<String>,
       taggedUserIds: null == taggedUserIds
           ? _value.taggedUserIds
           : taggedUserIds // ignore: cast_nullable_to_non_nullable
@@ -180,6 +187,7 @@ abstract class _$$PostModelImplCopyWith<$Res>
       String userName,
       String userAvatarUrl,
       String imageUrl,
+      List<String> taggedPendingUserIds,
       List<String> taggedUserIds,
       String location,
       DateTime createdAt,
@@ -209,6 +217,7 @@ class __$$PostModelImplCopyWithImpl<$Res>
     Object? userName = null,
     Object? userAvatarUrl = null,
     Object? imageUrl = null,
+    Object? taggedPendingUserIds = null,
     Object? taggedUserIds = null,
     Object? location = null,
     Object? createdAt = null,
@@ -242,6 +251,10 @@ class __$$PostModelImplCopyWithImpl<$Res>
           ? _value.imageUrl
           : imageUrl // ignore: cast_nullable_to_non_nullable
               as String,
+      taggedPendingUserIds: null == taggedPendingUserIds
+          ? _value._taggedPendingUserIds
+          : taggedPendingUserIds // ignore: cast_nullable_to_non_nullable
+              as List<String>,
       taggedUserIds: null == taggedUserIds
           ? _value._taggedUserIds
           : taggedUserIds // ignore: cast_nullable_to_non_nullable
@@ -299,6 +312,7 @@ class _$PostModelImpl implements _PostModel {
       required this.userName,
       required this.userAvatarUrl,
       required this.imageUrl,
+      required final List<String> taggedPendingUserIds,
       required final List<String> taggedUserIds,
       required this.location,
       required this.createdAt,
@@ -310,7 +324,8 @@ class _$PostModelImpl implements _PostModel {
       required this.blurHashAvatar,
       required this.aspectRatio,
       this.description})
-      : _taggedUserIds = taggedUserIds,
+      : _taggedPendingUserIds = taggedPendingUserIds,
+        _taggedUserIds = taggedUserIds,
         _likes = likes,
         _comments = comments;
 
@@ -327,6 +342,15 @@ class _$PostModelImpl implements _PostModel {
   final String userAvatarUrl;
   @override
   final String imageUrl;
+  final List<String> _taggedPendingUserIds;
+  @override
+  List<String> get taggedPendingUserIds {
+    if (_taggedPendingUserIds is EqualUnmodifiableListView)
+      return _taggedPendingUserIds;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_taggedPendingUserIds);
+  }
+
   final List<String> _taggedUserIds;
   @override
   List<String> get taggedUserIds {
@@ -370,7 +394,7 @@ class _$PostModelImpl implements _PostModel {
 
   @override
   String toString() {
-    return 'PostModel(mongoId: $mongoId, userId: $userId, userName: $userName, userAvatarUrl: $userAvatarUrl, imageUrl: $imageUrl, taggedUserIds: $taggedUserIds, location: $location, createdAt: $createdAt, likeCount: $likeCount, commentCount: $commentCount, likes: $likes, comments: $comments, blurHashImage: $blurHashImage, blurHashAvatar: $blurHashAvatar, aspectRatio: $aspectRatio, description: $description)';
+    return 'PostModel(mongoId: $mongoId, userId: $userId, userName: $userName, userAvatarUrl: $userAvatarUrl, imageUrl: $imageUrl, taggedPendingUserIds: $taggedPendingUserIds, taggedUserIds: $taggedUserIds, location: $location, createdAt: $createdAt, likeCount: $likeCount, commentCount: $commentCount, likes: $likes, comments: $comments, blurHashImage: $blurHashImage, blurHashAvatar: $blurHashAvatar, aspectRatio: $aspectRatio, description: $description)';
   }
 
   @override
@@ -386,6 +410,8 @@ class _$PostModelImpl implements _PostModel {
                 other.userAvatarUrl == userAvatarUrl) &&
             (identical(other.imageUrl, imageUrl) ||
                 other.imageUrl == imageUrl) &&
+            const DeepCollectionEquality()
+                .equals(other._taggedPendingUserIds, _taggedPendingUserIds) &&
             const DeepCollectionEquality()
                 .equals(other._taggedUserIds, _taggedUserIds) &&
             (identical(other.location, location) ||
@@ -417,6 +443,7 @@ class _$PostModelImpl implements _PostModel {
       userName,
       userAvatarUrl,
       imageUrl,
+      const DeepCollectionEquality().hash(_taggedPendingUserIds),
       const DeepCollectionEquality().hash(_taggedUserIds),
       location,
       createdAt,
@@ -450,6 +477,7 @@ abstract class _PostModel implements PostModel {
       required final String userName,
       required final String userAvatarUrl,
       required final String imageUrl,
+      required final List<String> taggedPendingUserIds,
       required final List<String> taggedUserIds,
       required final String location,
       required final DateTime createdAt,
@@ -475,6 +503,8 @@ abstract class _PostModel implements PostModel {
   String get userAvatarUrl;
   @override
   String get imageUrl;
+  @override
+  List<String> get taggedPendingUserIds;
   @override
   List<String> get taggedUserIds;
   @override

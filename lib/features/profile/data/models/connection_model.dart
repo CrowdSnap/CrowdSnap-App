@@ -12,6 +12,7 @@ class ConnectionModel with _$ConnectionModel {
     required String receiverId,
     required ConnectionStatus connectionStatus,
     String? connectionPostId,
+    String? imageUrl,
     String? connectionLocation,
   }) = _ConnectionModel;
 
@@ -29,6 +30,7 @@ ConnectionModel createConnectionModel(Map<String, dynamic> json) {
     connectionStatus:
         ConnectionStatusExtension.fromValue(json['status'] as String),
     connectionPostId: json['connectionPostId'] as String?,
+    imageUrl: json['imageUrl'] as String?,
     connectionLocation: json['connectionLocation'] as String?,
   );
 }

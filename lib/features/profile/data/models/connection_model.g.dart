@@ -15,6 +15,7 @@ _$ConnectionModelImpl _$$ConnectionModelImplFromJson(
       connectionStatus:
           $enumDecode(_$ConnectionStatusEnumMap, json['connectionStatus']),
       connectionPostId: json['connectionPostId'] as String?,
+      imageUrl: json['imageUrl'] as String?,
       connectionLocation: json['connectionLocation'] as String?,
     );
 
@@ -26,6 +27,7 @@ Map<String, dynamic> _$$ConnectionModelImplToJson(
       'receiverId': instance.receiverId,
       'connectionStatus': _$ConnectionStatusEnumMap[instance.connectionStatus]!,
       'connectionPostId': instance.connectionPostId,
+      'imageUrl': instance.imageUrl,
       'connectionLocation': instance.connectionLocation,
     };
 

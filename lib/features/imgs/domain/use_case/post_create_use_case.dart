@@ -32,15 +32,19 @@ class CreatePostUseCase {
     final userModel = await _getUserUseCase.execute();
     final userName = userModel.username;
     final avatarBlurHash = userModel.blurHashImage;
+    List<String> finalTaggedUserIds = [];
+    List<String> pendingTaggedUserIds = [];
 
     final (imageUrl, blurHash, aspectRatio) =
         await _imageUploadUseCase.execute(image, userName: userName);
+
     final post = PostModel(
       userId: userModel.userId,
       userName: userName,
       userAvatarUrl: userModel.avatarUrl!,
       location: 'Madrid', //TODO: get location method
-      taggedUserIds: taggedUserIds, // Add tagged user IDs here
+      taggedUserIds: finalTaggedUserIds, // Add tagged user IDs here
+      taggedPendingUserIds: pendingTaggedUserIds,
       imageUrl: imageUrl,
       createdAt: DateTime.now(),
       likeCount: 0,
@@ -52,7 +56,23 @@ class CreatePostUseCase {
       aspectRatio: aspectRatio,
     );
     print('Post created with image url: $imageUrl');
-    _postRepository.createPost(post);
+    final postId = await _postRepository.createPost(post);
+
+    for (final receiverId in taggedUserIds) {
+      if (await _usersRepository.checkConnection(
+              userModel.userId, receiverId) ==
+          ConnectionStatus.connected) {
+        finalTaggedUserIds.add(receiverId);
+      } else {
+        await _usersRepository.addTaggingConnection(
+          userModel.userId,
+          receiverId,
+          imageUrl,
+          postId,
+        );
+        pendingTaggedUserIds.add(receiverId);
+      }
+    }
 
     final pushNotification = PushNotificationModel(
       title: '${userModel.username} te ha etiquetado en una publicación!',
@@ -64,15 +84,6 @@ class CreatePostUseCase {
       avatarUrl: userModel.avatarUrl!,
       blurHashImage: userModel.blurHashImage!,
     );
-
-    for (final receiverId in taggedUserIds) {
-      if (await _usersRepository.checkConnection(
-              userModel.userId, receiverId) ==
-          ConnectionStatus.connected) {
-        await _usersRepository.addTaggingConnection(
-            userModel.userId, receiverId);
-      }
-    }
 
     // Send push notification to tagged users
     await _notificationDataSource.sendPushNotifications(

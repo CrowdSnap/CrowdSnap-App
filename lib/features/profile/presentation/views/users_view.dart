@@ -3,7 +3,10 @@ import 'package:crowd_snap/app/router/app_router.dart';
 import 'package:crowd_snap/core/data/models/post_model.dart';
 import 'package:crowd_snap/core/data/models/user_model.dart';
 import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_local_use_case.dart';
+import 'package:crowd_snap/features/imgs/data/repositories_impl/post_repository_impl.dart';
 import 'package:crowd_snap/features/imgs/presentation/widgets/connections_modal_bottom_sheet.dart';
+import 'package:crowd_snap/features/imgs/presentation/widgets/post_card.dart';
+import 'package:crowd_snap/features/profile/data/models/connection_model.dart';
 import 'package:crowd_snap/features/profile/data/repositories_impl/user_posts_repository_impl.dart';
 import 'package:crowd_snap/features/profile/data/repositories_impl/users_repository_impl.dart';
 import 'package:crowd_snap/features/profile/domain/use_cases/accept_connection_use_case.dart';
@@ -42,7 +45,9 @@ class _UsersViewState extends ConsumerState<UsersView> {
   late UserModel localUser;
   late UserModel user;
   late List<PostModel> userPosts;
+  late List<PostModel> userTaggedPosts;
   int index = 0;
+  late ConnectionModel connectionModel;
   ConnectionStatus connectionStatus = ConnectionStatus.none;
   int connectionsCount = 0;
 
@@ -58,18 +63,23 @@ class _UsersViewState extends ConsumerState<UsersView> {
     final user = await ref.read(usersRepositoryProvider).getUser(widget.userId);
     final userPosts =
         await ref.read(userPostsRepositoryProvider).getUserPosts(widget.userId);
-    final connectionStatus = await ref
+    final connectionModel = await ref
         .read(usersRepositoryProvider)
         .checkConnection(localUser.userId, widget.userId);
+    final userTaggedPosts = await ref
+        .read(postRepositoryProvider)
+        .getTaggedPostsByUserId(widget.userId);
+    print("userTaggedPosts: $userTaggedPosts");
 
     if (mounted) {
       setState(() {
         this.localUser = localUser;
         this.user = user;
         this.userPosts = userPosts;
-        this.connectionStatus = connectionStatus;
-        print('Connection status: $connectionStatus');
+        this.connectionModel = connectionModel;
+        connectionStatus = connectionModel.connectionStatus;
         connectionsCount = user.connectionsCount;
+        this.userTaggedPosts = userTaggedPosts;
       });
     }
   }
@@ -185,6 +195,90 @@ class _UsersViewState extends ConsumerState<UsersView> {
                       .execute(localUser, widget.userId, user.fcmToken!);
                   setState(() {
                     connectionStatus = ConnectionStatus.rejected;
+                  });
+                } on Exception catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Column(
+                        children: [
+                          Text('No se pudo rechazar, inténtalo de nuevo: $e'),
+                          const SizedBox(height: 8),
+                          ElevatedButton(
+                            onPressed: () => ref
+                                .read(rejectConnectionUseCaseProvider)
+                                .execute(
+                                    localUser, widget.userId, user.fcmToken!),
+                            child: const Text('Reintentar'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _acceptTagged() {
+    try {
+      ref
+          .read(postRepositoryProvider)
+          .acceptPendingTaggedToPost(connectionModel.connectionPostId!, widget.userId);
+      setState(() {
+        connectionStatus = ConnectionStatus.connected;
+      });
+    } on Exception catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Column(
+            children: [
+              Text('No se pudo aceptar, inténtalo de nuevo: $e'),
+              const SizedBox(height: 8),
+              ElevatedButton(
+                onPressed: () => ref
+                    .read(acceptConnectionUseCaseProvider)
+                    .execute(localUser, widget.userId, user.fcmToken!),
+                child: const Text('Reintentar'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+  }
+
+  void _rejectTagged() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Rechazar etiqueta'),
+          content: const Text(
+              '¿Estás seguro de que quieres rechazar esta etiqueta?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('No'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Sí'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                try {
+                  ref
+                      .read(rejectConnectionUseCaseProvider)
+                      .execute(localUser, widget.userId, user.fcmToken!);
+                  ref
+                      .read(postRepositoryProvider)
+                      .deletePendingTaggedFromPost(connectionModel.connectionPostId!, widget.userId);
+                  setState(() {
+                    connectionStatus = ConnectionStatus.none;
                   });
                 } on Exception catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -592,30 +686,34 @@ class _UsersViewState extends ConsumerState<UsersView> {
                   child: const Text('Rechazado'),
                 )
               else if (connectionStatus == ConnectionStatus.taggingRequest)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        HapticFeedback.selectionClick();
-                        _toggleConnection();
-                      },
-                      child: const Text('Conexion y etiqueta'),
-                    ),
-                    const SizedBox(width: 8),
-                    ElevatedButton(
+                Column(children: [
+                  CachedNetworkImage(imageUrl: connectionModel.imageUrl!),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
                         onPressed: () {
                           HapticFeedback.selectionClick();
-                          _rejectConnection();
+                          _acceptTagged();
                         },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(context).colorScheme.error,
-                          foregroundColor:
-                              Theme.of(context).colorScheme.onError,
-                        ),
-                        child: const Text('Rechazar')),
-                  ],
-                ),
+                        child: const Text('Conexión y etiqueta'),
+                      ),
+                      const SizedBox(width: 8),
+                      ElevatedButton(
+                          onPressed: () {
+                            HapticFeedback.selectionClick();
+                            _rejectTagged();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                Theme.of(context).colorScheme.error,
+                            foregroundColor:
+                                Theme.of(context).colorScheme.onError,
+                          ),
+                          child: const Text('Rechazar')),
+                    ],
+                  ),
+                ]),
             const SizedBox(height: 16),
           ],
         ),
@@ -679,17 +777,11 @@ class _UsersViewState extends ConsumerState<UsersView> {
                 },
               ),
               ListView.builder(
-                itemCount: userPosts.length,
+                itemCount: userTaggedPosts.length,
                 itemBuilder: (context, index) {
-                  final post = userPosts[index];
-                  return ListTile(
-                    leading: CircleAvatar(
-                      backgroundImage:
-                          CachedNetworkImageProvider(post.imageUrl),
-                    ),
-                    title: Text(post.userName),
-                    subtitle: Text(post.description ?? ''),
-                  );
+                  final post = userTaggedPosts[index];
+                  print("post: $post");
+                  return PostCard(post: post);
                 },
               ),
             ],
