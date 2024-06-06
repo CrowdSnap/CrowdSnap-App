@@ -585,7 +585,12 @@ class UsersDataSourceImpl implements UsersDataSource {
         }
       }
 
-      throw Exception('Connection not found');
+      return ConnectionModel(
+        connectedAt: DateTime.now(),
+        senderId: '',
+        receiverId: '',
+        connectionStatus: ConnectionStatus.none,
+      );
 
     } catch (e) {
       throw Exception('Failed to check connection: $e');

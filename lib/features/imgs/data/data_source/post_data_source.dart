@@ -178,6 +178,8 @@ class PostDataSourceImpl implements PostDataSource {
     await db.open();
     final postsCollection = db.collection('posts');
 
+    print('Creating post: ${post.toJson()}');
+
     await postsCollection.insert({
       ...post.toJson(),
     });

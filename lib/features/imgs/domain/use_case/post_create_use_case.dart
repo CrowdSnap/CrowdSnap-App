@@ -59,8 +59,9 @@ class CreatePostUseCase {
     final postId = await _postRepository.createPost(post);
 
     for (final receiverId in taggedUserIds) {
-      if (await _usersRepository.checkConnection(
-              userModel.userId, receiverId) ==
+      final receiverUser = await _usersRepository.checkConnection(
+              userModel.userId, receiverId);
+      if (receiverUser.connectionStatus ==
           ConnectionStatus.connected) {
         finalTaggedUserIds.add(receiverId);
       } else {
