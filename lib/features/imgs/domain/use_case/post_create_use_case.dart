@@ -38,6 +38,16 @@ class CreatePostUseCase {
     final (imageUrl, blurHash, aspectRatio) =
         await _imageUploadUseCase.execute(image, userName: userName);
 
+    for (final receiverId in taggedUserIds) {
+      final receiverUser =
+          await _usersRepository.checkConnection(userModel.userId, receiverId);
+      if (receiverUser.connectionStatus == ConnectionStatus.connected) {
+        finalTaggedUserIds.add(receiverId);
+      } else {
+        pendingTaggedUserIds.add(receiverId);
+      }
+    }
+
     final post = PostModel(
       userId: userModel.userId,
       userName: userName,
@@ -59,20 +69,12 @@ class CreatePostUseCase {
     final postId = await _postRepository.createPost(post);
 
     for (final receiverId in taggedUserIds) {
-      final receiverUser = await _usersRepository.checkConnection(
-              userModel.userId, receiverId);
-      if (receiverUser.connectionStatus ==
-          ConnectionStatus.connected) {
-        finalTaggedUserIds.add(receiverId);
-      } else {
-        await _usersRepository.addTaggingConnection(
-          userModel.userId,
-          receiverId,
-          imageUrl,
-          postId,
-        );
-        pendingTaggedUserIds.add(receiverId);
-      }
+      await _usersRepository.addTaggingConnection(
+        userModel.userId,
+        receiverId,
+        imageUrl,
+        postId,
+      );
     }
 
     final pushNotification = PushNotificationModel(

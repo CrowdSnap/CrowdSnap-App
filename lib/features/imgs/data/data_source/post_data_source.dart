@@ -180,18 +180,20 @@ class PostDataSourceImpl implements PostDataSource {
 
     print('Creating post: ${post.toJson()}');
 
-    await postsCollection.insert({
+    // Insertar el post y obtener el ID del documento insertado
+    final result = await postsCollection.insertOne({
       ...post.toJson(),
     });
 
-    // Devolver el ID del post creado
-    final createdPost = await postsCollection.findOne(
-      where.eq('userId', post.userId).eq('createdAt', post.createdAt),
-    );
-
-    await db.close();
-
-    return createdPost!['_id'].toString();
+    // Verificar si la inserción fue exitosa y obtener el ID
+    if (result.isSuccess) {
+      final insertedId = result.id.toHexString();
+      await db.close();
+      return insertedId;
+    } else {
+      await db.close();
+      throw Exception('Failed to insert post');
+    }
   }
 
   @override
