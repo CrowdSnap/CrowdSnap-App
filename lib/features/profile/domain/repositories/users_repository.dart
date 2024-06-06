@@ -1,8 +1,6 @@
 import 'package:crowd_snap/core/data/models/user_model.dart';
 import 'package:crowd_snap/features/profile/data/models/connection_model.dart';
 
-import '../../data/models/connection_status.dart';
-
 abstract class UsersRepository {
   Future<UserModel> getUser(String userId);
   Future<List<ConnectionModel>> getPendingConnections(String localUserId);

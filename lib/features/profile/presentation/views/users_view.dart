@@ -225,9 +225,8 @@ class _UsersViewState extends ConsumerState<UsersView> {
 
   void _acceptTagged() {
     try {
-      ref
-          .read(postRepositoryProvider)
-          .acceptPendingTaggedToPost(connectionModel.connectionPostId!, widget.userId);
+      ref.read(postRepositoryProvider).acceptPendingTaggedToPost(
+          connectionModel.connectionPostId!, widget.userId);
       setState(() {
         connectionStatus = ConnectionStatus.connected;
       });
@@ -274,9 +273,8 @@ class _UsersViewState extends ConsumerState<UsersView> {
                   ref
                       .read(rejectConnectionUseCaseProvider)
                       .execute(localUser, widget.userId, user.fcmToken!);
-                  ref
-                      .read(postRepositoryProvider)
-                      .deletePendingTaggedFromPost(connectionModel.connectionPostId!, widget.userId);
+                  ref.read(postRepositoryProvider).deletePendingTaggedFromPost(
+                      connectionModel.connectionPostId!, widget.userId);
                   setState(() {
                     connectionStatus = ConnectionStatus.none;
                   });
@@ -687,7 +685,24 @@ class _UsersViewState extends ConsumerState<UsersView> {
                 )
               else if (connectionStatus == ConnectionStatus.taggingRequest)
                 Column(children: [
-                  CachedNetworkImage(imageUrl: connectionModel.imageUrl!),
+                  SizedBox(
+                    width: 200,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12.0),
+                      child: CachedNetworkImage(
+                        imageUrl: connectionModel.imageUrl!,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Te ha etiquetado en esta publicación, ¿Aceptas?',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -696,7 +711,7 @@ class _UsersViewState extends ConsumerState<UsersView> {
                           HapticFeedback.selectionClick();
                           _acceptTagged();
                         },
-                        child: const Text('Conexión y etiqueta'),
+                        child: const Text('Aceptar formar parte'),
                       ),
                       const SizedBox(width: 8),
                       ElevatedButton(
@@ -717,76 +732,93 @@ class _UsersViewState extends ConsumerState<UsersView> {
             const SizedBox(height: 16),
           ],
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.grid_on),
-              color: index == 0
-                  ? Theme.of(context).colorScheme.primary
-                  : Colors.grey,
-              onPressed: () => _onGridSelected(0),
-            ),
-            IconButton(
-              icon: const Icon(Icons.person),
-              color: index == 1
-                  ? Theme.of(context).colorScheme.primary
-                  : Colors.grey,
-              onPressed: () => _onGridSelected(1),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        Expanded(
-          child: PageView(
-            controller: pageController,
-            onPageChanged: (index) {
-              setState(() {
-                this.index = index;
-              });
-            },
+        if (connectionStatus != ConnectionStatus.taggingRequest)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  crossAxisSpacing: 5,
-                  mainAxisSpacing: 5,
-                ),
-                itemCount: userPosts.length,
-                itemBuilder: (context, index) {
-                  final post = userPosts[index];
-                  return GestureDetector(
-                    onTap: () {
-                      HapticFeedback.selectionClick();
-                      ref.read(appRouterProvider).push(
-                        '/posts-list',
-                        extra: {
-                          'posts': userPosts,
-                          'height': _calculateHeight(userPosts, index),
-                        },
-                      );
-                    },
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image(
-                        image: CachedNetworkImageProvider(post.imageUrl),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  );
-                },
+              IconButton(
+                icon: const Icon(Icons.grid_on),
+                color: index == 0
+                    ? Theme.of(context).colorScheme.primary
+                    : Colors.grey,
+                onPressed: () => _onGridSelected(0),
               ),
-              ListView.builder(
-                itemCount: userTaggedPosts.length,
-                itemBuilder: (context, index) {
-                  final post = userTaggedPosts[index];
-                  print("post: $post");
-                  return PostCard(post: post);
-                },
+              IconButton(
+                icon: const Icon(Icons.person),
+                color: index == 1
+                    ? Theme.of(context).colorScheme.primary
+                    : Colors.grey,
+                onPressed: () => _onGridSelected(1),
               ),
             ],
           ),
-        ),
+        if (connectionStatus == ConnectionStatus.taggingRequest)
+          // ver las publicaciones en listado
+          ElevatedButton(
+            onPressed: () {
+              HapticFeedback.selectionClick();
+              ref.read(appRouterProvider).push(
+                '/posts-list',
+                extra: {
+                  'posts': userTaggedPosts,
+                  'height': _calculateHeight(userTaggedPosts, 0),
+                },
+              );
+            },
+            child: const Text('Ver publicaciones'),
+          ),
+        const SizedBox(height: 16),
+        if (connectionStatus != ConnectionStatus.taggingRequest)
+          Expanded(
+            child: PageView(
+              controller: pageController,
+              onPageChanged: (index) {
+                setState(() {
+                  this.index = index;
+                });
+              },
+              children: [
+                GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 5,
+                    mainAxisSpacing: 5,
+                  ),
+                  itemCount: userPosts.length,
+                  itemBuilder: (context, index) {
+                    final post = userPosts[index];
+                    return GestureDetector(
+                      onTap: () {
+                        HapticFeedback.selectionClick();
+                        ref.read(appRouterProvider).push(
+                          '/posts-list',
+                          extra: {
+                            'posts': userPosts,
+                            'height': _calculateHeight(userPosts, index),
+                          },
+                        );
+                      },
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image(
+                          image: CachedNetworkImageProvider(post.imageUrl),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                ListView.builder(
+                  itemCount: userTaggedPosts.length,
+                  itemBuilder: (context, index) {
+                    final post = userTaggedPosts[index];
+                    print("post: $post");
+                    return PostCard(post: post);
+                  },
+                ),
+              ],
+            ),
+          ),
       ],
     );
   }

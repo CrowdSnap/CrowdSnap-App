@@ -1,7 +1,6 @@
 import 'package:crowd_snap/core/data/models/user_model.dart';
 import 'package:crowd_snap/features/profile/data/data_source/users_data_source.dart';
 import 'package:crowd_snap/features/profile/data/models/connection_model.dart';
-import 'package:crowd_snap/features/profile/data/models/connection_status.dart';
 import 'package:crowd_snap/features/profile/domain/repositories/users_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
