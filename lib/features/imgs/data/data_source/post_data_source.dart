@@ -273,6 +273,8 @@ class PostDataSourceImpl implements PostDataSource {
     await db.open();
     final postsCollection = db.collection('posts');
 
+    print('Accepting tagged user: $userId to post: $postId');
+
     await postsCollection.updateOne(
       where.eq('_id', ObjectId.fromHexString(postId)),
       modify.pull('taggedPendingUserIds', userId).push('taggedUserIds', userId),

@@ -309,6 +309,9 @@ class UsersDataSourceImpl implements UsersDataSource {
       }
 
       // Actualiza la conexión a aceptada y la convierte en connected y elimina el postId y la imageUrl
+
+      print('id de la conexión: ${userId}_$localUserId');
+
       final connectionRef = _realtimeDatabase
           .ref()
           .child('connections')

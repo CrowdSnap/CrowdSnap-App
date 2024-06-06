@@ -10,6 +10,7 @@ import 'package:crowd_snap/features/profile/data/models/connection_model.dart';
 import 'package:crowd_snap/features/profile/data/repositories_impl/user_posts_repository_impl.dart';
 import 'package:crowd_snap/features/profile/data/repositories_impl/users_repository_impl.dart';
 import 'package:crowd_snap/features/profile/domain/use_cases/accept_connection_use_case.dart';
+import 'package:crowd_snap/features/profile/domain/use_cases/accept_tagged_use_case.dart';
 import 'package:crowd_snap/features/profile/domain/use_cases/add_connection_use_case.dart';
 import 'package:crowd_snap/features/profile/domain/use_cases/reject_connection_use_case.dart';
 import 'package:crowd_snap/features/profile/domain/use_cases/remove_connection_use_case.dart';
@@ -69,8 +70,7 @@ class _UsersViewState extends ConsumerState<UsersView> {
     final userTaggedPosts = await ref
         .read(postRepositoryProvider)
         .getTaggedPostsByUserId(widget.userId);
-    print("userTaggedPosts: $userTaggedPosts");
-
+    print("postId: ${connectionModel.toJson()}");
     if (mounted) {
       setState(() {
         this.localUser = localUser;
@@ -225,8 +225,14 @@ class _UsersViewState extends ConsumerState<UsersView> {
 
   void _acceptTagged() {
     try {
-      ref.read(postRepositoryProvider).acceptPendingTaggedToPost(
-          connectionModel.connectionPostId!, widget.userId);
+      print("postId: ${connectionModel.toJson()}");
+      ref.read(acceptTaggedUseCaseProvider).execute(
+            localUser,
+            widget.userId,
+            user.fcmToken!,
+            connectionModel.imageUrl!,
+            connectionModel.postId!,
+          );
       setState(() {
         connectionStatus = ConnectionStatus.connected;
       });
@@ -274,7 +280,7 @@ class _UsersViewState extends ConsumerState<UsersView> {
                       .read(rejectConnectionUseCaseProvider)
                       .execute(localUser, widget.userId, user.fcmToken!);
                   ref.read(postRepositoryProvider).deletePendingTaggedFromPost(
-                      connectionModel.connectionPostId!, widget.userId);
+                      connectionModel.postId!, widget.userId);
                   setState(() {
                     connectionStatus = ConnectionStatus.none;
                   });
@@ -760,7 +766,7 @@ class _UsersViewState extends ConsumerState<UsersView> {
               ref.read(appRouterProvider).push(
                 '/posts-list',
                 extra: {
-                  'posts': userTaggedPosts,
+                  'posts': userPosts,
                   'height': _calculateHeight(userTaggedPosts, 0),
                 },
               );

@@ -24,7 +24,7 @@ mixin _$ConnectionModel {
   String get senderId => throw _privateConstructorUsedError;
   String get receiverId => throw _privateConstructorUsedError;
   ConnectionStatus get connectionStatus => throw _privateConstructorUsedError;
-  String? get connectionPostId => throw _privateConstructorUsedError;
+  String? get postId => throw _privateConstructorUsedError;
   String? get imageUrl => throw _privateConstructorUsedError;
   String? get connectionLocation => throw _privateConstructorUsedError;
 
@@ -45,7 +45,7 @@ abstract class $ConnectionModelCopyWith<$Res> {
       String senderId,
       String receiverId,
       ConnectionStatus connectionStatus,
-      String? connectionPostId,
+      String? postId,
       String? imageUrl,
       String? connectionLocation});
 }
@@ -67,7 +67,7 @@ class _$ConnectionModelCopyWithImpl<$Res, $Val extends ConnectionModel>
     Object? senderId = null,
     Object? receiverId = null,
     Object? connectionStatus = null,
-    Object? connectionPostId = freezed,
+    Object? postId = freezed,
     Object? imageUrl = freezed,
     Object? connectionLocation = freezed,
   }) {
@@ -88,9 +88,9 @@ class _$ConnectionModelCopyWithImpl<$Res, $Val extends ConnectionModel>
           ? _value.connectionStatus
           : connectionStatus // ignore: cast_nullable_to_non_nullable
               as ConnectionStatus,
-      connectionPostId: freezed == connectionPostId
-          ? _value.connectionPostId
-          : connectionPostId // ignore: cast_nullable_to_non_nullable
+      postId: freezed == postId
+          ? _value.postId
+          : postId // ignore: cast_nullable_to_non_nullable
               as String?,
       imageUrl: freezed == imageUrl
           ? _value.imageUrl
@@ -117,7 +117,7 @@ abstract class _$$ConnectionModelImplCopyWith<$Res>
       String senderId,
       String receiverId,
       ConnectionStatus connectionStatus,
-      String? connectionPostId,
+      String? postId,
       String? imageUrl,
       String? connectionLocation});
 }
@@ -137,7 +137,7 @@ class __$$ConnectionModelImplCopyWithImpl<$Res>
     Object? senderId = null,
     Object? receiverId = null,
     Object? connectionStatus = null,
-    Object? connectionPostId = freezed,
+    Object? postId = freezed,
     Object? imageUrl = freezed,
     Object? connectionLocation = freezed,
   }) {
@@ -158,9 +158,9 @@ class __$$ConnectionModelImplCopyWithImpl<$Res>
           ? _value.connectionStatus
           : connectionStatus // ignore: cast_nullable_to_non_nullable
               as ConnectionStatus,
-      connectionPostId: freezed == connectionPostId
-          ? _value.connectionPostId
-          : connectionPostId // ignore: cast_nullable_to_non_nullable
+      postId: freezed == postId
+          ? _value.postId
+          : postId // ignore: cast_nullable_to_non_nullable
               as String?,
       imageUrl: freezed == imageUrl
           ? _value.imageUrl
@@ -182,7 +182,7 @@ class _$ConnectionModelImpl implements _ConnectionModel {
       required this.senderId,
       required this.receiverId,
       required this.connectionStatus,
-      this.connectionPostId,
+      this.postId,
       this.imageUrl,
       this.connectionLocation});
 
@@ -198,7 +198,7 @@ class _$ConnectionModelImpl implements _ConnectionModel {
   @override
   final ConnectionStatus connectionStatus;
   @override
-  final String? connectionPostId;
+  final String? postId;
   @override
   final String? imageUrl;
   @override
@@ -206,7 +206,7 @@ class _$ConnectionModelImpl implements _ConnectionModel {
 
   @override
   String toString() {
-    return 'ConnectionModel(connectedAt: $connectedAt, senderId: $senderId, receiverId: $receiverId, connectionStatus: $connectionStatus, connectionPostId: $connectionPostId, imageUrl: $imageUrl, connectionLocation: $connectionLocation)';
+    return 'ConnectionModel(connectedAt: $connectedAt, senderId: $senderId, receiverId: $receiverId, connectionStatus: $connectionStatus, postId: $postId, imageUrl: $imageUrl, connectionLocation: $connectionLocation)';
   }
 
   @override
@@ -222,8 +222,7 @@ class _$ConnectionModelImpl implements _ConnectionModel {
                 other.receiverId == receiverId) &&
             (identical(other.connectionStatus, connectionStatus) ||
                 other.connectionStatus == connectionStatus) &&
-            (identical(other.connectionPostId, connectionPostId) ||
-                other.connectionPostId == connectionPostId) &&
+            (identical(other.postId, postId) || other.postId == postId) &&
             (identical(other.imageUrl, imageUrl) ||
                 other.imageUrl == imageUrl) &&
             (identical(other.connectionLocation, connectionLocation) ||
@@ -232,15 +231,8 @@ class _$ConnectionModelImpl implements _ConnectionModel {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      connectedAt,
-      senderId,
-      receiverId,
-      connectionStatus,
-      connectionPostId,
-      imageUrl,
-      connectionLocation);
+  int get hashCode => Object.hash(runtimeType, connectedAt, senderId,
+      receiverId, connectionStatus, postId, imageUrl, connectionLocation);
 
   @JsonKey(ignore: true)
   @override
@@ -263,7 +255,7 @@ abstract class _ConnectionModel implements ConnectionModel {
       required final String senderId,
       required final String receiverId,
       required final ConnectionStatus connectionStatus,
-      final String? connectionPostId,
+      final String? postId,
       final String? imageUrl,
       final String? connectionLocation}) = _$ConnectionModelImpl;
 
@@ -279,7 +271,7 @@ abstract class _ConnectionModel implements ConnectionModel {
   @override
   ConnectionStatus get connectionStatus;
   @override
-  String? get connectionPostId;
+  String? get postId;
   @override
   String? get imageUrl;
   @override

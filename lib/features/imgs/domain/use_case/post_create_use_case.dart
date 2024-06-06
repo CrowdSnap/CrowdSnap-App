@@ -37,6 +37,8 @@ class CreatePostUseCase {
 
     final (imageUrl, blurHash, aspectRatio) =
         await _imageUploadUseCase.execute(image, userName: userName);
+    
+    print('Image uploaded with url: $imageUrl');
 
     for (final receiverId in taggedUserIds) {
       final receiverUser =
@@ -47,6 +49,8 @@ class CreatePostUseCase {
         pendingTaggedUserIds.add(receiverId);
       }
     }
+
+    print('Final tagged user IDs: $finalTaggedUserIds and pending tagged user IDs: $pendingTaggedUserIds');
 
     final post = PostModel(
       userId: userModel.userId,
@@ -68,6 +72,8 @@ class CreatePostUseCase {
     print('Post created with image url: $imageUrl');
     final postId = await _postRepository.createPost(post);
 
+    print('Post created with ID: $postId');
+
     for (final receiverId in taggedUserIds) {
       await _usersRepository.addTaggingConnection(
         userModel.userId,
@@ -76,6 +82,8 @@ class CreatePostUseCase {
         postId,
       );
     }
+
+    print('Tagging connections added!');
 
     final pushNotification = PushNotificationModel(
       title: '${userModel.username} te ha etiquetado en una publicación!',
@@ -93,6 +101,8 @@ class CreatePostUseCase {
       taggedUserIds,
       pushNotification,
     );
+
+    print('Push notifications sent to tagged users!');
   }
 }
 
