@@ -77,6 +77,7 @@ class ImageUploadView extends ConsumerWidget {
       await ref
           .read(createPostUseCaseProvider)
           .execute(imageState!, ref.watch(taggedUserIdsProviderProvider));
+      ref.invalidate(taggedUserIdsProviderProvider);
       ref.watch(imageStateProvider.notifier).clearImage();
       ref.watch(imageUploadNotifierProvider.notifier).updateIsLoading(false);
       // ignore: use_build_context_synchronously

@@ -43,6 +43,7 @@ class CreatePostUseCase {
     for (final receiverId in taggedUserIds) {
       final receiverUser =
           await _usersRepository.checkConnection(userModel.userId, receiverId);
+      print('Receiver user: $receiverUser');
       if (receiverUser.connectionStatus == ConnectionStatus.connected) {
         finalTaggedUserIds.add(receiverId);
       } else {
@@ -74,7 +75,7 @@ class CreatePostUseCase {
 
     print('Post created with ID: $postId');
 
-    for (final receiverId in taggedUserIds) {
+    for (final receiverId in pendingTaggedUserIds) {
       await _usersRepository.addTaggingConnection(
         userModel.userId,
         receiverId,

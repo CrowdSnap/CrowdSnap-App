@@ -235,6 +235,7 @@ class _UsersViewState extends ConsumerState<UsersView> {
           );
       setState(() {
         connectionStatus = ConnectionStatus.connected;
+        connectionsCount++;
       });
     } on Exception catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

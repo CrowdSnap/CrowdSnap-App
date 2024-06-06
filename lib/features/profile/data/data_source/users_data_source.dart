@@ -280,14 +280,16 @@ class UsersDataSourceImpl implements UsersDataSource {
             List<String>.from(localUserData['pendingConnections'] ?? []);
 
         // Elimina la conexión pendiente
-        pendingConnections
-            .removeWhere((connectionId) => connectionId.contains(userId));
+        if (pendingConnections.isNotEmpty) {
+          pendingConnections
+              .removeWhere((connectionId) => connectionId.contains(userId));
 
-        // Actualiza el array de pendingConnections del usuario local
-        await localUserRef.update({
-          'pendingConnections': pendingConnections,
-          'connectionsCount': FieldValue.increment(1),
-        });
+          // Actualiza el array de pendingConnections del usuario local
+          await localUserRef.update({
+            'pendingConnections': pendingConnections,
+            'connectionsCount': FieldValue.increment(1),
+          });
+        }
       }
 
       // Consulta el array de pendingConnections del usuario receptor
@@ -298,14 +300,16 @@ class UsersDataSourceImpl implements UsersDataSource {
             List<String>.from(userData['pendingConnections'] ?? []);
 
         // Elimina la conexión pendiente
-        pendingConnections
-            .removeWhere((connectionId) => connectionId.contains(localUserId));
+        if (pendingConnections.isNotEmpty) {
+          pendingConnections.removeWhere(
+              (connectionId) => connectionId.contains(localUserId));
 
-        // Actualiza el array de pendingConnections del usuario receptor
-        await userRef.update({
-          'pendingConnections': pendingConnections,
-          'connectionsCount': FieldValue.increment(1),
-        });
+          // Actualiza el array de pendingConnections del usuario receptor
+          await userRef.update({
+            'pendingConnections': pendingConnections,
+            'connectionsCount': FieldValue.increment(1),
+          });
+        }
       }
 
       // Actualiza la conexión a aceptada y la convierte en connected y elimina el postId y la imageUrl
