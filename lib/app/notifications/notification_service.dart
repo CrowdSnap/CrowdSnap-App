@@ -131,6 +131,12 @@ class NotificationService extends _$NotificationService {
     print('Extra: $extraString');
     ref.read(appRouterProvider).go('/users/$userId', extra: extraString);
   }
+
+  void _handleNotificationClickFromPayload(String payload) {
+    final userId = payload;
+    // Aquí puedes agregar lógica adicional si es necesario
+    ref.read(appRouterProvider).push('/users/$userId');
+  }
 }
 
 @pragma('vm:entry-point')

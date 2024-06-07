@@ -13,6 +13,9 @@ _$PostModelImpl _$$PostModelImplFromJson(Map<String, dynamic> json) =>
       userName: json['userName'] as String,
       userAvatarUrl: json['userAvatarUrl'] as String,
       imageUrl: json['imageUrl'] as String,
+      taggedPendingUserIds: (json['taggedPendingUserIds'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
       taggedUserIds: (json['taggedUserIds'] as List<dynamic>)
           .map((e) => e as String)
           .toList(),
@@ -39,6 +42,7 @@ Map<String, dynamic> _$$PostModelImplToJson(_$PostModelImpl instance) =>
       'userName': instance.userName,
       'userAvatarUrl': instance.userAvatarUrl,
       'imageUrl': instance.imageUrl,
+      'taggedPendingUserIds': instance.taggedPendingUserIds,
       'taggedUserIds': instance.taggedUserIds,
       'location': instance.location,
       'createdAt': instance.createdAt.toIso8601String(),

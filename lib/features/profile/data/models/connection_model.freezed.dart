@@ -24,7 +24,8 @@ mixin _$ConnectionModel {
   String get senderId => throw _privateConstructorUsedError;
   String get receiverId => throw _privateConstructorUsedError;
   ConnectionStatus get connectionStatus => throw _privateConstructorUsedError;
-  String? get connectionPostId => throw _privateConstructorUsedError;
+  String? get postId => throw _privateConstructorUsedError;
+  String? get imageUrl => throw _privateConstructorUsedError;
   String? get connectionLocation => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -44,7 +45,8 @@ abstract class $ConnectionModelCopyWith<$Res> {
       String senderId,
       String receiverId,
       ConnectionStatus connectionStatus,
-      String? connectionPostId,
+      String? postId,
+      String? imageUrl,
       String? connectionLocation});
 }
 
@@ -65,7 +67,8 @@ class _$ConnectionModelCopyWithImpl<$Res, $Val extends ConnectionModel>
     Object? senderId = null,
     Object? receiverId = null,
     Object? connectionStatus = null,
-    Object? connectionPostId = freezed,
+    Object? postId = freezed,
+    Object? imageUrl = freezed,
     Object? connectionLocation = freezed,
   }) {
     return _then(_value.copyWith(
@@ -85,9 +88,13 @@ class _$ConnectionModelCopyWithImpl<$Res, $Val extends ConnectionModel>
           ? _value.connectionStatus
           : connectionStatus // ignore: cast_nullable_to_non_nullable
               as ConnectionStatus,
-      connectionPostId: freezed == connectionPostId
-          ? _value.connectionPostId
-          : connectionPostId // ignore: cast_nullable_to_non_nullable
+      postId: freezed == postId
+          ? _value.postId
+          : postId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      imageUrl: freezed == imageUrl
+          ? _value.imageUrl
+          : imageUrl // ignore: cast_nullable_to_non_nullable
               as String?,
       connectionLocation: freezed == connectionLocation
           ? _value.connectionLocation
@@ -110,7 +117,8 @@ abstract class _$$ConnectionModelImplCopyWith<$Res>
       String senderId,
       String receiverId,
       ConnectionStatus connectionStatus,
-      String? connectionPostId,
+      String? postId,
+      String? imageUrl,
       String? connectionLocation});
 }
 
@@ -129,7 +137,8 @@ class __$$ConnectionModelImplCopyWithImpl<$Res>
     Object? senderId = null,
     Object? receiverId = null,
     Object? connectionStatus = null,
-    Object? connectionPostId = freezed,
+    Object? postId = freezed,
+    Object? imageUrl = freezed,
     Object? connectionLocation = freezed,
   }) {
     return _then(_$ConnectionModelImpl(
@@ -149,9 +158,13 @@ class __$$ConnectionModelImplCopyWithImpl<$Res>
           ? _value.connectionStatus
           : connectionStatus // ignore: cast_nullable_to_non_nullable
               as ConnectionStatus,
-      connectionPostId: freezed == connectionPostId
-          ? _value.connectionPostId
-          : connectionPostId // ignore: cast_nullable_to_non_nullable
+      postId: freezed == postId
+          ? _value.postId
+          : postId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      imageUrl: freezed == imageUrl
+          ? _value.imageUrl
+          : imageUrl // ignore: cast_nullable_to_non_nullable
               as String?,
       connectionLocation: freezed == connectionLocation
           ? _value.connectionLocation
@@ -169,7 +182,8 @@ class _$ConnectionModelImpl implements _ConnectionModel {
       required this.senderId,
       required this.receiverId,
       required this.connectionStatus,
-      this.connectionPostId,
+      this.postId,
+      this.imageUrl,
       this.connectionLocation});
 
   factory _$ConnectionModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -184,13 +198,15 @@ class _$ConnectionModelImpl implements _ConnectionModel {
   @override
   final ConnectionStatus connectionStatus;
   @override
-  final String? connectionPostId;
+  final String? postId;
+  @override
+  final String? imageUrl;
   @override
   final String? connectionLocation;
 
   @override
   String toString() {
-    return 'ConnectionModel(connectedAt: $connectedAt, senderId: $senderId, receiverId: $receiverId, connectionStatus: $connectionStatus, connectionPostId: $connectionPostId, connectionLocation: $connectionLocation)';
+    return 'ConnectionModel(connectedAt: $connectedAt, senderId: $senderId, receiverId: $receiverId, connectionStatus: $connectionStatus, postId: $postId, imageUrl: $imageUrl, connectionLocation: $connectionLocation)';
   }
 
   @override
@@ -206,8 +222,9 @@ class _$ConnectionModelImpl implements _ConnectionModel {
                 other.receiverId == receiverId) &&
             (identical(other.connectionStatus, connectionStatus) ||
                 other.connectionStatus == connectionStatus) &&
-            (identical(other.connectionPostId, connectionPostId) ||
-                other.connectionPostId == connectionPostId) &&
+            (identical(other.postId, postId) || other.postId == postId) &&
+            (identical(other.imageUrl, imageUrl) ||
+                other.imageUrl == imageUrl) &&
             (identical(other.connectionLocation, connectionLocation) ||
                 other.connectionLocation == connectionLocation));
   }
@@ -215,7 +232,7 @@ class _$ConnectionModelImpl implements _ConnectionModel {
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, connectedAt, senderId,
-      receiverId, connectionStatus, connectionPostId, connectionLocation);
+      receiverId, connectionStatus, postId, imageUrl, connectionLocation);
 
   @JsonKey(ignore: true)
   @override
@@ -238,7 +255,8 @@ abstract class _ConnectionModel implements ConnectionModel {
       required final String senderId,
       required final String receiverId,
       required final ConnectionStatus connectionStatus,
-      final String? connectionPostId,
+      final String? postId,
+      final String? imageUrl,
       final String? connectionLocation}) = _$ConnectionModelImpl;
 
   factory _ConnectionModel.fromJson(Map<String, dynamic> json) =
@@ -253,7 +271,9 @@ abstract class _ConnectionModel implements ConnectionModel {
   @override
   ConnectionStatus get connectionStatus;
   @override
-  String? get connectionPostId;
+  String? get postId;
+  @override
+  String? get imageUrl;
   @override
   String? get connectionLocation;
   @override

@@ -5,6 +5,8 @@ enum ConnectionStatus {
   connected,
   @JsonValue('pending')
   pending,
+  @JsonValue('taggingRequest')
+  taggingRequest,
   @JsonValue('waitingForAcceptance')
   waitingForAcceptance,
   @JsonValue('rejected')
@@ -20,6 +22,8 @@ extension ConnectionStatusExtension on ConnectionStatus {
         return 'connected';
       case ConnectionStatus.pending:
         return 'pending';
+      case ConnectionStatus.taggingRequest:
+        return 'taggingRequest';
       case ConnectionStatus.waitingForAcceptance:
         return 'waitingForAcceptance';
       case ConnectionStatus.rejected:
@@ -41,6 +45,8 @@ extension ConnectionStatusExtension on ConnectionStatus {
         return ConnectionStatus.rejected;
       case 'none':
         return ConnectionStatus.none;
+      case 'taggingRequest':
+        return ConnectionStatus.taggingRequest;
       default:
         throw Exception('Unknown ConnectionStatus value: $value');
     }

@@ -23,12 +23,12 @@ PushNotificationModel _$PushNotificationModelFromJson(
 mixin _$PushNotificationModel {
   String get title => throw _privateConstructorUsedError;
   String get body => throw _privateConstructorUsedError;
-  String get fcmToken => throw _privateConstructorUsedError;
-  String? get imageUrl => throw _privateConstructorUsedError;
-  String? get userId => throw _privateConstructorUsedError;
-  String? get username => throw _privateConstructorUsedError;
-  String? get avatarUrl => throw _privateConstructorUsedError;
-  String? get blurHashImage => throw _privateConstructorUsedError;
+  String? get fcmToken => throw _privateConstructorUsedError;
+  String get imageUrl => throw _privateConstructorUsedError;
+  String get userId => throw _privateConstructorUsedError;
+  String get username => throw _privateConstructorUsedError;
+  String get avatarUrl => throw _privateConstructorUsedError;
+  String get blurHashImage => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -45,12 +45,12 @@ abstract class $PushNotificationModelCopyWith<$Res> {
   $Res call(
       {String title,
       String body,
-      String fcmToken,
-      String? imageUrl,
-      String? userId,
-      String? username,
-      String? avatarUrl,
-      String? blurHashImage});
+      String? fcmToken,
+      String imageUrl,
+      String userId,
+      String username,
+      String avatarUrl,
+      String blurHashImage});
 }
 
 /// @nodoc
@@ -69,12 +69,12 @@ class _$PushNotificationModelCopyWithImpl<$Res,
   $Res call({
     Object? title = null,
     Object? body = null,
-    Object? fcmToken = null,
-    Object? imageUrl = freezed,
-    Object? userId = freezed,
-    Object? username = freezed,
-    Object? avatarUrl = freezed,
-    Object? blurHashImage = freezed,
+    Object? fcmToken = freezed,
+    Object? imageUrl = null,
+    Object? userId = null,
+    Object? username = null,
+    Object? avatarUrl = null,
+    Object? blurHashImage = null,
   }) {
     return _then(_value.copyWith(
       title: null == title
@@ -85,30 +85,30 @@ class _$PushNotificationModelCopyWithImpl<$Res,
           ? _value.body
           : body // ignore: cast_nullable_to_non_nullable
               as String,
-      fcmToken: null == fcmToken
+      fcmToken: freezed == fcmToken
           ? _value.fcmToken
           : fcmToken // ignore: cast_nullable_to_non_nullable
-              as String,
-      imageUrl: freezed == imageUrl
+              as String?,
+      imageUrl: null == imageUrl
           ? _value.imageUrl
           : imageUrl // ignore: cast_nullable_to_non_nullable
-              as String?,
-      userId: freezed == userId
+              as String,
+      userId: null == userId
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
-              as String?,
-      username: freezed == username
+              as String,
+      username: null == username
           ? _value.username
           : username // ignore: cast_nullable_to_non_nullable
-              as String?,
-      avatarUrl: freezed == avatarUrl
+              as String,
+      avatarUrl: null == avatarUrl
           ? _value.avatarUrl
           : avatarUrl // ignore: cast_nullable_to_non_nullable
-              as String?,
-      blurHashImage: freezed == blurHashImage
+              as String,
+      blurHashImage: null == blurHashImage
           ? _value.blurHashImage
           : blurHashImage // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as String,
     ) as $Val);
   }
 }
@@ -125,12 +125,12 @@ abstract class _$$PushNotificationModelImplCopyWith<$Res>
   $Res call(
       {String title,
       String body,
-      String fcmToken,
-      String? imageUrl,
-      String? userId,
-      String? username,
-      String? avatarUrl,
-      String? blurHashImage});
+      String? fcmToken,
+      String imageUrl,
+      String userId,
+      String username,
+      String avatarUrl,
+      String blurHashImage});
 }
 
 /// @nodoc
@@ -147,12 +147,12 @@ class __$$PushNotificationModelImplCopyWithImpl<$Res>
   $Res call({
     Object? title = null,
     Object? body = null,
-    Object? fcmToken = null,
-    Object? imageUrl = freezed,
-    Object? userId = freezed,
-    Object? username = freezed,
-    Object? avatarUrl = freezed,
-    Object? blurHashImage = freezed,
+    Object? fcmToken = freezed,
+    Object? imageUrl = null,
+    Object? userId = null,
+    Object? username = null,
+    Object? avatarUrl = null,
+    Object? blurHashImage = null,
   }) {
     return _then(_$PushNotificationModelImpl(
       title: null == title
@@ -163,30 +163,30 @@ class __$$PushNotificationModelImplCopyWithImpl<$Res>
           ? _value.body
           : body // ignore: cast_nullable_to_non_nullable
               as String,
-      fcmToken: null == fcmToken
+      fcmToken: freezed == fcmToken
           ? _value.fcmToken
           : fcmToken // ignore: cast_nullable_to_non_nullable
-              as String,
-      imageUrl: freezed == imageUrl
+              as String?,
+      imageUrl: null == imageUrl
           ? _value.imageUrl
           : imageUrl // ignore: cast_nullable_to_non_nullable
-              as String?,
-      userId: freezed == userId
+              as String,
+      userId: null == userId
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
-              as String?,
-      username: freezed == username
+              as String,
+      username: null == username
           ? _value.username
           : username // ignore: cast_nullable_to_non_nullable
-              as String?,
-      avatarUrl: freezed == avatarUrl
+              as String,
+      avatarUrl: null == avatarUrl
           ? _value.avatarUrl
           : avatarUrl // ignore: cast_nullable_to_non_nullable
-              as String?,
-      blurHashImage: freezed == blurHashImage
+              as String,
+      blurHashImage: null == blurHashImage
           ? _value.blurHashImage
           : blurHashImage // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as String,
     ));
   }
 }
@@ -197,12 +197,12 @@ class _$PushNotificationModelImpl implements _PushNotificationModel {
   const _$PushNotificationModelImpl(
       {required this.title,
       required this.body,
-      required this.fcmToken,
-      this.imageUrl,
-      this.userId,
-      this.username,
-      this.avatarUrl,
-      this.blurHashImage});
+      this.fcmToken,
+      required this.imageUrl,
+      required this.userId,
+      required this.username,
+      required this.avatarUrl,
+      required this.blurHashImage});
 
   factory _$PushNotificationModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$PushNotificationModelImplFromJson(json);
@@ -212,17 +212,17 @@ class _$PushNotificationModelImpl implements _PushNotificationModel {
   @override
   final String body;
   @override
-  final String fcmToken;
+  final String? fcmToken;
   @override
-  final String? imageUrl;
+  final String imageUrl;
   @override
-  final String? userId;
+  final String userId;
   @override
-  final String? username;
+  final String username;
   @override
-  final String? avatarUrl;
+  final String avatarUrl;
   @override
-  final String? blurHashImage;
+  final String blurHashImage;
 
   @override
   String toString() {
@@ -273,12 +273,12 @@ abstract class _PushNotificationModel implements PushNotificationModel {
   const factory _PushNotificationModel(
       {required final String title,
       required final String body,
-      required final String fcmToken,
-      final String? imageUrl,
-      final String? userId,
-      final String? username,
-      final String? avatarUrl,
-      final String? blurHashImage}) = _$PushNotificationModelImpl;
+      final String? fcmToken,
+      required final String imageUrl,
+      required final String userId,
+      required final String username,
+      required final String avatarUrl,
+      required final String blurHashImage}) = _$PushNotificationModelImpl;
 
   factory _PushNotificationModel.fromJson(Map<String, dynamic> json) =
       _$PushNotificationModelImpl.fromJson;
@@ -288,17 +288,17 @@ abstract class _PushNotificationModel implements PushNotificationModel {
   @override
   String get body;
   @override
-  String get fcmToken;
+  String? get fcmToken;
   @override
-  String? get imageUrl;
+  String get imageUrl;
   @override
-  String? get userId;
+  String get userId;
   @override
-  String? get username;
+  String get username;
   @override
-  String? get avatarUrl;
+  String get avatarUrl;
   @override
-  String? get blurHashImage;
+  String get blurHashImage;
   @override
   @JsonKey(ignore: true)
   _$$PushNotificationModelImplCopyWith<_$PushNotificationModelImpl>

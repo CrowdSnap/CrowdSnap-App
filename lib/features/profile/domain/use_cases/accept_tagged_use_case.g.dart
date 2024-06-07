@@ -1,26 +1,26 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'profile_notifier.dart';
+part of 'accept_tagged_use_case.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$profileNotifierHash() => r'ec1ef9f85965ba80a31dfc4506c53d1df2e96f4e';
+String _$acceptTaggedUseCaseHash() =>
+    r'5d4dc9df76719649cf5991faab04c837195f1387';
 
-/// See also [ProfileNotifier].
-@ProviderFor(ProfileNotifier)
-final profileNotifierProvider =
-    NotifierProvider<ProfileNotifier, ProfileState>.internal(
-  ProfileNotifier.new,
-  name: r'profileNotifierProvider',
+/// See also [acceptTaggedUseCase].
+@ProviderFor(acceptTaggedUseCase)
+final acceptTaggedUseCaseProvider = Provider<AcceptTaggedUseCase>.internal(
+  acceptTaggedUseCase,
+  name: r'acceptTaggedUseCaseProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$profileNotifierHash,
+      : _$acceptTaggedUseCaseHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$ProfileNotifier = Notifier<ProfileState>;
+typedef AcceptTaggedUseCaseRef = ProviderRef<AcceptTaggedUseCase>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

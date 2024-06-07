@@ -1,26 +1,27 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'profile_notifier.dart';
+part of 'tagged_user_ids_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$profileNotifierHash() => r'ec1ef9f85965ba80a31dfc4506c53d1df2e96f4e';
+String _$taggedUserIdsProviderHash() =>
+    r'922b3c671a844c0dbc383566077c0388a4890df2';
 
-/// See also [ProfileNotifier].
-@ProviderFor(ProfileNotifier)
-final profileNotifierProvider =
-    NotifierProvider<ProfileNotifier, ProfileState>.internal(
-  ProfileNotifier.new,
-  name: r'profileNotifierProvider',
+/// See also [TaggedUserIdsProvider].
+@ProviderFor(TaggedUserIdsProvider)
+final taggedUserIdsProviderProvider =
+    NotifierProvider<TaggedUserIdsProvider, List<String>>.internal(
+  TaggedUserIdsProvider.new,
+  name: r'taggedUserIdsProviderProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$profileNotifierHash,
+      : _$taggedUserIdsProviderHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$ProfileNotifier = Notifier<ProfileState>;
+typedef _$TaggedUserIdsProvider = Notifier<List<String>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

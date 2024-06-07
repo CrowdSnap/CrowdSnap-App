@@ -5,6 +5,10 @@ import 'package:crowd_snap/core/navbar/providers/navbar_provider.dart';
 import 'package:crowd_snap/features/imgs/domain/use_case/post_create_use_case.dart';
 import 'package:crowd_snap/features/imgs/presentation/notifier/image_picker_state.dart';
 import 'package:crowd_snap/features/imgs/presentation/notifier/image_upload_notifier.dart';
+import 'package:crowd_snap/features/imgs/presentation/notifier/tagged_user_ids_provider.dart';
+import 'package:crowd_snap/features/imgs/presentation/widgets/after_image_loaded.dart';
+import 'package:crowd_snap/features/imgs/presentation/widgets/before_image_loaded.dart';
+import 'package:crowd_snap/features/imgs/presentation/widgets/user_search_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -71,7 +75,10 @@ class ImageUploadView extends ConsumerWidget {
       File? imageState, WidgetRef ref, BuildContext context) async {
     ref.watch(imageUploadNotifierProvider.notifier).updateIsLoading(true);
     try {
-      await ref.read(createPostUseCaseProvider).execute(imageState!);
+      await ref
+          .read(createPostUseCaseProvider)
+          .execute(imageState!, ref.watch(taggedUserIdsProviderProvider));
+      ref.invalidate(taggedUserIdsProviderProvider);
       ref.watch(imageStateProvider.notifier).clearImage();
       ref.watch(imageUploadNotifierProvider.notifier).updateIsLoading(false);
       // ignore: use_build_context_synchronously
@@ -80,6 +87,26 @@ class ImageUploadView extends ConsumerWidget {
       ref.watch(imageUploadNotifierProvider.notifier).updateIsLoading(false);
       rethrow;
     }
+  }
+
+  void _showUserSearchModal(BuildContext context, WidgetRef ref) {
+    final image = ref.watch(imageStateProvider);
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.4,
+          minChildSize: 0.4,
+          maxChildSize: 0.7,
+          expand: false,
+          builder: (BuildContext context, ScrollController scrollController) {
+            return UserSearchModal(
+                scrollController: scrollController, image: image!);
+          },
+        );
+      },
+    );
   }
 
   void _goHome(BuildContext context, WidgetRef ref) {
@@ -93,24 +120,13 @@ class ImageUploadView extends ConsumerWidget {
     final isLoading = ref.watch(imageUploadNotifierProvider).isLoading;
     bool isSelecting = false;
 
-    final animationController = AnimationController(
-      vsync: Scaffold.of(context),
-      duration: const Duration(milliseconds: 1500),
-    )..repeat(reverse: true);
-
-    final animation = Tween<double>(begin: 0, end: -20).animate(
-      CurvedAnimation(
-        parent: animationController,
-        curve: Curves.easeInOut,
-      ),
-    );
-
     return PopScope(
       canPop: false,
       onPopInvoked: (didPop) async {
         if (didPop) {
           return;
         }
+        ref.watch(imageStateProvider.notifier).clearImage();
         _goHome(context, ref);
       },
       child: Scaffold(
@@ -119,120 +135,43 @@ class ImageUploadView extends ConsumerWidget {
         ),
         body: GestureDetector(
           onVerticalDragUpdate: (details) async {
-            if (details.primaryDelta! < -5 && !isSelecting) {
+            if (details.primaryDelta! < -5 &&
+                !isSelecting &&
+                imageState == null) {
               isSelecting = true;
               await _getGallery(ref, context);
               isSelecting = false;
+            } else if (details.primaryDelta! < -5 && imageState != null){
+              _showUserSearchModal(context, ref);
             }
           },
           behavior: HitTestBehavior.translucent,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      if (imageState != null)
-                        Expanded(
-                          child: Image.file(
-                            imageState,
-                            width: double.infinity,
-                            fit: BoxFit.contain,
-                          ),
-                        )
-                      else
-                        const Icon(
-                          Icons.people_alt_sharp,
-                          size: 200,
+          child: imageState == null
+              ? BeforeImageLoaded(
+                  onCameraPressed: () => _getCamera(ref, context),
+                  onGallerySwipe: () => _getGallery(ref, context),
+                )
+              : AfterImageLoaded(
+                  image: imageState,
+                  onSavePressed: () {
+                    try {
+                      _saveImage(imageState, ref, context);
+                    } on Exception catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Error uploading image: $e'),
+                          duration: const Duration(seconds: 2),
+                          behavior: SnackBarBehavior.floating,
                         ),
-                      const SizedBox(height: 20),
-                      if (imageState != null)
-                        Column(
-                          children: [
-                            ElevatedButton(
-                              onPressed: () {
-                                try {
-                                  _saveImage(imageState, ref, context);
-                                } on Exception catch (e) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text('Error uploading image: $e'),
-                                      duration: const Duration(seconds: 2),
-                                      behavior: SnackBarBehavior.floating,
-                                    ),
-                                  );
-                                }
-                              },
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  if (isLoading)
-                                    const Padding(
-                                      padding: EdgeInsets.only(right: 8.0),
-                                      child: SizedBox(
-                                        width: 12,
-                                        height: 12,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                        ),
-                                      ),
-                                    ),
-                                  const Icon(Icons.upload),
-                                  const Text('Subir Post'),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            ElevatedButton(
-                              onPressed: () {
-                                ref.watch(imageStateProvider.notifier).clearImage();
-                              },
-                              child: const Text('Cancelar'),
-                            ),
-                          ],
-                        ),
-                    ],
-                  ),
+                      );
+                    }
+                  },
+                  onCancelPressed: () {
+                    ref.invalidate(taggedUserIdsProviderProvider);
+                    ref.watch(imageStateProvider.notifier).clearImage();
+                  },
+                  isLoading: isLoading,
                 ),
-              ),
-              if (imageState == null)
-                Column(
-                  children: [
-                    ElevatedButton(
-                      onPressed: () => _getCamera(ref, context),
-                      style: ElevatedButton.styleFrom(
-                        shape: const CircleBorder(),
-                        padding:
-                            const EdgeInsets.all(10), // Text and icon color
-                      ),
-                      child: const Icon(Icons.camera_outlined,
-                          color: Colors.red, size: 50),
-                    ),
-                    const SizedBox(height: 50),
-                    AnimatedBuilder(
-                      animation: animation,
-                      builder: (context, child) {
-                        return Transform.translate(
-                          offset: Offset(0, animation.value),
-                          child: Transform.rotate(
-                            angle: 1.5708,
-                            child: const Icon(
-                              Icons.arrow_back_ios_new,
-                              size: 40,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 10),
-                    const Text('Desliza hacia arriba para abrir la galería'),
-                    const SizedBox(height: 20),
-                  ],
-                ),
-            ],
-          ),
         ),
       ),
     );

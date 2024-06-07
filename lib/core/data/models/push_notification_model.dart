@@ -8,7 +8,7 @@ class PushNotificationModel with _$PushNotificationModel {
   const factory PushNotificationModel({
     required String title,
     required String body,
-    required String fcmToken,
+    String? fcmToken,
     required String imageUrl,
     required String userId, 
     required String username,

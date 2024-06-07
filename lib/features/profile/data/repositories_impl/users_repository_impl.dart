@@ -1,7 +1,6 @@
 import 'package:crowd_snap/core/data/models/user_model.dart';
 import 'package:crowd_snap/features/profile/data/data_source/users_data_source.dart';
 import 'package:crowd_snap/features/profile/data/models/connection_model.dart';
-import 'package:crowd_snap/features/profile/data/models/connection_status.dart';
 import 'package:crowd_snap/features/profile/domain/repositories/users_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -51,6 +50,21 @@ class UsersRepositoryImpl implements UsersRepository {
   }
 
   @override
+  Future<void> addTaggingConnection(String localUserId, String userId, String imageUrl, String postId) async {
+    await _usersModelDataSource.addTaggingConnection(localUserId, userId, imageUrl, postId);
+  }
+
+  @override
+  Future<void> removeTaggingConnection(String localUserId, String userId) async {
+    await _usersModelDataSource.removeTaggingConnection(localUserId, userId);
+  }
+
+  @override
+  Future<void> acceptTaggingConnection(String localUserId, String userId) async {
+    await _usersModelDataSource.acceptTaggingConnection(localUserId, userId);
+  }
+
+  @override
   Future<void> addConnection(String localUserId, String userId) async {
     await _usersModelDataSource.addConnection(localUserId, userId);
   }
@@ -71,7 +85,7 @@ class UsersRepositoryImpl implements UsersRepository {
   }
 
   @override
-  Future<ConnectionStatus> checkConnection(
+  Future<ConnectionModel> checkConnection(
       String localUserId, String userId) async {
     final result =
         await _usersModelDataSource.checkConnection(localUserId, userId);

@@ -3,12 +3,16 @@ import 'package:crowd_snap/app/router/app_router.dart';
 import 'package:crowd_snap/core/data/models/post_model.dart';
 import 'package:crowd_snap/core/data/models/user_model.dart';
 import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_local_use_case.dart';
+import 'package:crowd_snap/features/imgs/data/repositories_impl/post_repository_impl.dart';
 import 'package:crowd_snap/features/imgs/presentation/widgets/connections_modal_bottom_sheet.dart';
+import 'package:crowd_snap/features/profile/data/models/connection_model.dart';
 import 'package:crowd_snap/features/profile/data/repositories_impl/user_posts_repository_impl.dart';
 import 'package:crowd_snap/features/profile/data/repositories_impl/users_repository_impl.dart';
 import 'package:crowd_snap/features/profile/domain/use_cases/accept_connection_use_case.dart';
+import 'package:crowd_snap/features/profile/domain/use_cases/accept_tagged_use_case.dart';
 import 'package:crowd_snap/features/profile/domain/use_cases/add_connection_use_case.dart';
 import 'package:crowd_snap/features/profile/domain/use_cases/reject_connection_use_case.dart';
+import 'package:crowd_snap/features/profile/domain/use_cases/reject_tagged_use_case.dart';
 import 'package:crowd_snap/features/profile/domain/use_cases/remove_connection_use_case.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -42,7 +46,9 @@ class _UsersViewState extends ConsumerState<UsersView> {
   late UserModel localUser;
   late UserModel user;
   late List<PostModel> userPosts;
+  late List<PostModel> userTaggedPosts;
   int index = 0;
+  late ConnectionModel connectionModel;
   ConnectionStatus connectionStatus = ConnectionStatus.none;
   int connectionsCount = 0;
 
@@ -58,17 +64,22 @@ class _UsersViewState extends ConsumerState<UsersView> {
     final user = await ref.read(usersRepositoryProvider).getUser(widget.userId);
     final userPosts =
         await ref.read(userPostsRepositoryProvider).getUserPosts(widget.userId);
-    final connectionStatus = await ref
+    final connectionModel = await ref
         .read(usersRepositoryProvider)
         .checkConnection(localUser.userId, widget.userId);
-
+    final userTaggedPosts = await ref
+        .read(postRepositoryProvider)
+        .getTaggedPostsByUserId(widget.userId);
+    print("postId: ${connectionModel.toJson()}");
     if (mounted) {
       setState(() {
         this.localUser = localUser;
         this.user = user;
         this.userPosts = userPosts;
-        this.connectionStatus = connectionStatus;
+        this.connectionModel = connectionModel;
+        connectionStatus = connectionModel.connectionStatus;
         connectionsCount = user.connectionsCount;
+        this.userTaggedPosts = userTaggedPosts;
       });
     }
   }
@@ -128,7 +139,8 @@ class _UsersViewState extends ConsumerState<UsersView> {
           ),
         );
       }
-    } else if (connectionStatus == ConnectionStatus.pending) {
+    } else if (connectionStatus == ConnectionStatus.pending ||
+        connectionStatus == ConnectionStatus.taggingRequest) {
       try {
         ref
             .read(acceptConnectionUseCaseProvider)
@@ -183,6 +195,97 @@ class _UsersViewState extends ConsumerState<UsersView> {
                       .execute(localUser, widget.userId, user.fcmToken!);
                   setState(() {
                     connectionStatus = ConnectionStatus.rejected;
+                  });
+                } on Exception catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Column(
+                        children: [
+                          Text('No se pudo rechazar, inténtalo de nuevo: $e'),
+                          const SizedBox(height: 8),
+                          ElevatedButton(
+                            onPressed: () => ref
+                                .read(rejectConnectionUseCaseProvider)
+                                .execute(
+                                    localUser, widget.userId, user.fcmToken!),
+                            child: const Text('Reintentar'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _acceptTagged() {
+    try {
+      print("postId: ${connectionModel.toJson()}");
+      ref.read(acceptTaggedUseCaseProvider).execute(
+            localUser,
+            widget.userId,
+            user.fcmToken!,
+            connectionModel.imageUrl!,
+            connectionModel.postId!,
+          );
+      setState(() {
+        connectionStatus = ConnectionStatus.connected;
+        connectionsCount++;
+      });
+    } on Exception catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Column(
+            children: [
+              Text('No se pudo aceptar, inténtalo de nuevo: $e'),
+              const SizedBox(height: 8),
+              ElevatedButton(
+                onPressed: () => ref
+                    .read(acceptConnectionUseCaseProvider)
+                    .execute(localUser, widget.userId, user.fcmToken!),
+                child: const Text('Reintentar'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+  }
+
+  void _rejectTagged() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Rechazar etiqueta'),
+          content: const Text(
+              '¿Estás seguro de que quieres rechazar esta etiqueta?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('No'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Sí'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                try {
+                  ref.read(rejectTaggedUseCaseProvider).execute(
+                        localUser,
+                        widget.userId,
+                        user.fcmToken!,
+                        connectionModel.imageUrl!,
+                        connectionModel.postId!,
+                      );
+                  setState(() {
+                    connectionStatus = ConnectionStatus.none;
                   });
                 } on Exception catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -269,7 +372,7 @@ class _UsersViewState extends ConsumerState<UsersView> {
             body: Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(10.0),
                   child: Center(
                     child: SizedBox(
                       width: 150,
@@ -588,86 +691,191 @@ class _UsersViewState extends ConsumerState<UsersView> {
                         .withOpacity(0.38),
                   ),
                   child: const Text('Rechazado'),
-                ),
+                )
+              else if (connectionStatus == ConnectionStatus.taggingRequest &&
+                  localUser.userId != connectionModel.senderId)
+                Column(children: [
+                  SizedBox(
+                    width: 400,
+                    height: 175,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12.0),
+                      child: CachedNetworkImage(
+                        imageUrl: connectionModel.imageUrl!,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Te ha etiquetado en esta publicación, ¿Aceptas?',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          HapticFeedback.selectionClick();
+                          _acceptTagged();
+                        },
+                        child: const Text('Aceptar formar parte'),
+                      ),
+                      const SizedBox(width: 8),
+                      ElevatedButton(
+                          onPressed: () {
+                            HapticFeedback.selectionClick();
+                            _rejectTagged();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                Theme.of(context).colorScheme.error,
+                            foregroundColor:
+                                Theme.of(context).colorScheme.onError,
+                          ),
+                          child: const Text('Rechazar')),
+                    ],
+                  ),
+                ]),
             const SizedBox(height: 16),
           ],
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.grid_on),
-              color: index == 0
-                  ? Theme.of(context).colorScheme.primary
-                  : Colors.grey,
-              onPressed: () => _onGridSelected(0),
-            ),
-            IconButton(
-              icon: const Icon(Icons.person),
-              color: index == 1
-                  ? Theme.of(context).colorScheme.primary
-                  : Colors.grey,
-              onPressed: () => _onGridSelected(1),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        Expanded(
-          child: PageView(
-            controller: pageController,
-            onPageChanged: (index) {
-              setState(() {
-                this.index = index;
-              });
-            },
+        if (connectionStatus != ConnectionStatus.taggingRequest ||
+            localUser.userId == connectionModel.senderId)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  crossAxisSpacing: 5,
-                  mainAxisSpacing: 5,
-                ),
-                itemCount: userPosts.length,
-                itemBuilder: (context, index) {
-                  final post = userPosts[index];
-                  return GestureDetector(
-                    onTap: () {
-                      HapticFeedback.selectionClick();
-                      ref.read(appRouterProvider).push(
-                        '/posts-list',
-                        extra: {
-                          'posts': userPosts,
-                          'height': _calculateHeight(userPosts, index),
-                        },
-                      );
-                    },
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image(
-                        image: CachedNetworkImageProvider(post.imageUrl),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  );
-                },
+              IconButton(
+                icon: const Icon(Icons.grid_on),
+                color: index == 0
+                    ? Theme.of(context).colorScheme.primary
+                    : Colors.grey,
+                onPressed: () => _onGridSelected(0),
               ),
-              ListView.builder(
-                itemCount: userPosts.length,
-                itemBuilder: (context, index) {
-                  final post = userPosts[index];
-                  return ListTile(
-                    leading: CircleAvatar(
-                      backgroundImage:
-                          CachedNetworkImageProvider(post.imageUrl),
-                    ),
-                    title: Text(post.userName),
-                    subtitle: Text(post.description ?? ''),
-                  );
-                },
+              IconButton(
+                icon: const Icon(Icons.person),
+                color: index == 1
+                    ? Theme.of(context).colorScheme.primary
+                    : Colors.grey,
+                onPressed: () => _onGridSelected(1),
               ),
             ],
           ),
-        ),
+        if (connectionStatus == ConnectionStatus.taggingRequest &&
+            localUser.userId != connectionModel.senderId)
+          // ver las publicaciones en listado
+          ElevatedButton(
+            onPressed: () {
+              HapticFeedback.selectionClick();
+              ref.read(appRouterProvider).push(
+                '/posts-list',
+                extra: {
+                  'posts': userPosts,
+                  'height': _calculateHeight(userTaggedPosts, 0),
+                },
+              );
+            },
+            child: const Text('Ver publicaciones'),
+          ),
+        const SizedBox(height: 16),
+        if (connectionStatus != ConnectionStatus.taggingRequest ||
+            localUser.userId == connectionModel.senderId)
+          Expanded(
+            child: PageView(
+              controller: pageController,
+              onPageChanged: (index) {
+                setState(() {
+                  this.index = index;
+                });
+              },
+              children: [
+                GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 5,
+                    mainAxisSpacing: 5,
+                  ),
+                  itemCount: userPosts.length,
+                  itemBuilder: (context, index) {
+                    final post = userPosts[index];
+                    return GestureDetector(
+                      onTap: () {
+                        HapticFeedback.selectionClick();
+                        ref.read(appRouterProvider).push(
+                          '/posts-list',
+                          extra: {
+                            'posts': userPosts,
+                            'height': _calculateHeight(userPosts, index),
+                          },
+                        );
+                      },
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image(
+                          image: CachedNetworkImageProvider(post.imageUrl),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 2,
+                    mainAxisSpacing: 2,
+                    childAspectRatio: 0.81,
+                  ),
+                  itemCount: userTaggedPosts.length,
+                  itemBuilder: (context, index) {
+                    final post = userTaggedPosts[index];
+                    return GestureDetector(
+                      onTap: () {
+                        HapticFeedback.selectionClick();
+                        ref.read(appRouterProvider).push(
+                          '/posts-list',
+                          extra: {
+                            'posts': userTaggedPosts,
+                            'height': _calculateHeight(userTaggedPosts, index),
+                          },
+                        );
+                      },
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                SizedBox(
+                                  width: 30,
+                                  height: 30,
+                                  child: CircleAvatar(
+                                      backgroundImage: CachedNetworkImageProvider(
+                                          post.userAvatarUrl)),
+                                ),
+                                Text(post.userName),
+                              ],
+                            ),
+                          ),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image(
+                              image: CachedNetworkImageProvider(post.imageUrl),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
       ],
     );
   }
