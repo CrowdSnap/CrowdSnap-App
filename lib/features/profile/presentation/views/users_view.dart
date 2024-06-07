@@ -13,6 +13,7 @@ import 'package:crowd_snap/features/profile/domain/use_cases/accept_connection_u
 import 'package:crowd_snap/features/profile/domain/use_cases/accept_tagged_use_case.dart';
 import 'package:crowd_snap/features/profile/domain/use_cases/add_connection_use_case.dart';
 import 'package:crowd_snap/features/profile/domain/use_cases/reject_connection_use_case.dart';
+import 'package:crowd_snap/features/profile/domain/use_cases/reject_tagged_use_case.dart';
 import 'package:crowd_snap/features/profile/domain/use_cases/remove_connection_use_case.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -277,11 +278,13 @@ class _UsersViewState extends ConsumerState<UsersView> {
               onPressed: () {
                 Navigator.of(context).pop();
                 try {
-                  ref
-                      .read(rejectConnectionUseCaseProvider)
-                      .execute(localUser, widget.userId, user.fcmToken!);
-                  ref.read(postRepositoryProvider).deletePendingTaggedFromPost(
-                      connectionModel.postId!, widget.userId);
+                  ref.read(rejectTaggedUseCaseProvider).execute(
+                        localUser,
+                        widget.userId,
+                        user.fcmToken!,
+                        connectionModel.imageUrl!,
+                        connectionModel.postId!,
+                      );
                   setState(() {
                     connectionStatus = ConnectionStatus.none;
                   });
@@ -690,18 +693,19 @@ class _UsersViewState extends ConsumerState<UsersView> {
                   ),
                   child: const Text('Rechazado'),
                 )
-              else if (connectionStatus == ConnectionStatus.taggingRequest && localUser.userId != connectionModel.senderId)
+              else if (connectionStatus == ConnectionStatus.taggingRequest &&
+                  localUser.userId != connectionModel.senderId)
                 Column(children: [
-                    SizedBox(
+                  SizedBox(
                     width: 400,
                     height: 175,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(12.0),
                       child: CachedNetworkImage(
-                      imageUrl: connectionModel.imageUrl!,
+                        imageUrl: connectionModel.imageUrl!,
                       ),
                     ),
-                    ),
+                  ),
                   const SizedBox(height: 16),
                   Text(
                     'Te ha etiquetado en esta publicación, ¿Aceptas?',
@@ -740,7 +744,8 @@ class _UsersViewState extends ConsumerState<UsersView> {
             const SizedBox(height: 16),
           ],
         ),
-        if (connectionStatus != ConnectionStatus.taggingRequest || localUser.userId == connectionModel.senderId)
+        if (connectionStatus != ConnectionStatus.taggingRequest ||
+            localUser.userId == connectionModel.senderId)
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -760,7 +765,8 @@ class _UsersViewState extends ConsumerState<UsersView> {
               ),
             ],
           ),
-        if (connectionStatus == ConnectionStatus.taggingRequest && localUser.userId != connectionModel.senderId)
+        if (connectionStatus == ConnectionStatus.taggingRequest &&
+            localUser.userId != connectionModel.senderId)
           // ver las publicaciones en listado
           ElevatedButton(
             onPressed: () {
@@ -776,7 +782,8 @@ class _UsersViewState extends ConsumerState<UsersView> {
             child: const Text('Ver publicaciones'),
           ),
         const SizedBox(height: 16),
-        if (connectionStatus != ConnectionStatus.taggingRequest || localUser.userId == connectionModel.senderId)
+        if (connectionStatus != ConnectionStatus.taggingRequest ||
+            localUser.userId == connectionModel.senderId)
           Expanded(
             child: PageView(
               controller: pageController,

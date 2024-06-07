@@ -261,7 +261,7 @@ class PostDataSourceImpl implements PostDataSource {
 
     await postsCollection.updateOne(
       where.eq('_id', ObjectId.fromHexString(postId)),
-      modify.pull('taggedUserIds', userId),
+      modify.pull('taggedPendingUserIds', userId),
     );
 
     await db.close();
@@ -272,8 +272,6 @@ class PostDataSourceImpl implements PostDataSource {
     final Db db = await Db.create(_mongoUrl!);
     await db.open();
     final postsCollection = db.collection('posts');
-
-    print('Accepting tagged user: $userId to post: $postId');
 
     await postsCollection.updateOne(
       where.eq('_id', ObjectId.fromHexString(postId)),
