@@ -135,7 +135,7 @@ class NotificationService extends _$NotificationService {
   void _handleNotificationClickFromPayload(String payload) {
     final userId = payload;
     // Aquí puedes agregar lógica adicional si es necesario
-    ref.read(appRouterProvider).go('/users/$userId');
+    ref.read(appRouterProvider).push('/users/$userId');
   }
 }
 

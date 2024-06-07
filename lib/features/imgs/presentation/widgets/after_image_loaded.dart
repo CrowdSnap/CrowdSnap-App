@@ -47,111 +47,86 @@ class _AfterImageLoadedState extends State<AfterImageLoaded>
     super.dispose();
   }
 
-  void _showUserSearchModal(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (BuildContext context) {
-        return DraggableScrollableSheet(
-          initialChildSize: 0.4,
-          minChildSize: 0.4,
-          maxChildSize: 0.7,
-          expand: false,
-          builder: (BuildContext context, ScrollController scrollController) {
-            return UserSearchModal(scrollController: scrollController, image: widget.image);
-          },
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onVerticalDragUpdate: (details) {
-        if (details.primaryDelta! < -5) {
-          _showUserSearchModal(context);
-        }
-      },
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Expanded(
-                    child: Image.file(
-                      widget.image,
-                      width: double.infinity,
-                      fit: BoxFit.contain,
-                    ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Expanded(
+                  child: Image.file(
+                    widget.image,
+                    width: double.infinity,
+                    fit: BoxFit.contain,
                   ),
-                  const SizedBox(height: 20),
-                  Column(
-                    children: [
-                      AnimatedBuilder(
-                        animation: _animation,
-                        builder: (context, child) {
-                          return Transform.translate(
-                            offset: Offset(0, _animation.value),
-                            child: Transform.rotate(
-                              angle: 1.5708,
-                              child: const Icon(
-                                Icons.arrow_back_ios_new,
-                                size: 40,
-                              ),
+                ),
+                const SizedBox(height: 20),
+                Column(
+                  children: [
+                    AnimatedBuilder(
+                      animation: _animation,
+                      builder: (context, child) {
+                        return Transform.translate(
+                          offset: Offset(0, _animation.value),
+                          child: Transform.rotate(
+                            angle: 1.5708,
+                            child: const Icon(
+                              Icons.arrow_back_ios_new,
+                              size: 40,
                             ),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      const Text(
-                          'Desliza hacia arriba para etiquetar usuarios'),
-                      const SizedBox(height: 10),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton(
-                        onPressed: widget.onSavePressed,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (widget.isLoading)
-                              const Padding(
-                                padding: EdgeInsets.only(right: 8.0),
-                                child: SizedBox(
-                                  width: 12,
-                                  height: 12,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    const Text(
+                        'Desliza hacia arriba para etiquetar usuarios'),
+                    const SizedBox(height: 10),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: widget.onSavePressed,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (widget.isLoading)
+                            const Padding(
+                              padding: EdgeInsets.only(right: 8.0),
+                              child: SizedBox(
+                                width: 12,
+                                height: 12,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
                                 ),
                               ),
-                            const Icon(Icons.upload),
-                            const Text('Subir Post'),
-                          ],
-                        ),
+                            ),
+                          const Icon(Icons.upload),
+                          const Text('Subir Post'),
+                        ],
                       ),
-                      const SizedBox(width: 8),
-                      ElevatedButton(
-                        onPressed: widget.onCancelPressed,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                        ),
-                        child: const Text('Cancelar'),
+                    ),
+                    const SizedBox(width: 8),
+                    ElevatedButton(
+                      onPressed: widget.onCancelPressed,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
                       ),
-                    ],
-                  ),
-                ],
-              ),
+                      child: const Text('Cancelar'),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

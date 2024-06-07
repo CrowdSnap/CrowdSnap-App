@@ -5,7 +5,6 @@ import 'package:crowd_snap/core/data/models/user_model.dart';
 import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_local_use_case.dart';
 import 'package:crowd_snap/features/imgs/data/repositories_impl/post_repository_impl.dart';
 import 'package:crowd_snap/features/imgs/presentation/widgets/connections_modal_bottom_sheet.dart';
-import 'package:crowd_snap/features/imgs/presentation/widgets/post_card.dart';
 import 'package:crowd_snap/features/profile/data/models/connection_model.dart';
 import 'package:crowd_snap/features/profile/data/repositories_impl/user_posts_repository_impl.dart';
 import 'package:crowd_snap/features/profile/data/repositories_impl/users_repository_impl.dart';
@@ -823,12 +822,55 @@ class _UsersViewState extends ConsumerState<UsersView> {
                     );
                   },
                 ),
-                ListView.builder(
+                GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 2,
+                    mainAxisSpacing: 2,
+                    childAspectRatio: 0.81,
+                  ),
                   itemCount: userTaggedPosts.length,
                   itemBuilder: (context, index) {
                     final post = userTaggedPosts[index];
-                    print("post: $post");
-                    return PostCard(post: post);
+                    return GestureDetector(
+                      onTap: () {
+                        HapticFeedback.selectionClick();
+                        ref.read(appRouterProvider).push(
+                          '/posts-list',
+                          extra: {
+                            'posts': userTaggedPosts,
+                            'height': _calculateHeight(userTaggedPosts, index),
+                          },
+                        );
+                      },
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                SizedBox(
+                                  width: 30,
+                                  height: 30,
+                                  child: CircleAvatar(
+                                      backgroundImage: CachedNetworkImageProvider(
+                                          post.userAvatarUrl)),
+                                ),
+                                Text(post.userName),
+                              ],
+                            ),
+                          ),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image(
+                              image: CachedNetworkImageProvider(post.imageUrl),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
                   },
                 ),
               ],

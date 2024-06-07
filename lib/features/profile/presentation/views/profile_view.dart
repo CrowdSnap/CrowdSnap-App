@@ -6,6 +6,7 @@ import 'package:crowd_snap/core/data/repository_impl/shared_preferences/user_rep
 import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_local_use_case.dart';
 import 'package:crowd_snap/core/domain/use_cases/shared_preferences/store_user_use_case.dart';
 import 'package:crowd_snap/core/navbar/providers/navbar_provider.dart';
+import 'package:crowd_snap/features/imgs/data/repositories_impl/post_repository_impl.dart';
 import 'package:crowd_snap/features/imgs/presentation/widgets/connections_modal_bottom_sheet.dart';
 import 'package:crowd_snap/features/profile/data/repositories_impl/user_posts_repository_impl.dart';
 import 'package:crowd_snap/features/profile/data/repositories_impl/users_repository_impl.dart';
@@ -27,6 +28,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
   late Future<void> _initializationFuture;
   late List<PostModel> userPosts;
   late UserModel localUser;
+  List<PostModel> userTaggedPosts = []; // Inicializa con una lista vacía
 
   @override
   void initState() {
@@ -43,11 +45,21 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
     final updatedUser =
         await ref.read(usersRepositoryProvider).getUser(localUser.userId);
 
+    userTaggedPosts = await ref
+        .read(postRepositoryProvider)
+        .getTaggedPostsByUserId(localUser.userId);
+
+    print('User Tagged Posts: $userTaggedPosts');
+
     if (mounted) {
       ref.read(profileNotifierProvider.notifier).updatePosts(userPosts);
       ref
           .read(profileNotifierProvider.notifier)
           .updateConnectionsCount(updatedUser.connectionsCount);
+
+      ref
+          .read(profileNotifierProvider.notifier)
+          .updateTaggedPosts(userTaggedPosts);
     }
 
     // Actualiza el usuario de Shared Preferences.
@@ -214,21 +226,17 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             IconButton(
-                              icon: const Icon(Icons.grid_on),
-                              color: profileValues.index == 0
-                                  ? Theme.of(context).colorScheme.primary
-                                  : Colors.grey,
-                              onPressed: () =>
-                                  _onGridSelected(0, profileNotifier),
-                            ),
+                                icon: const Icon(Icons.grid_on),
+                                color: profileValues.index == 0
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Colors.grey,
+                                onPressed: () {}),
                             IconButton(
-                              icon: const Icon(Icons.person),
-                              color: profileValues.index == 1
-                                  ? Theme.of(context).colorScheme.primary
-                                  : Colors.grey,
-                              onPressed: () =>
-                                  _onGridSelected(1, profileNotifier),
-                            ),
+                                icon: const Icon(Icons.person),
+                                color: profileValues.index == 1
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Colors.grey,
+                                onPressed: () {}),
                           ],
                         ),
                         const SizedBox(height: 16),
@@ -275,12 +283,12 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                               GridView.builder(
                                 gridDelegate:
                                     const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 3,
-                                  crossAxisSpacing: 5,
-                                  mainAxisSpacing: 5,
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: 2,
+                                  mainAxisSpacing: 2,
+                                  childAspectRatio: 0.81,
                                 ),
-                                itemCount:
-                                    0, // Reemplaza con el número real de posts etiquetados
+                                itemCount: userTaggedPosts.length,
                                 itemBuilder: (context, index) {
                                   return Container(
                                     color: Colors.grey[200],
@@ -427,17 +435,56 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                               GridView.builder(
                                 gridDelegate:
                                     const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 3,
-                                  crossAxisSpacing: 5,
-                                  mainAxisSpacing: 5,
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: 2,
+                                  mainAxisSpacing: 2,
+                                  childAspectRatio: 0.81,
                                 ),
-                                itemCount:
-                                    0, // Reemplaza con el número real de posts etiquetados
+                                itemCount: userTaggedPosts.length,
                                 itemBuilder: (context, index) {
-                                  return Container(
-                                    color: Colors.grey[200],
-                                    child: Center(
-                                      child: Text('Tagged Post ${index + 1}'),
+                                  final post = userTaggedPosts[index];
+                                  return GestureDetector(
+                                    onTap: () {
+                                      HapticFeedback.selectionClick();
+                                      ref.read(appRouterProvider).push(
+                                        '/posts-list',
+                                        extra: {
+                                          'posts': userTaggedPosts,
+                                          'height': _calculateHeight(
+                                              profileValues, index),
+                                        },
+                                      );
+                                    },
+                                    child: Column(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              SizedBox(
+                                                width: 30,
+                                                height: 30,
+                                                child: CircleAvatar(
+                                                    backgroundImage:
+                                                        CachedNetworkImageProvider(
+                                                            post.userAvatarUrl)),
+                                              ),
+                                              Text(post.userName),
+                                            ],
+                                          ),
+                                        ),
+                                        ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          child: Image(
+                                            image: CachedNetworkImageProvider(
+                                                post.imageUrl),
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   );
                                 },

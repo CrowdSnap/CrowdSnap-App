@@ -13,6 +13,7 @@ class ProfileState {
   final DateTime? birthDate;
   final File? image;
   final List<PostModel> posts;
+  final List<PostModel> taggedPosts;
   final int connectionsCount;
   final int index;
 
@@ -24,6 +25,7 @@ class ProfileState {
       this.birthDate,
       this.image,
       this.posts = const [],
+      this.taggedPosts = const [],
       this.connectionsCount = 0,
       this.index = 0});
 
@@ -36,6 +38,7 @@ class ProfileState {
     DateTime? birthDate,
     File? image,
     List<PostModel>? posts,
+    List<PostModel>? taggedPosts,
     int? connectionsCount,
     int? index,
   }) {
@@ -47,6 +50,7 @@ class ProfileState {
       birthDate: birthDate ?? this.birthDate,
       image: image ?? this.image,
       posts: posts ?? this.posts,
+      taggedPosts: taggedPosts ?? this.taggedPosts,
       connectionsCount: connectionsCount ?? this.connectionsCount,
       index: index ?? this.index,
     );
@@ -100,6 +104,10 @@ class ProfileNotifier extends _$ProfileNotifier {
   // Actualiza el número de conexiones del usuario en el estado.
   void updateConnectionsCount(int connectionsCount) {
     state = state.copyWith(connectionsCount: connectionsCount);
+  }
+
+  void updateTaggedPosts(List<PostModel> taggedPosts) {
+    state = state.copyWith(taggedPosts: taggedPosts);
   }
 
   // Actualiza el índice de la grid seleccionada en el estado.

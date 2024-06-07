@@ -8,6 +8,7 @@ import 'package:crowd_snap/features/imgs/presentation/notifier/image_upload_noti
 import 'package:crowd_snap/features/imgs/presentation/notifier/tagged_user_ids_provider.dart';
 import 'package:crowd_snap/features/imgs/presentation/widgets/after_image_loaded.dart';
 import 'package:crowd_snap/features/imgs/presentation/widgets/before_image_loaded.dart';
+import 'package:crowd_snap/features/imgs/presentation/widgets/user_search_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -88,6 +89,26 @@ class ImageUploadView extends ConsumerWidget {
     }
   }
 
+  void _showUserSearchModal(BuildContext context, WidgetRef ref) {
+    final image = ref.watch(imageStateProvider);
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.4,
+          minChildSize: 0.4,
+          maxChildSize: 0.7,
+          expand: false,
+          builder: (BuildContext context, ScrollController scrollController) {
+            return UserSearchModal(
+                scrollController: scrollController, image: image!);
+          },
+        );
+      },
+    );
+  }
+
   void _goHome(BuildContext context, WidgetRef ref) {
     context.go('/');
     ref.read(navBarIndexNotifierProvider.notifier).updateIndex(0);
@@ -120,6 +141,8 @@ class ImageUploadView extends ConsumerWidget {
               isSelecting = true;
               await _getGallery(ref, context);
               isSelecting = false;
+            } else if (details.primaryDelta! < -5 && imageState != null){
+              _showUserSearchModal(context, ref);
             }
           },
           behavior: HitTestBehavior.translucent,
