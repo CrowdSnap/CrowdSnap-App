@@ -14,7 +14,7 @@ class ImageCompressUseCase {
 
     // Obtener el tamaño de la imagen original
     final originalSize = await image.length();
-    print('Tamaño original: ${originalSize} bytes');
+    print('Tamaño original: $originalSize bytes');
 
     // Comprimir la imagen utilizando la librería FlutterImageCompress.
     final result = await FlutterImageCompress.compressAndGetFile(
@@ -30,7 +30,7 @@ class ImageCompressUseCase {
 
     // Obtener el tamaño de la imagen comprimida
     final compressedSize = await File(result!.path).length();
-    print('Tamaño comprimido: ${compressedSize} bytes');
+    print('Tamaño comprimido: $compressedSize bytes');
 
     // Devolver la imagen comprimida.
     return File(result.path);

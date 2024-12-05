@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:crowd_snap/features/imgs/presentation/widgets/user_search_modal.dart';
 import 'package:flutter/material.dart';
 
 class AfterImageLoaded extends StatefulWidget {
