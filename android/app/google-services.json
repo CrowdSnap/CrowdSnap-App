@@ -1,18 +1,32 @@
 {
   "project_info": {
     "project_number": "971504465078",
+    "firebase_url": "https://crowd-snap-default-rtdb.europe-west1.firebasedatabase.app",
     "project_id": "crowd-snap",
     "storage_bucket": "crowd-snap.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:971504465078:android:a66fb56cad4b9375c02217",
+        "mobilesdk_app_id": "1:971504465078:android:078ca6ba62f54023c02217",
         "android_client_info": {
           "package_name": "com.example.crowd_snap"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "971504465078-7jmmftq3amju3197ilq3sqppdhisklf3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.crowd_snap",
+            "certificate_hash": "d940751fb9282dc1d9dde9119bf0faf3c428af0e"
+          }
+        },
+        {
+          "client_id": "971504465078-mvgvk72th070ikpj28pem7k79hmkj7rm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBBrA6xyQMdfI9XtW8w_a3M5XYik5RJ8n0"
@@ -20,7 +34,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "971504465078-mvgvk72th070ikpj28pem7k79hmkj7rm.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "971504465078-4rbd942mhe3ds36sdm3q77oahdvk3p3r.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.crowdSnap"
+              }
+            }
+          ]
         }
       }
     }
