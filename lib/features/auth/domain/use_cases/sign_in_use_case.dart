@@ -45,6 +45,7 @@ class SignInUseCase {
 
       await _storeUserUseCase.execute(fcmTokenUserModel);
       await _usersRepository.updateUserFCMToken(userModel, fcmToken!);
+      // TOdo: Añadir metodo para web, manejar la memoria en el navegador.
       await _avatarGetUseCase.execute(avatarUrl!);
 
       _getUserUseCase.execute().then((user) {
