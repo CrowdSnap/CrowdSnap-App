@@ -1,0 +1,2 @@
+/Users/alex03/Dev/Projects/CrowdSnap-App/android/app/.cxx/Debug/6n5h62gh/x86_64/CMakeFiles/edit_cache.dir
+/Users/alex03/Dev/Projects/CrowdSnap-App/android/app/.cxx/Debug/6n5h62gh/x86_64/CMakeFiles/rebuild_cache.dir

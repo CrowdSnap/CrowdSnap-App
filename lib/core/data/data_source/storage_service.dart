@@ -11,6 +11,7 @@ class MobileStorageService implements StorageService {
   @override
   Future<String?> getAvatar(String userId) async {
     final directory = await getApplicationDocumentsDirectory();
+    return null;
     // implementación existente para móvil
   }
 

@@ -12,10 +12,6 @@ class NotificationService extends _$NotificationService {
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
-  NotificationService() {
-    _initialize();
-  }
-
   @override
   void build() {
     _initialize();
@@ -30,14 +26,26 @@ class NotificationService extends _$NotificationService {
   }
 
   void _requestPermission() async {
-    NotificationSettings settings = await _firebaseMessaging.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
+    // Verificar el estado actual de los permisos antes de solicitarlos nuevamente
+    NotificationSettings currentSettings =
+        await _firebaseMessaging.getNotificationSettings();
 
-    debugPrint(
-        'User granted notifications permission: ${settings.authorizationStatus}');
+    // Solo solicitar permisos si aún no se han determinado
+    if (currentSettings.authorizationStatus ==
+        AuthorizationStatus.notDetermined) {
+      NotificationSettings settings =
+          await _firebaseMessaging.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+
+      debugPrint(
+          'User granted notifications permission: ${settings.authorizationStatus}');
+    } else {
+      debugPrint(
+          'Notifications permission already set to: ${currentSettings.authorizationStatus}');
+    }
   }
 
   void _initializeLocalNotifications() {
@@ -51,6 +59,9 @@ class NotificationService extends _$NotificationService {
 
     _flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
+      onDidReceiveNotificationResponse: (NotificationResponse response) {
+        onNotificationTap(response.payload);
+      },
     );
   }
 
@@ -132,10 +143,12 @@ class NotificationService extends _$NotificationService {
     ref.read(appRouterProvider).go('/users/$userId', extra: extraString);
   }
 
-  void _handleNotificationClickFromPayload(String payload) {
-    final userId = payload;
-    // Aquí puedes agregar lógica adicional si es necesario
-    ref.read(appRouterProvider).push('/users/$userId');
+  // Manejador para clicks de notificaciones desde payload
+  void onNotificationTap(String? payload) {
+    if (payload != null) {
+      final userId = payload;
+      ref.read(appRouterProvider).push('/users/$userId');
+    }
   }
 }
 

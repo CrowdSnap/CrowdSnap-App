@@ -1,0 +1,16 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "validate-gradle",
+			"type": "shell",
+			"command": "./gradlew clean assembleDebug",
+			"group": "build",
+			"problemMatcher": [
+				"$gradle"
+			],
+			"isBackground": false,
+			"args": []
+		}
+	]
+}
