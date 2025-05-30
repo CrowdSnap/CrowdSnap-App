@@ -1,7 +1,9 @@
-
+import 'package:crowd_snap/core/errors/exceptions.dart';
+import 'package:crowd_snap/core/errors/result.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:crowd_snap/core/data/data_source/shared_preferences/user_data_source.dart';
 import 'package:crowd_snap/core/data/models/post_model.dart';
-import 'package:crowd_snap/core/data/models/user_model.dart';
+import 'package:crowd_snap/features/profile/data/models/user_model.dart';
 import 'package:crowd_snap/core/domain/repositories/shared_preferences/user_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -19,67 +21,79 @@ class UserRepositoryImpl implements UserRepository {
   UserRepositoryImpl(this._userModelDataSource);
 
   @override
-  Future<void> saveUser(UserModel user) async {
+  Future<Result<void, AppException>> saveUser(UserModel user) async {
     try {
       await _userModelDataSource.saveUserModel(user);
+      return const Right(unit);
     } catch (e) {
-      throw Exception('Failed to save user to SharedPreferences');
+      // TODO: Add logging
+      return Left(CacheException('Failed to save user to SharedPreferences: ${e.toString()}'));
     }
   }
 
   @override
-  Future<UserModel> getUser() async {
+  Future<Result<UserModel, AppException>> getUser() async {
     try {
       final userModel = await _userModelDataSource.getUserModel();
-      return userModel;
+      return Right(userModel);
     } catch (e) {
-      throw Exception('Failed to get user from SharedPreferences');
-    } 
+      // TODO: Add logging
+      return Left(CacheException('Failed to get user from SharedPreferences: ${e.toString()}'));
+    }
   }
 
   @override
-  Future<void> updateUserAvatar(String avatarUrl, String blurHash) async {
+  Future<Result<void, AppException>> updateUserAvatar(String avatarUrl, String blurHash) async {
     try {
       await _userModelDataSource.updateUserAvatar(avatarUrl, blurHash);
+      return const Right(unit);
     } catch (e) {
-      throw Exception('Failed to update user avatar in SharedPreferences');
+      // TODO: Add logging
+      return Left(CacheException('Failed to update user avatar in SharedPreferences: ${e.toString()}'));
     }
   }
 
   @override
-  Future<void> updateUserFCMToken(String fcmToken) async {
+  Future<Result<void, AppException>> updateUserFCMToken(String fcmToken) async {
     try {
       await _userModelDataSource.updateUserFCMToken(fcmToken);
+      return const Right(unit);
     } catch (e) {
-      throw Exception('Failed to update user FCM token in SharedPreferences');
+      // TODO: Add logging
+      return Left(CacheException('Failed to update user FCM token in SharedPreferences: ${e.toString()}'));
     }
   }
 
   @override
-  Future<void> savePosts(List<PostModel> posts) async {
+  Future<Result<void, AppException>> savePosts(List<PostModel> posts) async {
     try {
       await _userModelDataSource.savePosts(posts);
+      return const Right(unit);
     } catch (e) {
-      throw Exception('Failed to save posts to SharedPreferences');
+      // TODO: Add logging
+      return Left(CacheException('Failed to save posts to SharedPreferences: ${e.toString()}'));
     }
   }
 
   @override
-  Future<List<PostModel>> getPosts() async {
+  Future<Result<List<PostModel>, AppException>> getPosts() async {
     try {
       final posts = await _userModelDataSource.getPosts();
-      return posts;
+      return Right(posts);
     } catch (e) {
-      throw Exception('Failed to get posts from SharedPreferences');
+      // TODO: Add logging
+      return Left(CacheException('Failed to get posts from SharedPreferences: ${e.toString()}'));
     }
   }
 
   @override
-  Future<void> deleteUser() async {
+  Future<Result<void, AppException>> deleteUser() async {
     try {
       await _userModelDataSource.deleteUserModel();
+      return const Right(unit);
     } catch (e) {
-      throw Exception('Failed to delete user from SharedPreferences');
+      // TODO: Add logging
+      return Left(CacheException('Failed to delete user from SharedPreferences: ${e.toString()}'));
     }
   }
 }

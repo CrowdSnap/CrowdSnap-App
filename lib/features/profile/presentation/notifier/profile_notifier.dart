@@ -57,7 +57,7 @@ class ProfileState {
   }
 }
 
-@Riverpod(keepAlive: true)
+@Riverpod()
 class ProfileNotifier extends _$ProfileNotifier {
   // Constructor para el notificador de perfil.
   // Inicializa el estado con un `ProfileState` vacío.

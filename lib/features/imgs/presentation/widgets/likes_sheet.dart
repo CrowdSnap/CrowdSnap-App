@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:crowd_snap/core/data/models/user_model.dart';
+import 'package:crowd_snap/features/profile/data/models/user_model.dart';
 import 'package:crowd_snap/core/data/models/post_model.dart';
 import 'package:flutter_blurhash/flutter_blurhash.dart';
 import 'package:go_router/go_router.dart';

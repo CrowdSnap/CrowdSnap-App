@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:crowd_snap/core/data/models/post_model.dart';
-import 'package:crowd_snap/core/data/models/user_model.dart';
+import 'package:crowd_snap/features/profile/data/models/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

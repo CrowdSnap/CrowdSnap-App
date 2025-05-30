@@ -1,5 +1,5 @@
-import 'package:crowd_snap/core/data/models/google_user_model.dart';
-import 'package:crowd_snap/core/data/models/user_model.dart';
+import 'package:crowd_snap/features/auth/data/models/google_user_model.dart';
+import 'package:crowd_snap/features/profile/data/models/user_model.dart';
 
 // Interfaz base que define los métodos para manejar la autenticación de usuarios en la aplicación.
 abstract class AuthRepository {

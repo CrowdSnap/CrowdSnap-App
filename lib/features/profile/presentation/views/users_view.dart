@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crowd_snap/app/router/app_router.dart';
 import 'package:crowd_snap/core/data/models/post_model.dart';
-import 'package:crowd_snap/core/data/models/user_model.dart';
+import 'package:crowd_snap/features/profile/data/models/user_model.dart';
 import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_local_use_case.dart';
 import 'package:crowd_snap/features/imgs/data/repositories_impl/post_repository_impl.dart';
 import 'package:crowd_snap/features/imgs/presentation/widgets/connections_modal_bottom_sheet.dart';

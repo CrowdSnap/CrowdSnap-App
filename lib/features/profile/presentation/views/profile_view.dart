@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crowd_snap/app/router/app_router.dart';
 import 'package:crowd_snap/core/data/models/post_model.dart';
-import 'package:crowd_snap/core/data/models/user_model.dart';
+import 'package:crowd_snap/features/profile/data/models/user_model.dart';
 import 'package:crowd_snap/core/data/repository_impl/shared_preferences/user_repository_impl.dart';
 import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_local_use_case.dart';
 import 'package:crowd_snap/core/domain/use_cases/shared_preferences/store_user_use_case.dart';
@@ -56,14 +56,12 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
       ref
           .read(profileNotifierProvider.notifier)
           .updateConnectionsCount(updatedUser.connectionsCount);
-
       ref
           .read(profileNotifierProvider.notifier)
           .updateTaggedPosts(userTaggedPosts);
-    }
 
-    // Actualiza el usuario de Shared Preferences.
-    await ref.read(storeUserUseCaseProvider).execute(
+      // Actualiza el usuario de Shared Preferences.
+      await ref.read(storeUserUseCaseProvider).execute(
           UserModel(
             userId: updatedUser.userId,
             username: updatedUser.username,
@@ -80,7 +78,8 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
           ),
         );
 
-    await ref.read(userRepositoryProvider).savePosts(userPosts);
+      await ref.read(userRepositoryProvider).savePosts(userPosts);
+    }
   }
 
   void _showConnectionSheet() {
@@ -126,8 +125,10 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
 
   void _goHome(BuildContext context, WidgetRef ref) {
     context.go('/'); // Redirige a la ruta raíz.
-    ref.read(navBarIndexNotifierProvider.notifier).updateIndex(
-        0); // Actualiza el índice de la barra de navegación inferior a 0.
+    if (mounted) {
+      ref.read(navBarIndexNotifierProvider.notifier).updateIndex(
+          0); // Actualiza el índice de la barra de navegación inferior a 0.
+    }
   }
 
   double _calculateHeight(ProfileState profileValues, int index) {

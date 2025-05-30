@@ -1,7 +1,7 @@
-import 'package:crowd_snap/core/data/models/google_user_model.dart';
+import 'package:crowd_snap/features/auth/data/models/google_user_model.dart';
 import 'package:crowd_snap/features/auth/data/data_sources/auth_data_source.dart';
 import 'package:crowd_snap/features/auth/data/data_sources/google_auth_data_source.dart';
-import 'package:crowd_snap/core/data/models/user_model.dart';
+import 'package:crowd_snap/features/profile/data/models/user_model.dart';
 import 'package:crowd_snap/features/auth/domain/repositories/auth_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:logging/logging.dart';

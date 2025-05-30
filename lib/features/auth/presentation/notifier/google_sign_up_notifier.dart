@@ -1,5 +1,5 @@
-import 'package:crowd_snap/core/data/models/google_user_model.dart';
-import 'package:crowd_snap/core/data/repository_impl/shared_preferences/google_user_repository_impl.dart';
+import 'package:crowd_snap/features/auth/data/models/google_user_model.dart';
+import 'package:crowd_snap/features/auth/data/repositories/google_user_repository_impl.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'google_sign_up_notifier.g.dart';

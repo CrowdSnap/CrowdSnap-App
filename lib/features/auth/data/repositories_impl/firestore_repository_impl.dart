@@ -1,5 +1,5 @@
 import 'package:crowd_snap/features/auth/data/data_sources/firestore_data_source.dart';
-import 'package:crowd_snap/core/data/models/user_model.dart';
+import 'package:crowd_snap/features/profile/data/models/user_model.dart';
 import 'package:crowd_snap/features/auth/domain/repositories/firestore_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:logging/logging.dart';

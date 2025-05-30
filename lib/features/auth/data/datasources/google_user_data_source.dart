@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:crowd_snap/core/data/models/google_user_model.dart';
+import 'package:crowd_snap/features/auth/data/models/google_user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

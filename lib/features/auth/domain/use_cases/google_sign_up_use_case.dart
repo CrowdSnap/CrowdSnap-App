@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:crowd_snap/core/data/models/user_model.dart';
-import 'package:crowd_snap/core/data/repository_impl/shared_preferences/google_user_repository_impl.dart';
-import 'package:crowd_snap/core/domain/repositories/shared_preferences/google_user_repository.dart';
+import 'package:crowd_snap/features/profile/data/models/user_model.dart';
+import 'package:crowd_snap/features/auth/data/repositories/google_user_repository_impl.dart';
+import 'package:crowd_snap/features/auth/domain/repositories/google_user_repository.dart';
 import 'package:crowd_snap/core/domain/use_cases/shared_preferences/get_user_local_use_case.dart';
 import 'package:crowd_snap/core/domain/use_cases/shared_preferences/store_user_use_case.dart';
 import 'package:crowd_snap/features/auth/data/repositories_impl/firestore_repository_impl.dart';

@@ -1,4 +1,4 @@
-import 'package:crowd_snap/core/data/models/user_model.dart';
+import 'package:crowd_snap/features/profile/data/models/user_model.dart';
 
 // Interfaz base que define los métodos para interactuar con los datos de usuario en Firestore.
 abstract class FirestoreRepository {

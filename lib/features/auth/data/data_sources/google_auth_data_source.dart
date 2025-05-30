@@ -1,4 +1,4 @@
-import 'package:crowd_snap/core/data/models/google_user_model.dart';
+import 'package:crowd_snap/features/auth/data/models/google_user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
